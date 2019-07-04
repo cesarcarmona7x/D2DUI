@@ -22,30 +22,30 @@ namespace D2DUI{
 		hwnd=parent;
 		this->modal=modal;
 		showing=false;
-		textContent=new TextLabel(text);
+		textContent=std::shared_ptr<TextLabel>(new TextLabel(text));
 		textContent->setPadding(5,0);
 		textContent->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
-		textTitle=new TextLabel(title);
+		textTitle=std::shared_ptr<TextLabel>(new TextLabel(title));
 		textTitle->setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 		showing=false;
 		this->buttons=buttons;
 		this->msgicon=icon;
-		contentRow=new TableRow(2);
+		contentRow=std::shared_ptr<TableRow>(new TableRow(2));
 		textTitle->setPadding(0,0);
 		contentRow->setPadding(0,0);
 		contentRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 		switch(msgicon){
 		case MSGBOX_ERROR:
-			msgboxicon=new ImageView(L"Images\\UI\\msgbox_error.png");
+			msgboxicon=std::shared_ptr<ImageView>(new ImageView(L"Images\\UI\\msgbox_error.png"));
 			break;
 		case MSGBOX_INFORMATION:
-			msgboxicon=new ImageView(L"Images\\UI\\msgbox_inf.png");
+			msgboxicon=std::shared_ptr<ImageView>(new ImageView(L"Images\\UI\\msgbox_inf.png"));
 			break;
 		case MSGBOX_QUESTION:
-			msgboxicon=new ImageView(L"Images\\UI\\msgbox_question.png");
+			msgboxicon=std::shared_ptr<ImageView>(new ImageView(L"Images\\UI\\msgbox_question.png"));
 			break;
 		case MSGBOX_WARNING:
-			msgboxicon=new ImageView(L"Images\\UI\\msgbox_warning.png");
+			msgboxicon=std::shared_ptr<ImageView>(new ImageView(L"Images\\UI\\msgbox_warning.png"));
 			break;
 		}
 		msgboxicon->setSize(32,32);
@@ -54,10 +54,10 @@ namespace D2DUI{
 		contentRow->add(*textContent);
 		switch(buttons){
 		case MSGBOX_OK:
-			buttonsRow=new GridLayout();
+			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout());
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
-			btnOk=new Button(L"OK",L"");
+			btnOk=std::shared_ptr<Button>(new Button(L"OK",L""));
 			btnOk->setEnabled(true);
 			btnOk->setSize(100,30);
 			btnOk->setPadding(0,0);
@@ -66,17 +66,17 @@ namespace D2DUI{
 			buttonsRow->add(*btnOk,1,1);
 			break;
 		case MSGBOX_OKCANCEL:
-			buttonsRow=new GridLayout(2,1);
+			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout(2,1));
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
-			btnOk=new Button(L"OK",L"");
+			btnOk=std::shared_ptr<Button>(new Button(L"OK",L""));
 			btnOk->setEnabled(true);
 			btnOk->setSize(100,30);
 			btnOk->setPadding(0,0);
 			btnOk->setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 			btnOk->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnOk,1,1);
-			btnCancel=new Button(L"Cancel",L"");
+			btnCancel=std::shared_ptr<Button>(new Button(L"Cancel",L""));
 			btnCancel->setEnabled(true);
 			btnCancel->setSize(100,30);
 			btnCancel->setPadding(0,0);
@@ -85,17 +85,17 @@ namespace D2DUI{
 			buttonsRow->add(*btnCancel,2,1);
 			break;
 		case MSGBOX_YESNO:
-			buttonsRow=new GridLayout(2,1);
+			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout(2,1));
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
-			btnYes=new Button(L"Yes",L"");
+			btnYes=std::shared_ptr<Button>(new Button(L"Yes",L""));
 			btnYes->setEnabled(true);
 			btnYes->setSize(100,30);
 			btnYes->setPadding(0,0);
 			btnYes->setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 			btnYes->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnYes,1,1);
-			btnNo=new Button(L"No",L"");
+			btnNo=std::shared_ptr<Button>(new Button(L"No",L""));
 			btnNo->setEnabled(true);
 			btnNo->setSize(100,30);
 			btnNo->setPadding(0,0);
@@ -104,24 +104,24 @@ namespace D2DUI{
 			buttonsRow->add(*btnNo,2,1);
 			break;
 		case MSGBOX_YESNOCANCEL:
-			buttonsRow=new GridLayout(3,1);
+			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout(3,1));
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
-			btnYes=new Button(L"Yes",L"");
+			btnYes=std::shared_ptr<Button>(new Button(L"Yes",L""));
 			btnYes->setEnabled(true);
 			btnYes->setSize(100,30);
 			btnYes->setPadding(0,0);
 			btnYes->setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 			btnYes->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnYes,1,1);
-			btnNo=new Button(L"No",L"");
+			btnNo=std::shared_ptr<Button>(new Button(L"No",L""));
 			btnNo->setEnabled(true);
 			btnNo->setSize(100,30);
 			btnNo->setPadding(0,0);
 			btnNo->setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 			btnNo->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnNo,2,1);
-			btnCancel=new Button(L"Cancel",L"");
+			btnCancel=std::shared_ptr<Button>(new Button(L"Cancel",L""));
 			btnCancel->setEnabled(true);
 			btnCancel->setSize(100,30);
 			btnCancel->setPadding(0,0);
@@ -269,7 +269,7 @@ namespace D2DUI{
 	}
 	InfoBox::InfoBox(HWND parent,wchar_t* text){
 		this->hwnd=parent;
-		textContent=new TextLabel(text);
+		textContent=std::shared_ptr<TextLabel>(new TextLabel(text));
 		textContent->setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 		textContent->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 		textContent->setPadding(0,0);
@@ -2392,7 +2392,8 @@ namespace D2DUI{
 				IDWriteTextLayout* dwtl;
 				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,&dwtl);
 				d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
-				textlayout=d2d->textlayout.get();
+				textlayout.reset();
+				textlayout=std::shared_ptr<IDWriteTextLayout>(d2d->textlayout);
 				d2d->target->DrawTextLayout(Point2F((float)(getBounds().left+getLeftPadding()),(float)(getBounds().top+getTopPadding())),d2d->textlayout.get(),d2d->solidbrush.get());
 				if(&caretRect!=NULL){
 					d2d->solidbrush->SetColor(ColorF(ColorF::Chocolate,opacity));
@@ -2459,7 +2460,8 @@ namespace D2DUI{
 				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.get(),getBounds().right-getBounds().left-getLeftPadding()-getRightPadding(),getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding(),&dwtl);
 				d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-				textlayout=d2d->textlayout.get();
+				textlayout.reset();
+				textlayout=std::shared_ptr<IDWriteTextLayout>(d2d->textlayout);
 				d2d->solidbrush.reset();
 				d2d->bmpdecoder.reset();
 				d2d->bmpframedecoder.reset();
@@ -2523,7 +2525,8 @@ namespace D2DUI{
 			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,&dwtl);
 			d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
 			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-			textlayout=d2d->textlayout.get();
+			textlayout.reset();
+			textlayout=std::shared_ptr<IDWriteTextLayout>(d2d->textlayout);
 			d2d->bmpdecoder.reset();
 			d2d->bmpframedecoder.reset();
 			d2d->formatconverter.reset();
@@ -3175,7 +3178,7 @@ namespace D2DUI{
 			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
 			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			d2d->bmpdecoder.reset(),
-			d2d->bmpframedecoder.reset();
+				d2d->bmpframedecoder.reset();
 			d2d->formatconverter.reset();
 			d2d->bmp.reset();
 			d2d->bmpscaler.reset();
@@ -3190,10 +3193,9 @@ namespace D2DUI{
 		wtext+=std::to_wstring(value);
 		wchar_t* text=new wchar_t[wtext.length()];
 		wcscpy(text,wtext.c_str());
-		//MessageBox(NULL,text,L"Spinner Text",MB_OK);
-		valuemodifier=new TextBox(text);
-		up=new ArrowButton(SPINNER,UP);
-		down=new ArrowButton(SPINNER,DOWN);
+		valuemodifier=std::shared_ptr<TextBox>(new TextBox(text));
+		up=std::shared_ptr<ArrowButton>(new ArrowButton(SPINNER,UP));
+		down=std::shared_ptr<ArrowButton>(new ArrowButton(SPINNER,DOWN));
 		setFont(L"Microsoft Sans Serif");
 		setTextSize(12.0f);
 		setForeground(0,0,0);
@@ -4218,61 +4220,120 @@ namespace D2DUI{
 			}//Unchecked checkbox
 		}//Enabled checkbox
 		else{
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-			std::wstring wtext(getText());
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-			d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
-			switch(getVerticalTextAlignment()){
-			case VerticalConstants::TOP:
-				d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
-				break;
-			case VerticalConstants::CENTER_VERTICAL:
-				d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-				break;
-			case VerticalConstants::BOTTOM:
-				d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
-				break;
+			if(isChecked()==true){
+				IWICBitmapDecoder* wicbd;
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
+				IWICBitmapFrameDecode* wicbfd;
+				d2d->bmpdecoder->GetFrame(0,&wicbfd);
+				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
+				IWICBitmapScaler* wicbs;
+				d2d->imgfactory->CreateBitmapScaler(&wicbs);
+				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				IWICFormatConverter* wicfc;
+				d2d->imgfactory->CreateFormatConverter(&wicfc);
+				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
+				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				ID2D1Bitmap* wicb;
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
+				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				std::wstring wtext(getText());
+				IDWriteTextFormat* dwtf;
+				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
+				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+				switch(getVerticalTextAlignment()){
+				case VerticalConstants::TOP:
+					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				case VerticalConstants::CENTER_VERTICAL:
+					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				case VerticalConstants::BOTTOM:
+					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				switch(getHorizontalTextAlignment()){
+				case HorizontalConstants::LEFT:
+					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					break;
+				case HorizontalConstants::CENTER_HORIZONTAL:
+					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					break;
+				case HorizontalConstants::RIGHT:
+					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					break;
+				}
+				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				ID2D1SolidColorBrush* scb;
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
+				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
+				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
+				d2d->bmpdecoder.reset();
+				d2d->bmpframedecoder.reset();
+				d2d->formatconverter.reset();
+				d2d->bmp.reset();
+				d2d->textformat.reset();
+				d2d->solidbrush.reset();
+				d2d->bmpscaler.reset();
 			}
-			switch(getHorizontalTextAlignment()){
-			case HorizontalConstants::LEFT:
-				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
-				break;
-			case HorizontalConstants::CENTER_HORIZONTAL:
-				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
-				break;
-			case HorizontalConstants::RIGHT:
-				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
-				break;
-			}
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-			ID2D1SolidColorBrush* scb;
-			d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-			d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-			d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
-			d2d->textformat.reset();
-			d2d->solidbrush.reset();
-			d2d->bmpscaler.reset();
+			else{
+				IWICBitmapDecoder* wicbd;
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
+				IWICBitmapFrameDecode* wicbfd;
+				d2d->bmpdecoder->GetFrame(0,&wicbfd);
+				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
+				IWICBitmapScaler* wicbs;
+				d2d->imgfactory->CreateBitmapScaler(&wicbs);
+				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				IWICFormatConverter* wicfc;
+				d2d->imgfactory->CreateFormatConverter(&wicfc);
+				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
+				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				ID2D1Bitmap* wicb;
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
+				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				std::wstring wtext(getText());
+				IDWriteTextFormat* dwtf;
+				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
+				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+				switch(getVerticalTextAlignment()){
+				case VerticalConstants::TOP:
+					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+					break;
+				case VerticalConstants::CENTER_VERTICAL:
+					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+					break;
+				case VerticalConstants::BOTTOM:
+					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+					break;
+				}
+				switch(getHorizontalTextAlignment()){
+				case HorizontalConstants::LEFT:
+					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+					break;
+				case HorizontalConstants::CENTER_HORIZONTAL:
+					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+					break;
+				case HorizontalConstants::RIGHT:
+					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+					break;
+				}
+				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				ID2D1SolidColorBrush* scb;
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
+				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
+				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
+				d2d->bmpdecoder.reset();
+				d2d->bmpframedecoder.reset();
+				d2d->formatconverter.reset();
+				d2d->bmp.reset();
+				d2d->textformat.reset();
+				d2d->solidbrush.reset();
+				d2d->bmpscaler.reset();
+			}//Normal disabled checkbox
 		}//Disabled checkbox
 	}
 	DialogueBox::DialogueBox(wchar_t* text):TextLabel(text){
