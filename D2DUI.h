@@ -924,9 +924,8 @@ namespace D2DUI{
 		int vAlignment;
 		float fRGBA[4];
 		int iRGBA[4];
-		std::vector<IDWriteTextLayout*>textlayouts;
-		IDWriteTextLayout* textlayout;
-		IDWriteTextFormat* textformat;
+		std::shared_ptr<IDWriteTextLayout> textlayout;
+		std::shared_ptr<IDWriteTextFormat> textformat;
 		RECT caretRect;
 		wchar_t* text;
 		wchar_t* font;
@@ -1116,8 +1115,8 @@ namespace D2DUI{
 		RECT bounds;
 		int iRGBA[4];
 		float fRGBA[4];
-		ArrowButton* up;
-		ArrowButton* down;
+		std::shared_ptr<ArrowButton> up;
+		std::shared_ptr<ArrowButton> down;
 		int leftPadding;
 		int topPadding;
 		int rightPadding;
@@ -1167,7 +1166,7 @@ namespace D2DUI{
 		virtual void setLocale(wchar_t* locale) override;
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	protected:
-		TextBox* valuemodifier;
+		std::shared_ptr<TextBox> valuemodifier;
 	private:
 		virtual void setChecked(bool checked){}
 		virtual bool isChecked(){return false;}
@@ -1183,7 +1182,6 @@ namespace D2DUI{
 		CheckBox(bool checked=true,wchar_t* text=L"");
 		~CheckBox(){}
 		RECT bounds;
-		ArrowButton up;
 		std::vector<D2DUI::WINDOW_STATES> states;
 		int leftPadding;
 		int topPadding;
@@ -1331,12 +1329,12 @@ namespace D2DUI{
 	public:
 		ComboBox(){
 			states.push_back(NONE);
-			tb=new TextBox();
-			dropdown=new ArrowButton();
-			hScrollBar=new ScrollBar();
+			tb=std::shared_ptr<TextBox>(new TextBox());
+			dropdown=std::shared_ptr<ArrowButton>(new ArrowButton());
+			hScrollBar=std::shared_ptr<ScrollBar>(new ScrollBar());
 			hScrollBar->disableVerticalScrolling();
 			hScrollBar->disableHorizontalScrolling();
-			vScrollBar=new ScrollBar();
+			vScrollBar=std::shared_ptr<ScrollBar>(new ScrollBar());
 			vScrollBar->position=0;
 			vScrollBar->portions=1;
 			vScrollBar->disableHorizontalScrolling();
@@ -1348,9 +1346,10 @@ namespace D2DUI{
 			setForeground(0.f,0.f,0.f,1.f);
 		}
 		~ComboBox(){
-			delete dropdown;
-			delete hScrollBar;
-			delete vScrollBar;
+			tb.reset();
+			dropdown.reset();
+			vScrollBar.reset();
+			hScrollBar.reset();
 		}
 		float fRGBA_hovered[4];
 		int iRGBA_hovered[4];
@@ -1379,7 +1378,7 @@ namespace D2DUI{
 		wchar_t* font;
 		wchar_t* icon;
 		float textsize;
-		TextBox* tb;
+		std::shared_ptr<TextBox> tb;
 		virtual void setTextSize(float px);
 		virtual float getTextSize();
 		virtual void setText(wchar_t* text);
@@ -1416,9 +1415,9 @@ namespace D2DUI{
 		virtual void setForeground(float R,float G,float B,float A=1.0f);
 		virtual float* getForegroundFloat();
 		virtual int* getForegroundInt();
-		ArrowButton* dropdown;
-		ScrollBar* hScrollBar;
-		ScrollBar* vScrollBar;
+		std::shared_ptr<ArrowButton> dropdown;
+		std::shared_ptr<ScrollBar> hScrollBar;
+		std::shared_ptr<ScrollBar> vScrollBar;
 		std::vector<T> list;
 		virtual void setLocale(wchar_t* locale) override;
 		virtual void setOpacity(float opacity=1.0f) override;
@@ -1466,12 +1465,12 @@ namespace D2DUI{
 	template<class T> class ListBox:public WindowBase,public ListBase<T>{
 	public:
 		ListBox(){
-			hScrollBar=new ScrollBar;
+			hScrollBar=std::shared_ptr<ScrollBar>(new ScrollBar);
 			hScrollBar->disableHorizontalScrolling();
 			hScrollBar->disableVerticalScrolling();
 			hScrollBar->position=0;
 			hScrollBar->portions=1;
-			vScrollBar=new ScrollBar;
+			vScrollBar=std::shared_ptr<ScrollBar>(new ScrollBar);
 			vScrollBar->disableVerticalScrolling();
 			vScrollBar->disableHorizontalScrolling();
 			vScrollBar->position=0;
@@ -1479,10 +1478,7 @@ namespace D2DUI{
 			setTotalHeight(0);
 			states.push_back(NONE);
 		}
-		~ListBox(){
-			delete vScrollBar;
-			delete hScrollBar;
-		}
+		~ListBox(){}
 		RECT bounds;
 		std::vector<D2DUI::WINDOW_STATES> states;
 		int leftPadding;
@@ -1505,8 +1501,8 @@ namespace D2DUI{
 		wchar_t* font;
 		wchar_t* icon;
 		float textsize;
-		ScrollBar* hScrollBar;
-		ScrollBar* vScrollBar;
+		std::shared_ptr<ScrollBar> hScrollBar;
+		std::shared_ptr<ScrollBar> vScrollBar;
 		std::vector<T> list;
 		T selecteditem;
 		virtual void setFont(wchar_t* font);
@@ -2013,16 +2009,9 @@ namespace D2DUI{
 	public:
 		MsgBox(HWND parent,bool modal,wchar_t* text,wchar_t* title,MSGBoxButtons buttons,MSGBoxIcon icon);
 		~MsgBox(){
-			delete textContent;
-			delete textTitle;
-			if(buttonsRow!=NULL)delete buttonsRow;
-			if(btnOk!=NULL)delete btnOk;
-			if(btnYes!=NULL)delete btnYes;
-			if(btnNo!=NULL)delete btnNo;
-			if(btnCancel!=NULL)delete btnCancel;
 		}
-		TextLabel* textContent,*textTitle;
-		ImageView* msgboxicon;
+		std::shared_ptr<TextLabel> textContent, textTitle;
+		std::shared_ptr<ImageView> msgboxicon;
 		RECT bounds;
 		wchar_t* font;
 		float textSize;
@@ -2036,9 +2025,9 @@ namespace D2DUI{
 		virtual int* getForegroundInt();
 		virtual void setForeground(float R,float G,float B,float A=1.f);
 		virtual float* getForegroundFloat();
-		TableRow* contentRow;
-		GridLayout* buttonsRow;
-		Button* btnOk,* btnYes,* btnNo,* btnCancel;
+		std::shared_ptr<TableRow> contentRow;
+		std::shared_ptr<GridLayout> buttonsRow;
+		std::shared_ptr<Button> btnOk, btnYes, btnNo, btnCancel;
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	protected:
 		virtual void reorderComponents(std::shared_ptr<D2DHandle>& d2d);
@@ -2087,9 +2076,8 @@ namespace D2DUI{
 	public:
 		InfoBox(HWND parent,wchar_t* text);
 		~InfoBox(){
-			delete textContent;
 		}
-		TextLabel* textContent;
+		std::shared_ptr<TextLabel> textContent;
 		RECT bounds;
 		wchar_t* font;
 		float textSize;
