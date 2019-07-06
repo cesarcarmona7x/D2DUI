@@ -14,24 +14,20 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 	HRESULT hr;
     RECT r;
     GetClientRect(hwnd,&r);
-	ID2D1Factory* d2dfact;
-    hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,&d2dfact);
+	hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dfactory.GetAddressOf());
     if(hr!=S_OK){
 		_com_error err(hr);
 		const TCHAR* error=err.ErrorMessage();
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
         return false;
     }
-	d2dfactory=std::shared_ptr<ID2D1Factory>(d2dfact,[](ID2D1Factory* p){p->Release();});
-	IDWriteFactory* dwfact;
-	hr=DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(IDWriteFactory),(IUnknown**)&dwfact);
+	hr=DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(IDWriteFactory),(IUnknown**)dwritefactory.GetAddressOf());
     if(hr!=S_OK){
 		_com_error err(hr);
 		const TCHAR* error=err.ErrorMessage();
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
         return false;
     }
-	dwritefactory=std::shared_ptr<IDWriteFactory>(dwfact,[](IDWriteFactory* p){p->Release();});
 	D2D1_RENDER_TARGET_PROPERTIES rtp;
 	rtp.dpiX=0.0f;
 	rtp.dpiY=0.0f;
@@ -74,8 +70,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 	scdesc.SampleDesc.Quality=0;
 	scdesc.Windowed=!sett.fullscreen;
 	D3D10_FEATURE_LEVEL1 levels[]={D3D10_FEATURE_LEVEL_9_3};
-	ID3D10Device1* d3ddev;
-	hr=D3D10CreateDevice1(NULL,D3D10_DRIVER_TYPE_HARDWARE,NULL,D3D10_CREATE_DEVICE_BGRA_SUPPORT,levels[0],D3D10_1_SDK_VERSION,&d3ddev);
+	hr=D3D10CreateDevice1(NULL,D3D10_DRIVER_TYPE_HARDWARE,NULL,D3D10_CREATE_DEVICE_BGRA_SUPPORT,levels[0],D3D10_1_SDK_VERSION,d3ddevice.GetAddressOf());
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error creating D3D10_1 device","Error",MB_OK|MB_ICONERROR);
 		_com_error err(hr);
@@ -83,9 +78,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
 		return false;
 	}
-	d3ddevice=std::shared_ptr<ID3D10Device1>(d3ddev,[](ID3D10Device1* p){p->Release();});
-	IDXGIDevice1* dxgidev;
-	hr=d3ddevice->QueryInterface(&dxgidev);
+	hr=d3ddevice.As(&dxgidevice);
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error getting DXGI device","Error",MB_OK|MB_ICONERROR);
 		_com_error err(hr);
@@ -93,9 +86,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
 		return false;
 	}
-	dxgidevice=std::shared_ptr<IDXGIDevice1>(dxgidev,[](IDXGIDevice1* p){p->Release();});
-	IDXGIAdapter* dxgiad;
-	hr=dxgidevice->GetAdapter(&dxgiad);
+	hr=dxgidevice->GetAdapter(dxgiadapter.GetAddressOf());
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error getting DXGI adapter","Error",MB_OK|MB_ICONERROR);
 		_com_error err(hr);
@@ -103,9 +94,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
 		return false;
 	}
-	dxgiadapter=std::shared_ptr<IDXGIAdapter>(dxgiad,[](IDXGIAdapter* p){p->Release();});
-	IDXGIFactory* dxgifact;
-	hr=dxgiadapter->GetParent(IID_PPV_ARGS(&dxgifact));
+	hr=dxgiadapter->GetParent(IID_PPV_ARGS(dxgifactory.GetAddressOf()));
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error getting DXGI factory","Error",MB_OK|MB_ICONERROR);
 		_com_error err(hr);
@@ -113,9 +102,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
 		return false;
 	}
-	dxgifactory=std::shared_ptr<IDXGIFactory>(dxgifact,[](IDXGIFactory* p){p->Release();});
-	IDXGISwapChain* dxgisch;
-	hr=dxgifactory->CreateSwapChain(d3ddevice.get(),&scdesc,&dxgisch);
+	hr=dxgifactory->CreateSwapChain(d3ddevice.Get(),&scdesc,swapchain.GetAddressOf());
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error creating DXGI swap chain","Error",MB_OK|MB_ICONERROR);
 		_com_error err(hr);
@@ -127,12 +114,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		MessageBox(NULL,errordesu.c_str(),L"Error",MB_OK|MB_ICONERROR);
 		return false;
 	}
-	swapchain=std::shared_ptr<IDXGISwapChain>(dxgisch,[](IDXGISwapChain* p){
-		p->SetFullscreenState(false,NULL);
-		p->Release();
-	});
-	IDXGISurface* sur;
-	hr=swapchain->GetBuffer(0,IID_PPV_ARGS(&sur));
+	hr=swapchain->GetBuffer(0,IID_PPV_ARGS(surface.GetAddressOf()));
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error getting DXGI surface","Error",MB_OK|MB_ICONERROR);
 		_com_error err(hr);
@@ -140,9 +122,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
 		return false;
 	}
-	surface=std::shared_ptr<IDXGISurface>(sur,[](IDXGISurface*p){p->Release();});
-	ID2D1RenderTarget* rt;
-	hr=d2dfactory->CreateDxgiSurfaceRenderTarget(surface.get(),rtp,&rt);
+	hr=d2dfactory->CreateDxgiSurfaceRenderTarget(surface.Get(),rtp,target.GetAddressOf());
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error creating render target","Error",MB_OK|MB_ICONERROR);
 		_com_error err(hr);
@@ -150,14 +130,10 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
 		return false;
 	}
-	target=std::shared_ptr<ID2D1RenderTarget>(rt,[](ID2D1RenderTarget* p){p->Release();});
 	target->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
 	target->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
-	ID2D1DrawingStateBlock* rtst;
-	hr=d2dfactory->CreateDrawingStateBlock(&rtst);
-	targetstate=std::shared_ptr<ID2D1DrawingStateBlock>(rtst,[](ID2D1DrawingStateBlock* p){p->Release();});
-	IWICImagingFactory* wicif;
-	CoCreateInstance(CLSID_WICImagingFactory,NULL,CLSCTX_INPROC_SERVER,IID_IWICImagingFactory,(LPVOID*)&wicif);
-	imgfactory=std::shared_ptr<IWICImagingFactory>(wicif,[](IWICImagingFactory* p){p->Release();});
+	hr=d2dfactory->CreateDrawingStateBlock(targetstate.GetAddressOf());
+	CoCreateInstance(CLSID_WICImagingFactory,NULL,CLSCTX_INPROC_SERVER,IID_IWICImagingFactory,(LPVOID*)imgfactory.GetAddressOf());
+	dwritefactory->CreateTextFormat(L"Microsoft Sans Serif",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,12.0f,L"en-us",textformat.GetAddressOf());
     return true;
 }
