@@ -258,11 +258,8 @@ namespace D2DUI{
 	}
 	void MsgBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		reorderComponents(d2d);
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fRGBA_bg[0],fRGBA_bg[1],fRGBA_bg[2],fRGBA_bg[3]),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.get());
-		d2d->solidbrush.reset();
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA_bg[0],fRGBA_bg[1],fRGBA_bg[2],fRGBA_bg[3]),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.Get());
 		textTitle->draw(d2d);
 		contentRow->draw(d2d);
 		buttonsRow->draw(d2d);
@@ -352,11 +349,8 @@ namespace D2DUI{
 	}
 	void InfoBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		reorderComponents(d2d);
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fRGBA_bg[0],fRGBA_bg[1],fRGBA_bg[2],fRGBA_bg[3]),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.get());
-		d2d->solidbrush.reset();
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA_bg[0],fRGBA_bg[1],fRGBA_bg[2],fRGBA_bg[3]),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.Get());
 		textContent->draw(d2d);
 	}
 	PopupNotification::PopupNotification(HWND parent,wchar_t* text,long duration){
@@ -675,58 +669,46 @@ namespace D2DUI{
 		}//Horizontal Placement
 	}
 	void LinearLayout::draw(std::shared_ptr<D2DHandle>& d2d){
-		ID2D1StrokeStyle* strokestyle;
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.get());
+		ComPtr<ID2D1StrokeStyle> strokestyle;
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.Get());
 		if(&leftBorder!=NULL){
 			d2d->solidbrush->SetColor(ColorF(leftBorder.fRGBA[0],leftBorder.fRGBA[1],leftBorder.fRGBA[2],leftBorder.fRGBA[3]));
 			switch(leftBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			}
-			d2d->solidbrush->Release();
-			d2d->solidbrush=NULL;
 		}
 		if(&topBorder!=NULL){
 			d2d->solidbrush->SetColor(ColorF(topBorder.fRGBA[0],topBorder.fRGBA[1],topBorder.fRGBA[2],topBorder.fRGBA[3]));
 			switch(topBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
 				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -734,23 +716,19 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(rightBorder.fRGBA[0],rightBorder.fRGBA[1],rightBorder.fRGBA[2],rightBorder.fRGBA[3]));
 			switch(rightBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -758,30 +736,26 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(bottomBorder.fRGBA[0],bottomBorder.fRGBA[1],bottomBorder.fRGBA[2],bottomBorder.fRGBA[3]));
 			switch(bottomBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth());
 				break;
 			}
 		}
-		d2d->solidbrush.reset();
+		d2d->target->EndDraw();
 		reorderComponents();
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),D2D1_ANTIALIAS_MODE_ALIASED);
-		d2d->target->SaveDrawingState(d2d->targetstate.get());
+		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(getBounds().left,getBounds().top));
 		if(layouts.size()!=0){
 			for(int i=0;i<layouts.size();i++){
@@ -794,7 +768,7 @@ namespace D2DUI{
 			}
 		}
 		d2d->target->PopAxisAlignedClip();
-		d2d->target->RestoreDrawingState(d2d->targetstate.get());
+		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 	}
 	GridLayout::GridLayout(int rows,int cols){
 		GridLayout::rows=rows;
@@ -1119,32 +1093,26 @@ namespace D2DUI{
 		}
 	}
 	void GridLayout::draw(std::shared_ptr<D2DHandle>& d2d){
-		ID2D1StrokeStyle* strokestyle;
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.get());
+		ComPtr<ID2D1StrokeStyle> strokestyle;
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.Get());
 		if(&leftBorder!=NULL){
 			d2d->solidbrush->SetColor(ColorF(leftBorder.fRGBA[0],leftBorder.fRGBA[1],leftBorder.fRGBA[2],leftBorder.fRGBA[3]));
 			switch(leftBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1152,23 +1120,19 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(topBorder.fRGBA[0],topBorder.fRGBA[1],topBorder.fRGBA[2],topBorder.fRGBA[3]));
 			switch(topBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1176,23 +1140,19 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(rightBorder.fRGBA[0],rightBorder.fRGBA[1],rightBorder.fRGBA[2],rightBorder.fRGBA[3]));
 			switch(rightBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
 				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1200,27 +1160,22 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(bottomBorder.fRGBA[0],bottomBorder.fRGBA[1],bottomBorder.fRGBA[2],bottomBorder.fRGBA[3]));
 			switch(bottomBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
 				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth());
 				break;
 			}
 		}
-		d2d->solidbrush.reset();
 		reorderComponents();
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),D2D1_ANTIALIAS_MODE_ALIASED);
 		for(int i=0;i<windows.size();i++){
@@ -1361,32 +1316,26 @@ namespace D2DUI{
 		}
 	}
 	void TableLayout::draw(std::shared_ptr<D2DHandle>& d2d){
-		ID2D1StrokeStyle* strokestyle;
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.get());
+		ComPtr<ID2D1StrokeStyle> strokestyle;
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.Get());
 		if(&leftBorder!=NULL){
 			d2d->solidbrush->SetColor(ColorF(leftBorder.fRGBA[0],leftBorder.fRGBA[1],leftBorder.fRGBA[2],leftBorder.fRGBA[3]));
 			switch(leftBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1394,23 +1343,19 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(topBorder.fRGBA[0],topBorder.fRGBA[1],topBorder.fRGBA[2],topBorder.fRGBA[3]));
 			switch(topBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1418,23 +1363,19 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(rightBorder.fRGBA[0],rightBorder.fRGBA[1],rightBorder.fRGBA[2],rightBorder.fRGBA[3]));
 			switch(rightBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1442,27 +1383,22 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(bottomBorder.fRGBA[0],bottomBorder.fRGBA[1],bottomBorder.fRGBA[2],bottomBorder.fRGBA[3]));
 			switch(bottomBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
 				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth());
 				break;
 			}
 		}
-		d2d->solidbrush.reset();
 		reorderComponents();
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),D2D1_ANTIALIAS_MODE_ALIASED);
 		if(rows.size()!=0){
@@ -1751,32 +1687,26 @@ namespace D2DUI{
 		}
 	}
 	void TableRow::draw(std::shared_ptr<D2DHandle>& d2d){
-		ID2D1StrokeStyle* strokestyle;
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.get());
+		ComPtr<ID2D1StrokeStyle> strokestyle;
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),d2d->solidbrush.Get());
 		if(&leftBorder!=NULL){
 			d2d->solidbrush->SetColor(ColorF(leftBorder.fRGBA[0],leftBorder.fRGBA[1],leftBorder.fRGBA[2],leftBorder.fRGBA[3]));
 			switch(leftBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getLeftBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getLeftBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1784,23 +1714,19 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(topBorder.fRGBA[0],topBorder.fRGBA[1],topBorder.fRGBA[2],topBorder.fRGBA[3]));
 			switch(topBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getTopBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getTopBorder().getStrokeWidth()/2),(float)getBounds().top+(getTopBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getTopBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1808,23 +1734,19 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(rightBorder.fRGBA[0],rightBorder.fRGBA[1],rightBorder.fRGBA[2],rightBorder.fRGBA[3]));
 			switch(rightBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getRightBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().top+(getRightBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getRightBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getRightBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getRightBorder().getStrokeWidth());
 				break;
 			}
 		}
@@ -1832,27 +1754,22 @@ namespace D2DUI{
 			d2d->solidbrush->SetColor(ColorF(bottomBorder.fRGBA[0],bottomBorder.fRGBA[1],bottomBorder.fRGBA[2],bottomBorder.fRGBA[3]));
 			switch(bottomBorder.getStroke()){
 			case Border::DOTTED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_CAP_STYLE_ROUND,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DOT,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::DASHED:
-				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,&strokestyle);
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth(),strokestyle);
-				strokestyle->Release();
-				strokestyle=NULL;
+				d2d->d2dfactory->CreateStrokeStyle(StrokeStyleProperties(D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_CAP_STYLE_FLAT,D2D1_LINE_JOIN_MITER,10.0f,D2D1_DASH_STYLE_DASH,0.0f),NULL,0,strokestyle.GetAddressOf());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getBottomBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth(),strokestyle.Get());
 				break;
 			case Border::INSET:
 				break;
 			case Border::OUTSET:
 				break;
 			case Border::SOLID:
-				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.get(),getBottomBorder().getStrokeWidth());
+				d2d->target->DrawLine(Point2F((float)getBounds().left+(getBottomBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().right-(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),d2d->solidbrush.Get(),getBottomBorder().getStrokeWidth());
 				break;
 			}
 		}
-		d2d->solidbrush.reset();
 		reorderComponents();
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),D2D1_ANTIALIAS_MODE_ALIASED);
 		if(windows.size()!=0){
@@ -2063,9 +1980,6 @@ namespace D2DUI{
 		return visible;
 	}
 	void TextLabel::draw(std::shared_ptr<D2DHandle>& d2d){
-		IDWriteTextFormat* dwtf;
-		d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-		d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 		switch(getHorizontalTextAlignment()){
 		case HorizontalConstants::LEFT:
 			d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -2088,13 +2002,16 @@ namespace D2DUI{
 			d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
 			break;
 		}
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
 		std::wstring wtext(getText());
-		d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),getBounds().right-getRightPadding(),getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-		d2d->solidbrush.reset();
-		d2d->textformat.reset();
+		d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+		DWRITE_TEXT_RANGE rng;
+		rng.startPosition=0;
+		rng.length=wtext.length();
+		d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+		d2d->textlayout->SetFontFamilyName(font,rng);
+		d2d->textlayout->SetLocaleName(locale,rng);
+		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 	}
 	TextBox::TextBox(wchar_t* text): WindowBase(text){
 		states.push_back(NONE);
@@ -2342,27 +2259,14 @@ namespace D2DUI{
 	void TextBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()==true){
 			if(hasFocus()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox_focus.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox_focus.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -2385,51 +2289,31 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				IDWriteTextLayout* dwtl;
-				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,&dwtl);
-				d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
-				textlayout.reset();
-				textlayout=std::shared_ptr<IDWriteTextLayout>(d2d->textlayout);
-				d2d->target->DrawTextLayout(Point2F((float)(getBounds().left+getLeftPadding()),(float)(getBounds().top+getTopPadding())),d2d->textlayout.get(),d2d->solidbrush.get());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
+				d2d->textlayout.CopyTo(textlayout.ReleaseAndGetAddressOf());
 				if(&caretRect!=NULL){
 					d2d->solidbrush->SetColor(ColorF(ColorF::Chocolate,opacity));
-					d2d->target->FillRectangle(RectF(caretRect.left,caretRect.top,caretRect.right,caretRect.bottom),d2d->solidbrush.get());
+					d2d->target->FillRectangle(RectF(caretRect.left,caretRect.top,caretRect.right,caretRect.bottom),d2d->solidbrush.Get());
 				}
-				d2d->solidbrush.reset();
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->textformat.reset();
-				d2d->textlayout.reset();
-				d2d->bmpscaler.reset();
 			}
 			else{
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -2452,49 +2336,28 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				IDWriteTextLayout* dwtl;
-				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.get(),getBounds().right-getBounds().left-getLeftPadding()-getRightPadding(),getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding(),&dwtl);
-				d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
-				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-				textlayout.reset();
-				textlayout=std::shared_ptr<IDWriteTextLayout>(d2d->textlayout);
-				d2d->solidbrush.reset();
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
-				d2d->bmpscaler.reset();
-				d2d->textformat.reset();
-				d2d->textlayout.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
+				d2d->textlayout.CopyTo(textlayout.ReleaseAndGetAddressOf());
 			}
 		}
 		else{
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 			std::wstring wtext(getText());
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
 			switch(getVerticalTextAlignment()){
 			case VerticalConstants::TOP:
 				d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -2517,24 +2380,17 @@ namespace D2DUI{
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 				break;
 			}
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-			ID2D1SolidColorBrush* scb;
-			d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-			d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-			IDWriteTextLayout* dwtl;
-			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,&dwtl);
-			d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
-			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-			textlayout.reset();
-			textlayout=std::shared_ptr<IDWriteTextLayout>(d2d->textlayout);
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
-			d2d->textformat.reset();
-			d2d->textlayout.reset();
-			d2d->solidbrush.reset();
-			d2d->bmpscaler.reset();
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
+			d2d->textlayout.CopyTo(textlayout.ReleaseAndGetAddressOf());
 		}
 	}
 	Button::Button(wchar_t* text): WindowBase(text){
@@ -2787,27 +2643,14 @@ namespace D2DUI{
 	void Button::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()==true){
 			if(isPressed()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -2830,41 +2673,26 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->bmpscaler.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Pressed button
 			else if(isHovered()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -2887,41 +2715,26 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->bmpscaler.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Hovered button
 			else{
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -2944,42 +2757,27 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->bmpscaler.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Normal button
 		}//Enabled button
 		else{
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 			std::wstring wtext(getText());
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,16.0F,locale,&dwtf);
-			d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 			switch(getVerticalTextAlignment()){
 			case VerticalConstants::TOP:
 				d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -3002,18 +2800,16 @@ namespace D2DUI{
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 				break;
 			}
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-			ID2D1SolidColorBrush* scb;
-			d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-			d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-			d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
-			d2d->bmpscaler.reset();
-			d2d->textformat.reset();
-			d2d->solidbrush.reset();
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		}
 	}
 	ArrowButton::ArrowButton(ArrowButton_Type type,ArrowButton_Direction dir):Button(){
@@ -3023,165 +2819,105 @@ namespace D2DUI{
 	void ArrowButton::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()==true){
 			if(isPressed()==true){
-				IWICBitmapDecoder* wicbd;
 				if(parentContainer==SPINNER){
 					if(direction==UP){
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_pressed_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_pressed_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 					}
 					else{
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_pressed_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_pressed_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//Spinner
 				else{
 					if(direction==UP){
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_pressed_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_pressed_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 					}
 					else{
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_pressed_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_pressed_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//ComboBox
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->bmpscaler.reset();
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}//Pressed enabled ArrowButton
 			else if(isHovered()==true){
-				IWICBitmapDecoder* wicbd;
 				if(parentContainer==SPINNER){
 					if(direction==UP){
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_hovered_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_hovered_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 					}
 					else{
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_hovered_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_hovered_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//Spinner
 				else{
 					if(direction==UP){
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_hovered_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_hovered_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 					}
 					else{
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_hovered_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_hovered_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//ComboBox
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->bmpscaler.reset();
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}//Hovered enabled ArrowButton
 			else{
-				IWICBitmapDecoder* wicbd;
 				if(parentContainer==SPINNER){
 					if(direction==UP){
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 					}
 					else{
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//Spinner
 				else{
 					if(direction==UP){
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 					}
 					else{
-						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//ComboBox
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->bmpscaler.reset();
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}//Normal enabled ArrowButton
 		}//Enabled ArrowButton
 		else{
-			IWICBitmapDecoder* wicbd;
 			if(parentContainer==SPINNER){
 				if(direction==UP){
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_disabled_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_disabled_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 				}
 				else{
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_disabled_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_disabled_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				}
 			}//Spinner
 			else{
 				if(direction==UP){
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_disabled_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);	
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_disabled_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 				}
 				else{
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_disabled_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_disabled_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				}
 			}//ComboBox
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-			d2d->bmpdecoder.reset(),
-				d2d->bmpframedecoder.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
-			d2d->bmpscaler.reset();
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 		}//Disabled ArrowButton
 	}
 	Spinner::Spinner(int minValue,int maxValue,int value){
@@ -3875,27 +3611,14 @@ namespace D2DUI{
 		if(isEnabled()==true){
 			if(isChecked()==true){
 				if(isPressed()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -3918,40 +3641,27 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.length(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getBottomPadding()-getTopPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed and checked checkbox
 				else if(isHovered()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -3974,41 +3684,26 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered and checked checkbox
 				else{
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4031,43 +3726,28 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Normal checked checkbox
 			}//Checked checkbox
 			else{
 				if(isPressed()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4090,41 +3770,26 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed checkbox
 				else if(isHovered()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4147,41 +3812,26 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered checkbox
 				else{
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4204,44 +3854,29 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Normal checkbox
 			}//Unchecked checkbox
 		}//Enabled checkbox
 		else{
 			if(isChecked()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4264,41 +3899,26 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
-				d2d->bmpscaler.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}
 			else{
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4321,18 +3941,16 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
-				d2d->bmpscaler.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Normal disabled checkbox
 		}//Disabled checkbox
 	}
@@ -4396,48 +4014,23 @@ namespace D2DUI{
 	}
 	void DialogueBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(&decorationfile!=NULL){
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(decorationfile,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getDecorationBounds().bottom-getDecorationBounds().top,getDecorationBounds().bottom-getDecorationBounds().top,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+			d2d->imgfactory->CreateDecoderFromFilename(decorationfile,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getDecorationBounds().bottom-getDecorationBounds().top,getDecorationBounds().bottom-getDecorationBounds().top,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 		}
 		if(&decorationfile!=NULL&&getDecorationLevel()==DECORATIONBELOWDIALOGUEBOX){
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
-			d2d->bmpscaler.reset();
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
 		}
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(fbgRGBA[0],fbgRGBA[1],fbgRGBA[2],fbgRGBA[3]*opacity),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.get());
+		d2d->target->CreateSolidColorBrush(ColorF(fbgRGBA[0],fbgRGBA[1],fbgRGBA[2],fbgRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.Get());
 		if(&decorationfile!=NULL&&getDecorationLevel()==DECORATIONOVERDIALOGUEBOX){
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
-			d2d->bmpscaler.reset();
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
 		}
 		std::wstring wtext(getText());
-		IDWriteTextFormat* dwtf;
-		d2d->dwritefactory->CreateTextFormat(getFont(),NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-		d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 		switch(getHorizontalTextAlignment()){
 		case HorizontalConstants::LEFT:
 			d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -4461,11 +4054,16 @@ namespace D2DUI{
 			break;
 		}
 		d2d->solidbrush->SetColor(ColorF(ColorF::Black,0.5f));
-		d2d->target->DrawTextW(wtext.c_str(),showedcharacters,d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding()+2,(float)getBounds().top+getTopPadding()+2,(float)getBounds().right-getRightPadding()+2,(float)getBounds().bottom-getBottomPadding()+2),d2d->solidbrush.get());
+		d2d->dwritefactory->CreateTextLayout(wtext.c_str(),showedcharacters,d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+		DWRITE_TEXT_RANGE rng;
+		rng.startPosition=0;
+		rng.length=wtext.length();
+		d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+		d2d->textlayout->SetFontFamilyName(font,rng);
+		d2d->textlayout->SetLocaleName(locale,rng);
+		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		d2d->solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
-		d2d->target->DrawTextW(wtext.c_str(),showedcharacters,d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-		d2d->textformat.reset();
-		d2d->solidbrush.reset();
+		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 	}
 	RadioButton::RadioButton(RadioGroup& parent,bool selected,wchar_t* text): WindowBase(&parent,selected,text), parent(parent){
 		setParent(parent);
@@ -4764,26 +4362,13 @@ namespace D2DUI{
 		if(isEnabled()==true){
 			if(isSelected()==true){
 				if(isPressed()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4806,40 +4391,25 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed and selected radiobutton
 				else if(isHovered()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4862,40 +4432,25 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered and selected radiobutton
 				else{
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4918,42 +4473,27 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Normal selected radiobutton
 			}//Selected radiobutton
 			else{
 				if(isPressed()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -4976,40 +4516,25 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed radiobutton
 				else if(isHovered()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5032,40 +4557,25 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered radiobutton
 				else{
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5088,43 +4598,28 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Normal enabled radiobutton
 			}//Unselected radiobutton
 		}//Enabled radiobutton
 		else{
 			if(isSelected()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_disabled_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_disabled_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5147,40 +4642,25 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
-				d2d->bmpscaler.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Selected disabled radiobutton
 			else{
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5203,18 +4683,16 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+(getBounds().bottom-getBounds().top)+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
-				d2d->bmpscaler.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Unselected disabled radiobutton
 		}//Disabled radiobutton
 	}
@@ -5514,27 +4992,14 @@ namespace D2DUI{
 	void ToggleButton::draw(std::shared_ptr<D2DHandle>& d2d){ //DrawText measuring are just magic numbers made to fit the image proportions. Use your own proportions when using another image.
 		if(isEnabled()==true){
 			if(isSelected()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				std::wstring wtext(getText());
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 				switch(getVerticalTextAlignment()){
 				case VerticalConstants::TOP:
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5557,42 +5022,27 @@ namespace D2DUI{
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 					break;
 				}
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+((float)(getBounds().right-getBounds().left)/50.0f)+getLeftPadding(),(float)getBounds().top+((float)(getBounds().bottom-getBounds().top)/10.0f)+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
-				d2d->bmpscaler.reset();
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Selected ToggleButton
 			else{
 				if(isPressed()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5615,41 +5065,26 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+((float)(getBounds().right-getBounds().left)/50.0f)+getLeftPadding(),(float)getBounds().top+((float)(getBounds().bottom-getBounds().top)/10.0f)+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed ToggleButton
 				else if(isHovered()==true){
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5672,41 +5107,26 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+((float)(getBounds().right-getBounds().left)/50.0f)+getLeftPadding(),(float)getBounds().top+((float)(getBounds().bottom-getBounds().top)/10.0f)+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered ToggleButton
 				else{
-					IWICBitmapDecoder* wicbd;
-					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-					d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-					IWICBitmapFrameDecode* wicbfd;
-					d2d->bmpdecoder->GetFrame(0,&wicbfd);
-					d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-					IWICBitmapScaler* wicbs;
-					d2d->imgfactory->CreateBitmapScaler(&wicbs);
-					d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-					IWICFormatConverter* wicfc;
-					d2d->imgfactory->CreateFormatConverter(&wicfc);
-					d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-					d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-					ID2D1Bitmap* wicb;
-					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-					d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+					d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+					d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 					std::wstring wtext(getText());
-					IDWriteTextFormat* dwtf;
-					d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-					d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 					switch(getVerticalTextAlignment()){
 					case VerticalConstants::TOP:
 						d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5729,45 +5149,28 @@ namespace D2DUI{
 						d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 						break;
 					}
-					d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-					ID2D1SolidColorBrush* scb;
-					d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),&scb);
-					d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-					d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+((float)(getBounds().right-getBounds().left)/50.0f)+getLeftPadding(),(float)getBounds().top+((float)(getBounds().bottom-getBounds().top)/10.0f)+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-					d2d->bmpdecoder.reset();
-					d2d->bmpframedecoder.reset();
-					d2d->formatconverter.reset();
-					d2d->bmp.reset();
-					d2d->textformat.reset();
-					d2d->solidbrush.reset();
-					d2d->bmpscaler.reset();
+					d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+					d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+					d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+					DWRITE_TEXT_RANGE rng;
+					rng.startPosition=0;
+					rng.length=wtext.length();
+					d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+					d2d->textlayout->SetFontFamilyName(font,rng);
+					d2d->textlayout->SetLocaleName(locale,rng);
+					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Normal ToggleButton
 			}//Unselected ToggleButton
 		}//Enabled ToggleButton
 		else{
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			if(wicb==NULL){
-				MessageBox(NULL,L"This thing is null bmp",L"NULL",MB_OK);
-			}
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 			std::wstring wtext(getText());
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-			d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 			switch(getVerticalTextAlignment()){
 			case VerticalConstants::TOP:
 				d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -5790,18 +5193,16 @@ namespace D2DUI{
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
 				break;
 			}
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-			ID2D1SolidColorBrush* scb;
-			d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),&scb);
-			d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-			d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+((float)(getBounds().right-getBounds().left)/50.0f)+getLeftPadding(),(float)getBounds().top+((float)(getBounds().bottom-getBounds().top)/10.0f)+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
-			d2d->textformat.reset();
-			d2d->solidbrush.reset();
-			d2d->bmpscaler.reset();
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->CreateSolidColorBrush(ColorF(ToggleButton::fRGBA[0],ToggleButton::fRGBA[1],ToggleButton::fRGBA[2],ToggleButton::fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		}//Disabled ToggleButton
 	}
 
@@ -5863,29 +5264,14 @@ namespace D2DUI{
 		return visible;
 	}
 	void ImageView::draw(std::shared_ptr<D2DHandle>& d2d){
-		IWICBitmapDecoder* wicbd;
-		d2d->imgfactory->CreateDecoderFromFilename(getFilePath(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-		d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-		IWICBitmapFrameDecode* wicbfd;
-		d2d->bmpdecoder->GetFrame(0,&wicbfd);
-		d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-		IWICBitmapScaler* wicbs;
-		d2d->imgfactory->CreateBitmapScaler(&wicbs);
-		d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-		d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-		IWICFormatConverter* wicfc;
-		d2d->imgfactory->CreateFormatConverter(&wicfc);
-		d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-		d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-		ID2D1Bitmap* wicb;
-		d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-		d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-		d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-		d2d->bmpdecoder.reset();
-		d2d->bmpframedecoder.reset();
-		d2d->formatconverter.reset();
-		d2d->bmpscaler.reset();
-		d2d->bmp.reset();
+		d2d->imgfactory->CreateDecoderFromFilename(getFilePath(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+		d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+		d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+		d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+		d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+		d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+		d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+		d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 	}
 	ImageButton::ImageButton(wchar_t* file,wchar_t* text):WindowBase(text){
 		disabledpath=pressedpath=hoveredpath=enabledpath=file;
@@ -6141,27 +5527,14 @@ namespace D2DUI{
 		std::wstring wtext(getText());
 		if(isEnabled()==true){
 			if(isPressed()==true&&(wcscmp(pressedpath,L"")!=0)){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(pressedpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_REGULAR,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(pressedpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 				switch(getHorizontalTextAlignment()){
 				case HorizontalConstants::LEFT:
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -6184,40 +5557,25 @@ namespace D2DUI{
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
 					break;
 				}
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmp.reset();
-				d2d->formatconverter.reset();
-				d2d->bmpscaler.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpdecoder.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Pressed ImageButton
 			else if(isHovered()==true&&(wcscmp(hoveredpath,L"")!=0)){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(hoveredpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_REGULAR,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(hoveredpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 				switch(getHorizontalTextAlignment()){
 				case HorizontalConstants::LEFT:
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -6240,43 +5598,25 @@ namespace D2DUI{
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
 					break;
 				}
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmp.reset();
-				d2d->formatconverter.reset();
-				d2d->bmpscaler.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpdecoder.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Hovered ImageButton
 			else if(wcscmp(enabledpath,L"")!=0){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(enabledpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				if(wicb==NULL){
-					MessageBox(NULL,L"Hello this thing is null bmp",L"Error",MB_OK);
-				}
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-				IDWriteTextFormat* dwtf;
-				d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_REGULAR,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-				d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+				d2d->imgfactory->CreateDecoderFromFilename(enabledpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 				switch(getHorizontalTextAlignment()){
 				case HorizontalConstants::LEFT:
 					d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -6299,41 +5639,26 @@ namespace D2DUI{
 					d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
 					break;
 				}
-				ID2D1SolidColorBrush* scb;
-				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-				d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-				d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-				d2d->bmp.reset();
-				d2d->formatconverter.reset();
-				d2d->bmpscaler.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpdecoder.reset();
-				d2d->textformat.reset();
-				d2d->solidbrush.reset();
+				d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+				d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+				DWRITE_TEXT_RANGE rng;
+				rng.startPosition=0;
+				rng.length=wtext.length();
+				d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+				d2d->textlayout->SetFontFamilyName(font,rng);
+				d2d->textlayout->SetLocaleName(locale,rng);
+				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Normal enabled ImageButton
 		}//Enabled ImageButton
 		else if(wcscmp(disabledpath,L"")!=0){
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(disabledpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(font,NULL,DWRITE_FONT_WEIGHT_REGULAR,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-			d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
+			d2d->imgfactory->CreateDecoderFromFilename(disabledpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			switch(getHorizontalTextAlignment()){
 			case HorizontalConstants::LEFT:
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -6356,17 +5681,15 @@ namespace D2DUI{
 				d2d->textformat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_FAR);
 				break;
 			}
-			ID2D1SolidColorBrush* scb;
-			d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),&scb);
-			d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-			d2d->target->DrawTextW(wtext.c_str(),wtext.length(),d2d->textformat.get(),RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),d2d->solidbrush.get());
-			d2d->bmp.reset();
-			d2d->formatconverter.reset();
-			d2d->bmpscaler.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->bmpdecoder.reset();
-			d2d->textformat.reset();
-			d2d->solidbrush.reset();
+			d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		}//Disabled ImageButton
 	}
 	template<> bool ListItem<wchar_t*>::isString(){
@@ -7653,36 +6976,31 @@ namespace D2DUI{
 		return ComboBox::totalheight;
 	}
 	template<> void ComboBox<ListItem<wchar_t*>>::drawDropdown(std::shared_ptr<D2DHandle>& d2d){
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRectangle(RectF(getBounds().left,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight()),d2d->solidbrush.get());
+		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRectangle(RectF(getBounds().left,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight()),d2d->solidbrush.Get());
 		d2d->target->PushAxisAlignedClip(RectF(getBounds().left,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight()),D2D1_ANTIALIAS_MODE_ALIASED);
 		float topY=(getTotalHeight()/vScrollBar->portions)*vScrollBar->position;
-		d2d->target->SaveDrawingState(d2d->targetstate.get());
+		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(0,-topY));
 		for(int i=0;i<list.size();i++){
 			if(list.at(i).isEnabled()==true){
 				if(list.at(i).isSelected()==true){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_selected[0],fRGBA_selected[1],fRGBA_selected[2],fRGBA_selected[3]*opacity));
-					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
 				else if(list.at(i).isPressed()==true){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_pressed[0],fRGBA_pressed[1],fRGBA_pressed[2],fRGBA_pressed[3]*opacity));
-					d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+					d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
 				else if(list.at(i).isHovered()==true){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_hovered[0],fRGBA_hovered[1],fRGBA_hovered[2],fRGBA_hovered[3]*opacity));
-					d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+					d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
 			}
 			else{
 				d2d->solidbrush->SetColor(ColorF(fRGBA_disabled[0],fRGBA_disabled[1],fRGBA_disabled[2],fRGBA_disabled[3]*opacity));
-				d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+				d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 			}
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(list.at(i).getFont(),NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,list.at(i).getTextSize()*(96.0f/72.0f),locale,&dwtf);
-			d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 			switch(getHorizontalTextAlignment()){
 			case HorizontalConstants::LEFT:
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -7707,46 +7025,44 @@ namespace D2DUI{
 			}
 			d2d->solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
 			std::wstring wtext(list.at(i).getData());
-			IDWriteTextLayout* dwtl;
-			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.length(),d2d->textformat.get(),list.at(i).getBounds().right-list.at(i).getBounds().left-getLeftPadding()-getRightPadding(),list.at(i).getBounds().bottom-list.at(i).getBounds().top-getBottomPadding()-getTopPadding(),&dwtl);
-			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+list.at(i).getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-			d2d->textformat.reset();
-			d2d->textlayout.reset();
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		}
-		d2d->solidbrush.reset();
 		d2d->target->PopAxisAlignedClip();
-		d2d->target->RestoreDrawingState(d2d->targetstate.get());
+		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 	}
 	template<> void ComboBox<ListItem<newifstream>>::drawDropdown(std::shared_ptr<D2DHandle>& d2d){
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRectangle(RectF(getBounds().left,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight()),d2d->solidbrush.get());
+		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRectangle(RectF(getBounds().left,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight()),d2d->solidbrush.Get());
 		d2d->target->PushAxisAlignedClip(RectF(getBounds().left,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight()),D2D1_ANTIALIAS_MODE_ALIASED);
 		float topY=(getTotalHeight()/vScrollBar->portions)*vScrollBar->position;
-		d2d->target->SaveDrawingState(d2d->targetstate.get());
+		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(0,-topY));
 		for(int i=0;i<list.size();i++){
 			if(list.at(i).isEnabled()==true){
 				if(list.at(i).isSelected()==true){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_selected[0],fRGBA_selected[1],fRGBA_selected[2],fRGBA_selected[3]*opacity));
-					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
 				else if(list.at(i).isPressed()==true){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_pressed[0],fRGBA_pressed[1],fRGBA_pressed[2],fRGBA_pressed[3]*opacity));
-					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
 				else if(list.at(i).isHovered()==true){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_hovered[0],fRGBA_hovered[1],fRGBA_hovered[2],fRGBA_hovered[3]*opacity));
-					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
 			}
 			else{
 				d2d->solidbrush->SetColor(ColorF(fRGBA_disabled[0],fRGBA_disabled[1],fRGBA_disabled[2],fRGBA_disabled[3]*opacity));
-				d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+				d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 			}
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(list.at(i).getFont(),NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,list.at(i).getTextSize()*(96.0f/72.0f),locale,&dwtf);
 			switch(getHorizontalTextAlignment()){
 			case HorizontalConstants::LEFT:
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -7772,15 +7088,17 @@ namespace D2DUI{
 			}
 			d2d->solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]));
 			std::wstring wtext(list.at(i).getData().getFilename());
-			IDWriteTextLayout* dwtl;
-			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.length(),d2d->textformat.get(),list.at(i).getBounds().right-list.at(i).getBounds().left-getLeftPadding()-getRightPadding(),list.at(i).getBounds().bottom-list.at(i).getBounds().top-getBottomPadding()-getTopPadding(),&dwtl);
-			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+list.at(i).getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-			d2d->textformat.reset();
-			d2d->textlayout.reset();
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		}
-		d2d->solidbrush.reset();
 		d2d->target->PopAxisAlignedClip();
-		d2d->target->RestoreDrawingState(d2d->targetstate.get());
+		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 	}
 	template<> void ComboBox<ListItem<wchar_t*>>::setLocale(wchar_t* locale){
 		this->locale=locale;
@@ -8697,14 +8015,12 @@ namespace D2DUI{
 		}
 		setBounds(getBounds().left,getBounds().top,getBounds().right,getBounds().bottom);
 		setViewportBounds(getViewportBounds().left,getViewportBounds().top,getViewportBounds().right,getViewportBounds().bottom);
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.get());
+		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.Get());
 		d2d->target->PushAxisAlignedClip(RectF(getViewportBounds().left,getViewportBounds().top,getBounds().right,getBounds().bottom),D2D1_ANTIALIAS_MODE_ALIASED);
 		float topY=((float)(getBounds().bottom-getBounds().top)/vScrollBar->portions)*vScrollBar->position;
 		float leftY=((float)(getBounds().right-getBounds().left)/hScrollBar->portions)*hScrollBar->position;
-		d2d->target->SaveDrawingState(d2d->targetstate.get());
+		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(-leftY,-topY));
 		for(int i=0;i<list.size();i++){
 			if(list.at(i).isEnabled()==true){
@@ -8721,11 +8037,8 @@ namespace D2DUI{
 			else{
 				d2d->solidbrush->SetColor(ColorF(fRGBA_disabled[0],fRGBA_disabled[1],fRGBA_disabled[2],fRGBA_disabled[3]*opacity));
 			}//Disabled ListItem
-			d2d->target->FillRectangle(RectF((float)getBounds().left+list.at(i).getBounds().left,(float)getBounds().top+list.at(i).getBounds().top,(float)getBounds().left+list.at(i).getBounds().right,(float)getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+			d2d->target->FillRectangle(RectF((float)getBounds().left+list.at(i).getBounds().left,(float)getBounds().top+list.at(i).getBounds().top,(float)getBounds().left+list.at(i).getBounds().right,(float)getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 			d2d->solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(list.at(i).getFont(),NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-			d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 			switch(getHorizontalTextAlignment()){
 			case HorizontalConstants::LEFT:
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -8751,15 +8064,16 @@ namespace D2DUI{
 				break;
 			}
 			std::wstring wtext(list.at(i).getData());
-			IDWriteTextLayout* dwtl;
-			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.length(),d2d->textformat.get(),(float)(list.at(i).getBounds().right-list.at(i).getBounds().left),(float)(list.at(i).getBounds().bottom-list.at(i).getBounds().top),&dwtl);
-			d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
-			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+list.at(i).getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-			d2d->textlayout.reset();
-			d2d->textformat.reset();
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		}
-		d2d->solidbrush.reset();
-		d2d->target->RestoreDrawingState(d2d->targetstate.get());
+		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 		d2d->target->PopAxisAlignedClip();
 		if(hScrollBar->isHorizontalScrollingEnabled()==true){
 			hScrollBar->draw(d2d);
@@ -8776,14 +8090,12 @@ namespace D2DUI{
 			vScrollBar->enableVerticalScrolling();
 		}
 		setBounds(getBounds().left,getBounds().top,getBounds().right,getBounds().bottom);
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
-		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.get());
+		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.Get());
 		d2d->target->PushAxisAlignedClip(RectF(getViewportBounds().left,getViewportBounds().top,getBounds().right,getBounds().bottom),D2D1_ANTIALIAS_MODE_ALIASED);
 		float topY=((float)(getBounds().bottom-getBounds().top)/vScrollBar->portions)*vScrollBar->position;
 		float leftY=((float)(getBounds().right-getBounds().left)/hScrollBar->portions)*hScrollBar->position;
-		d2d->target->SaveDrawingState(d2d->targetstate.get());
+		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(-leftY,-topY));
 		for(int i=0;i<list.size();i++){
 			if(list.at(i).isEnabled()==true){
@@ -8800,11 +8112,8 @@ namespace D2DUI{
 			else{
 				d2d->solidbrush->SetColor(ColorF(fRGBA_disabled[0],fRGBA_disabled[1],fRGBA_disabled[2],fRGBA_disabled[3]*opacity));
 			}//Disabled ListItem
-			d2d->target->FillRectangle(RectF((float)getBounds().left+list.at(i).getBounds().left,(float)getBounds().top+list.at(i).getBounds().top,(float)getBounds().left+list.at(i).getBounds().right,(float)getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.get());
+			d2d->target->FillRectangle(RectF((float)getBounds().left+list.at(i).getBounds().left,(float)getBounds().top+list.at(i).getBounds().top,(float)getBounds().left+list.at(i).getBounds().right,(float)getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 			d2d->solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
-			IDWriteTextFormat* dwtf;
-			d2d->dwritefactory->CreateTextFormat(list.at(i).getFont(),NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,getTextSize()*(96.0f/72.0f),locale,&dwtf);
-			d2d->textformat=std::shared_ptr<IDWriteTextFormat>(dwtf,[](IDWriteTextFormat* p){p->Release();});
 			switch(getHorizontalTextAlignment()){
 			case HorizontalConstants::LEFT:
 				d2d->textformat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
@@ -8830,15 +8139,16 @@ namespace D2DUI{
 				break;
 			}
 			std::wstring wtext(list.at(i).getData().getFilename());
-			IDWriteTextLayout* dwtl;
-			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.length(),d2d->textformat.get(),(float)(list.at(i).getBounds().right-list.at(i).getBounds().left),(float)(list.at(i).getBounds().bottom-list.at(i).getBounds().top),&dwtl);
-			d2d->textlayout=std::shared_ptr<IDWriteTextLayout>(dwtl,[](IDWriteTextLayout* p){p->Release();});
-			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+list.at(i).getBounds().top+getTopPadding()),d2d->textlayout.get(),d2d->solidbrush.get());
-			d2d->textlayout.reset();
-			d2d->textformat.reset();
+			d2d->dwritefactory->CreateTextLayout(wtext.c_str(),wtext.size(),d2d->textformat.Get(),(float)(getBounds().right-getBounds().left-getLeftPadding()-getRightPadding()),(float)(getBounds().bottom-getBounds().top-getTopPadding()-getBottomPadding()),d2d->textlayout.ReleaseAndGetAddressOf());
+			DWRITE_TEXT_RANGE rng;
+			rng.startPosition=0;
+			rng.length=wtext.length();
+			d2d->textlayout->SetFontSize(textsize*(96.0f/72.0f),rng);
+			d2d->textlayout->SetFontFamilyName(font,rng);
+			d2d->textlayout->SetLocaleName(locale,rng);
+			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 		}
-		d2d->solidbrush.reset();
-		d2d->target->RestoreDrawingState(d2d->targetstate.get());
+		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 		d2d->target->PopAxisAlignedClip();
 		if(hScrollBar->isHorizontalScrollingEnabled()==true){
 			hScrollBar->draw(d2d);
@@ -9044,89 +8354,41 @@ namespace D2DUI{
 		int size=(getBounds().bottom-getBounds().top);
 		int trackheight=(size*2)/3;
 		int pad=(size*1)/3;
-		ID2D1SolidColorBrush* scb;
-		d2d->target->CreateSolidColorBrush(ColorF(ColorF::LightGray,opacity),&scb);
-		d2d->solidbrush=std::shared_ptr<ID2D1SolidColorBrush>(scb,[](ID2D1SolidColorBrush* p){p->Release();});
+		d2d->target->CreateSolidColorBrush(ColorF(ColorF::LightGray,opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
 		int top=getBounds().top+((size/2)-(trackheight/2));
 		float thumbleft=(float)(getBounds().left)+(((float)(getBounds().right-getBounds().left))/((float)(maxValue/step))*(float)value);
-		d2d->target->FillRectangle(RectF((float)getBounds().left+pad,top,(float)getBounds().right-pad,(float)(top+trackheight)),d2d->solidbrush.get());
-		d2d->solidbrush.reset();
+		d2d->target->FillRectangle(RectF((float)getBounds().left+pad,top,(float)getBounds().right-pad,(float)(top+trackheight)),d2d->solidbrush.Get());
 		if(isEnabled()==true){
 			if(isPressed()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),size,size,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpscaler.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),size,size,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
 			}//Enabled pressed Slider
 			else if(isHovered()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),size,size,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpscaler.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),size,size,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
 			}//Normal enabled Slider
 		}//Enabled Slider
 		else{
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),size,size,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->bmpscaler.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),size,size,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
 		}//Disabled Slider
 	}
 	void ScrollBar::disableHorizontalScrolling(){
@@ -9276,157 +8538,67 @@ namespace D2DUI{
 	void ScrollBar::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isVerticalScrollingEnabled()==true){
 			if(isPressed()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);	
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpscaler.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
 			else{
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);	
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpscaler.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			float topY=(float)(getBounds().top)+((((float)(getBounds().bottom-getBounds().top))/portions)*position);
 			float height=(float)(getBounds().bottom-getBounds().top)/portions;
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,(int)height,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,topY,(float)getBounds().right,topY+height),opacity);	
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->bmpscaler.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,(int)height,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,topY,(float)getBounds().right,topY+height),opacity);	
 		}
 		else if(isHorizontalScrollingEnabled()==true){
 			if(isPressed()==true){
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);	
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpscaler.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
 			else{
-				IWICBitmapDecoder* wicbd;
-				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-				d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-				IWICBitmapFrameDecode* wicbfd;
-				d2d->bmpdecoder->GetFrame(0,&wicbfd);
-				d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-				IWICBitmapScaler* wicbs;
-				d2d->imgfactory->CreateBitmapScaler(&wicbs);
-				d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
-				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
-				IWICFormatConverter* wicfc;
-				d2d->imgfactory->CreateFormatConverter(&wicfc);
-				d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-				d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-				ID2D1Bitmap* wicb;
-				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-				d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-				d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);	
-				d2d->bmpdecoder.reset();
-				d2d->bmpframedecoder.reset();
-				d2d->bmpscaler.reset();
-				d2d->formatconverter.reset();
-				d2d->bmp.reset();
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+				d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+				d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
-			IWICBitmapDecoder* wicbd;
-			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_thumb_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,&wicbd);
-			d2d->bmpdecoder=std::shared_ptr<IWICBitmapDecoder>(wicbd,[](IWICBitmapDecoder* p){p->Release();});
-			IWICBitmapFrameDecode* wicbfd;
-			d2d->bmpdecoder->GetFrame(0,&wicbfd);
-			d2d->bmpframedecoder=std::shared_ptr<IWICBitmapFrameDecode>(wicbfd,[](IWICBitmapFrameDecode* p){p->Release();});
-			IWICBitmapScaler* wicbs;
-			d2d->imgfactory->CreateBitmapScaler(&wicbs);
-			d2d->bmpscaler=std::shared_ptr<IWICBitmapScaler>(wicbs,[](IWICBitmapScaler* p){p->Release();});
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_thumb_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			float topY=(float)(getBounds().top)+((((float)(getBounds().bottom-getBounds().top))/portions)*position);
 			float height=(float)(getBounds().bottom-getBounds().top)/portions;
-			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.get(),getBounds().right-getBounds().left,(int)height,WICBitmapInterpolationModeFant);
-			IWICFormatConverter* wicfc;
-			d2d->imgfactory->CreateFormatConverter(&wicfc);
-			d2d->formatconverter=std::shared_ptr<IWICFormatConverter>(wicfc,[](IWICFormatConverter* p){p->Release();});
-			d2d->formatconverter->Initialize(d2d->bmpscaler.get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
-			ID2D1Bitmap* wicb;
-			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.get(),NULL,&wicb);
-			d2d->bmp=std::shared_ptr<ID2D1Bitmap>(wicb,[](ID2D1Bitmap* p){p->Release();});
-			d2d->target->DrawBitmap(d2d->bmp.get(),RectF((float)getBounds().left,topY,(float)getBounds().right,topY+height),opacity);	
-			d2d->bmpdecoder.reset();
-			d2d->bmpframedecoder.reset();
-			d2d->bmpscaler.reset();
-			d2d->formatconverter.reset();
-			d2d->bmp.reset();
+			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,(int)height,WICBitmapInterpolationModeFant);
+			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+			d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,topY,(float)getBounds().right,topY+height),opacity);
 		}
 	}
 }

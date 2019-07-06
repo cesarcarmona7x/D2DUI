@@ -81,6 +81,7 @@ namespace D2DUI{
 		~WindowBase(){}
 		wchar_t* wndId;
 		wchar_t* locale;
+		ComPtr<IDWriteTextFormat> textformat;
 		int index;
 		float opacity;
 		float fRGBA_bg[4];
@@ -924,8 +925,7 @@ namespace D2DUI{
 		int vAlignment;
 		float fRGBA[4];
 		int iRGBA[4];
-		std::shared_ptr<IDWriteTextLayout> textlayout;
-		std::shared_ptr<IDWriteTextFormat> textformat;
+		ComPtr<IDWriteTextLayout> textlayout;
 		RECT caretRect;
 		wchar_t* text;
 		wchar_t* font;
