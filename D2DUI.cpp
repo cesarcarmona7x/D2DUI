@@ -24,10 +24,10 @@ namespace D2DUI{
 		showing=false;
 		textContent=std::shared_ptr<TextLabel>(new TextLabel(text));
 		textContent->setPadding(5,0);
+		textContent->setHorizontalTextAlignment(HorizontalConstants::LEFT);
 		textContent->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 		textTitle=std::shared_ptr<TextLabel>(new TextLabel(title));
 		textTitle->setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
-		showing=false;
 		this->buttons=buttons;
 		this->msgicon=icon;
 		contentRow=std::shared_ptr<TableRow>(new TableRow(2));
@@ -133,6 +133,23 @@ namespace D2DUI{
 		setFont(L"Microsoft Sans Serif");
 		setTextSize(12.f);
 		setForeground(1.f,1.f,1.f);
+	}
+	void MsgBox::setOpacity(float opacity){
+		this->opacity=opacity;
+		textContent->setOpacity(opacity);
+		textTitle->setOpacity(opacity);
+		msgboxicon->setOpacity(opacity);
+		for(int i=0;i<buttonsRow->windows.size();i++){
+			buttonsRow->windows.at(i).get().setOpacity(opacity);
+		}
+	}
+	void MsgBox::setLocale(wchar_t* locale){
+		this->locale=locale;
+		textContent->setLocale(locale);
+		textTitle->setLocale(locale);
+		for(int i=0;i<buttonsRow->windows.size();i++){
+			buttonsRow->windows.at(i).get().setLocale(locale);
+		}
 	}
 	void MsgBox::setPadding(int left,int top,int right,int bottom){
 		leftPadding=left;
@@ -328,6 +345,14 @@ namespace D2DUI{
 	}
 	float* InfoBox::getForegroundFloat(){
 		return fRGBA;
+	}
+	void InfoBox::setOpacity(float opacity){
+		this->opacity=opacity;
+		textContent->setOpacity(opacity);
+	}
+	void InfoBox::setLocale(wchar_t* locale){
+		this->locale=locale;
+		textContent->setLocale(locale);
 	}
 	void InfoBox::reorderComponents(std::shared_ptr<D2DHandle>& d2d){
 		RECT r;

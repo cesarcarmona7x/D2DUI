@@ -81,7 +81,6 @@ namespace D2DUI{
 		~WindowBase(){}
 		wchar_t* wndId;
 		wchar_t* locale;
-		ComPtr<IDWriteTextFormat> textformat;
 		int index;
 		float opacity;
 		float fRGBA_bg[4];
@@ -342,7 +341,7 @@ namespace D2DUI{
 	class Border{
 	public:
 		Border(){
-			setStroke(SOLID);
+			setStroke(NONE);
 			setColor(0.f,0.f,0.f,1.f);
 		}
 		~Border(){}
@@ -2025,6 +2024,8 @@ namespace D2DUI{
 		virtual int* getForegroundInt();
 		virtual void setForeground(float R,float G,float B,float A=1.f);
 		virtual float* getForegroundFloat();
+		virtual void setOpacity(float opacity=1.0f) override;
+		virtual void setLocale(wchar_t* locale) override;
 		std::shared_ptr<TableRow> contentRow;
 		std::shared_ptr<GridLayout> buttonsRow;
 		std::shared_ptr<Button> btnOk, btnYes, btnNo, btnCancel;
@@ -2091,6 +2092,8 @@ namespace D2DUI{
 		virtual int* getForegroundInt();
 		virtual void setForeground(float R,float G,float B,float A=1.f);
 		virtual float* getForegroundFloat();
+		virtual void setOpacity(float opacity=1.0f) override;
+		virtual void setLocale(wchar_t* locale) override;
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	protected:
 		virtual void reorderComponents(std::shared_ptr<D2DHandle>& d2d);
