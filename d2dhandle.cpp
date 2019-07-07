@@ -40,23 +40,22 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 	rat.Denominator = 1;
 	rat.Numerator = 30;
 	modedesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	modedesc.Width=sett.winwidth;
-	modedesc.Height=sett.winheight;
-	modedesc.RefreshRate = rat;
-	std::stringstream war;
-	std::stringstream sar;
-	float windowaspectratio=((float)sett.winwidth/(float)sett.winheight);
-	war<<boost::format("%.2f") % windowaspectratio;
-	windowaspectratio=atof(war.str().c_str());
-	float screenaspectratio=((float)sett.screenwidth/(float)sett.screenheight);
-	sar<<boost::format("%.2f") % screenaspectratio;
-	screenaspectratio=atof(sar.str().c_str());
-	if(windowaspectratio==screenaspectratio){
-		modedesc.Scaling=DXGI_MODE_SCALING_STRETCHED;
+	if(sett.fullscreen==true){
+		if(sett.aspect43==true){
+			modedesc.Width=(int)((sett.screenheight)*(4.f/3.f));
+			modedesc.Height=sett.screenheight;	
+		}
+		else{
+			modedesc.Width=sett.screenwidth;
+			modedesc.Height=(int)((sett.screenwidth)*(9.f/16.f));
+		}
 	}
 	else{
-		modedesc.Scaling=DXGI_MODE_SCALING_CENTERED;
+		modedesc.Width=sett.winwidth;
+		modedesc.Height=sett.winheight;
 	}
+	modedesc.RefreshRate = rat;
+	modedesc.Scaling=DXGI_MODE_SCALING_CENTERED;
 	modedesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
 	DXGI_SWAP_CHAIN_DESC scdesc;
 	ZeroMemory(&scdesc,sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -137,7 +136,30 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 	dwritefactory->CreateTextFormat(L"Microsoft Sans Serif",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,12.0f,L"en-us",textformat.GetAddressOf());
 	return true;
 }
-void D2DHandle::resize(GameSettings settings){
+void D2DHandle::resize(HWND hwnd,GameSettings settings){
+	DXGI_MODE_DESC modedesc;
+	DXGI_RATIONAL rat;
+	rat.Denominator = 1;
+	rat.Numerator = 30;
+	modedesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	if(settings.fullscreen==true){
+		if(settings.aspect43==true){
+			modedesc.Width=(int)((settings.screenheight)*(4.f/3.f));
+			modedesc.Height=settings.screenheight;	
+		}
+		else{
+			modedesc.Width=settings.screenwidth;
+			modedesc.Height=(int)((settings.screenwidth)*(9.f/16.f));
+		}
+	}
+	else{
+		modedesc.Width=settings.winwidth;
+		modedesc.Height=settings.winheight;
+	}
+	modedesc.RefreshRate = rat;
+	modedesc.Scaling=DXGI_MODE_SCALING_CENTERED;
+	modedesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
+	swapchain->ResizeTarget(&modedesc);
 	if(settings.fullscreen==true){
 		if(settings.aspect43==true){
 			swapchain->ResizeBuffers(0,(int)((settings.screenheight)*(4.f/3.f)),settings.screenheight,DXGI_FORMAT_R8G8B8A8_UNORM,0);

@@ -33,6 +33,6 @@ public:
 	ComPtr<ID2D1SolidColorBrush> solidbrush;
 	ComPtr<ID2D1LinearGradientBrush> gradientbrush;
 	ComPtr<ID2D1GradientStopCollection> gradientcollection;
-	void resize(GameSettings settings);
+	void resize(HWND hwnd,GameSettings settings);
 };
 #endif // D2DHANDLE_H_INCLUDED
