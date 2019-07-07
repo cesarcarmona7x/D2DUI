@@ -12,26 +12,26 @@ void D2DHandle::cleanD3D(){
 }
 bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 	HRESULT hr;
-    RECT r;
-    GetClientRect(hwnd,&r);
+	RECT r;
+	GetClientRect(hwnd,&r);
 	hr=D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED,d2dfactory.GetAddressOf());
-    if(hr!=S_OK){
+	if(hr!=S_OK){
 		_com_error err(hr);
 		const TCHAR* error=err.ErrorMessage();
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
-        return false;
-    }
+		return false;
+	}
 	hr=DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(IDWriteFactory),(IUnknown**)dwritefactory.GetAddressOf());
-    if(hr!=S_OK){
+	if(hr!=S_OK){
 		_com_error err(hr);
 		const TCHAR* error=err.ErrorMessage();
 		MessageBox(NULL,error,L"Error",MB_OK|MB_ICONERROR);
-        return false;
-    }
+		return false;
+	}
 	D2D1_RENDER_TARGET_PROPERTIES rtp;
 	rtp.dpiX=0.0f;
 	rtp.dpiY=0.0f;
-	rtp.minLevel=D2D1_FEATURE_LEVEL_10;
+	rtp.minLevel=D2D1_FEATURE_LEVEL_9;
 	rtp.pixelFormat=PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM,D2D1_ALPHA_MODE_PREMULTIPLIED);
 	rtp.type=D2D1_RENDER_TARGET_TYPE_HARDWARE;
 	rtp.usage=D2D1_RENDER_TARGET_USAGE_NONE;
@@ -69,7 +69,7 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 	scdesc.SampleDesc.Count=1;
 	scdesc.SampleDesc.Quality=0;
 	scdesc.Windowed=!sett.fullscreen;
-	D3D10_FEATURE_LEVEL1 levels[]={D3D10_FEATURE_LEVEL_9_3};
+	D3D10_FEATURE_LEVEL1 levels[]={D3D10_FEATURE_LEVEL_9_1};
 	hr=D3D10CreateDevice1(NULL,D3D10_DRIVER_TYPE_HARDWARE,NULL,D3D10_CREATE_DEVICE_BGRA_SUPPORT,levels[0],D3D10_1_SDK_VERSION,d3ddevice.GetAddressOf());
 	if(hr!=S_OK){
 		MessageBoxA(NULL,"Error creating D3D10_1 device","Error",MB_OK|MB_ICONERROR);
@@ -131,9 +131,31 @@ bool D2DHandle::InitializeD2D(HWND hwnd,GameSettings& sett){
 		return false;
 	}
 	target->SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
-	target->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_CLEARTYPE);
+	target->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 	hr=d2dfactory->CreateDrawingStateBlock(targetstate.GetAddressOf());
 	CoCreateInstance(CLSID_WICImagingFactory,NULL,CLSCTX_INPROC_SERVER,IID_IWICImagingFactory,(LPVOID*)imgfactory.GetAddressOf());
 	dwritefactory->CreateTextFormat(L"Microsoft Sans Serif",NULL,DWRITE_FONT_WEIGHT_NORMAL,DWRITE_FONT_STYLE_NORMAL,DWRITE_FONT_STRETCH_NORMAL,12.0f,L"en-us",textformat.GetAddressOf());
-    return true;
+	return true;
+}
+void D2DHandle::resize(GameSettings settings){
+	if(settings.fullscreen==true){
+		if(settings.aspect43==true){
+			swapchain->ResizeBuffers(0,(int)((settings.screenheight)*(4.f/3.f)),settings.screenheight,DXGI_FORMAT_R8G8B8A8_UNORM,0);
+		}
+		else{
+			swapchain->ResizeBuffers(0,settings.screenwidth,(int)((settings.screenwidth)*(9.f/16.f)),DXGI_FORMAT_R8G8B8A8_UNORM,0);
+		}
+	}
+	else{
+		swapchain->ResizeBuffers(0,settings.winwidth,settings.winheight,DXGI_FORMAT_R8G8B8A8_UNORM,0);
+	}
+	swapchain->GetBuffer(0,IID_PPV_ARGS(surface.ReleaseAndGetAddressOf()));
+	D2D1_RENDER_TARGET_PROPERTIES rtp;
+	rtp.dpiX=0.0f;
+	rtp.dpiY=0.0f;
+	rtp.minLevel=D2D1_FEATURE_LEVEL_9;
+	rtp.pixelFormat=PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM,D2D1_ALPHA_MODE_PREMULTIPLIED);
+	rtp.type=D2D1_RENDER_TARGET_TYPE_HARDWARE;
+	rtp.usage=D2D1_RENDER_TARGET_USAGE_NONE;
+	d2dfactory->CreateDxgiSurfaceRenderTarget(surface.Get(),rtp,target.ReleaseAndGetAddressOf());
 }
