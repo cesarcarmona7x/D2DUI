@@ -2284,11 +2284,7 @@ namespace D2DUI{
 	void TextBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()==true){
 			if(hasFocus()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\textbox_focus.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox_focus.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -2335,11 +2331,7 @@ namespace D2DUI{
 				}
 			}
 			else{
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\textbox.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -2383,11 +2375,7 @@ namespace D2DUI{
 			}
 		}
 		else{
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\textbox_disabled.png"));
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -2680,11 +2668,7 @@ namespace D2DUI{
 	void Button::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()==true){
 			if(isPressed()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\button_pressed.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -2726,11 +2710,7 @@ namespace D2DUI{
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Pressed button
 			else if(isHovered()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\button_hovered.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -2772,11 +2752,7 @@ namespace D2DUI{
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Hovered button
 			else{
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\button.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -2819,11 +2795,7 @@ namespace D2DUI{
 			}//Normal button
 		}//Enabled button
 		else{
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\button_disabled.png"));
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -2874,34 +2846,18 @@ namespace D2DUI{
 			if(isPressed()==true){
 				if(parentContainer==SPINNER){
 					if(direction==UP){
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_pressed_up.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_pressed_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
 					}
 					else{
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_pressed_down.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_pressed_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//Spinner
 				else{
 					if(direction==UP){
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_pressed_up.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_pressed_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 					else{
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_pressed_down.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_pressed_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//ComboBox
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
@@ -2915,34 +2871,18 @@ namespace D2DUI{
 			else if(isHovered()==true){
 				if(parentContainer==SPINNER){
 					if(direction==UP){
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_hovered_up.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_hovered_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 					else{
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_hovered_down.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_hovered_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//Spinner
 				else{
 					if(direction==UP){
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_hovered_up.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_hovered_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 					else{
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_hovered_down.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_hovered_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//ComboBox
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
@@ -2956,34 +2896,18 @@ namespace D2DUI{
 			else{
 				if(parentContainer==SPINNER){
 					if(direction==UP){
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_up.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 					else{
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_down.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//Spinner
 				else{
 					if(direction==UP){
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_up.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 					else{
-						wchar_t* directory=new wchar_t[MAX_PATH];
-						GetModuleFileNameW(NULL,directory,MAX_PATH);
-						PathRemoveFileSpec(directory);
-						std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_down.png"));
-						d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					}
 				}//ComboBox
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
@@ -2998,34 +2922,18 @@ namespace D2DUI{
 		else{
 			if(parentContainer==SPINNER){
 				if(direction==UP){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_disabled_up.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_disabled_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				}
 				else{
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\spinner_arrowbutton_disabled_down.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_disabled_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				}
 			}//Spinner
 			else{
 				if(direction==UP){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_disabled_up.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_disabled_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				}
 				else{
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\combobox_arrowbutton_disabled_down.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\combobox_arrowbutton_disabled_down.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				}
 			}//ComboBox
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
@@ -3728,11 +3636,7 @@ namespace D2DUI{
 		if(isEnabled()==true){
 			if(isChecked()==true){
 				if(isPressed()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox_pressed_checked.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -3775,11 +3679,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed and checked checkbox
 				else if(isHovered()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox_hovered_checked.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -3821,11 +3721,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered and checked checkbox
 				else{
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox_checked.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -3869,11 +3765,7 @@ namespace D2DUI{
 			}//Checked checkbox
 			else{
 				if(isPressed()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox_pressed.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -3915,11 +3807,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed checkbox
 				else if(isHovered()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox_hovered.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -3961,11 +3849,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered checkbox
 				else{
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4010,11 +3894,7 @@ namespace D2DUI{
 		}//Enabled checkbox
 		else{
 			if(isChecked()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox_disabled_checked.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4056,11 +3936,7 @@ namespace D2DUI{
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}
 			else{
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\checkbox_disabled.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4163,11 +4039,7 @@ namespace D2DUI{
 	}
 	void DialogueBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(&decorationfile!=NULL){
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+decorationfile);
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(decorationfile,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getDecorationBounds().bottom-getDecorationBounds().top,getDecorationBounds().bottom-getDecorationBounds().top,WICBitmapInterpolationModeFant);
@@ -4515,11 +4387,7 @@ namespace D2DUI{
 		if(isEnabled()==true){
 			if(isSelected()==true){
 				if(isPressed()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton_pressed_selected.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4560,11 +4428,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed and selected radiobutton
 				else if(isHovered()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton_hovered_selected.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4605,11 +4469,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered and selected radiobutton
 				else{
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton_selected.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4652,11 +4512,7 @@ namespace D2DUI{
 			}//Selected radiobutton
 			else{
 				if(isPressed()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton_pressed.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4697,11 +4553,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed radiobutton
 				else if(isHovered()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton_hovered.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4742,11 +4594,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered radiobutton
 				else{
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4790,11 +4638,7 @@ namespace D2DUI{
 		}//Enabled radiobutton
 		else{
 			if(isSelected()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton_disabled_selected.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_disabled_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -4835,11 +4679,7 @@ namespace D2DUI{
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Selected disabled radiobutton
 			else{
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\radiobutton_disabled.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().bottom-getBounds().top,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5177,11 +5017,7 @@ namespace D2DUI{
 	void ToggleButton::draw(std::shared_ptr<D2DHandle>& d2d){ //DrawText measuring are just magic numbers made to fit the image proportions. Use your own proportions when using another image.
 		if(isEnabled()==true){
 			if(isSelected()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\togglebutton_selected.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5224,11 +5060,7 @@ namespace D2DUI{
 			}//Selected ToggleButton
 			else{
 				if(isPressed()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\togglebutton_pressed.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5270,11 +5102,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed ToggleButton
 				else if(isHovered()==true){
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\togglebutton_hovered.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5363,11 +5191,7 @@ namespace D2DUI{
 			}//Unselected ToggleButton
 		}//Enabled ToggleButton
 		else{
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\togglebutton_disabled.png"));
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_disabled.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5468,11 +5292,7 @@ namespace D2DUI{
 		return visible;
 	}
 	void ImageView::draw(std::shared_ptr<D2DHandle>& d2d){
-		wchar_t* directory=new wchar_t[MAX_PATH];
-		GetModuleFileNameW(NULL,directory,MAX_PATH);
-		PathRemoveFileSpec(directory);
-		std::wstring wdir(directory+std::wstring(L"\\")+getFilePath());
-		d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+		d2d->imgfactory->CreateDecoderFromFilename(getFilePath(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 		d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 		d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 		d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5735,11 +5555,7 @@ namespace D2DUI{
 		std::wstring wtext(getText());
 		if(isEnabled()==true){
 			if(isPressed()==true&&(wcscmp(pressedpath,L"")!=0)){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+pressedpath);
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(pressedpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5780,11 +5596,7 @@ namespace D2DUI{
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Pressed ImageButton
 			else if(isHovered()==true&&(wcscmp(hoveredpath,L"")!=0)){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+hoveredpath);
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(hoveredpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5825,11 +5637,7 @@ namespace D2DUI{
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Hovered ImageButton
 			else if(wcscmp(enabledpath,L"")!=0){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+enabledpath);
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(enabledpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -5871,11 +5679,7 @@ namespace D2DUI{
 			}//Normal enabled ImageButton
 		}//Enabled ImageButton
 		else if(wcscmp(disabledpath,L"")!=0){
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+disabledpath);
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(disabledpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -8584,11 +8388,7 @@ namespace D2DUI{
 		d2d->target->FillRectangle(RectF((float)getBounds().left+pad,top,(float)getBounds().right-pad,(float)(top+trackheight)),d2d->solidbrush.Get());
 		if(isEnabled()==true){
 			if(isPressed()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\slide_thumb.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),size,size,WICBitmapInterpolationModeFant);
@@ -8598,11 +8398,7 @@ namespace D2DUI{
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
 			}//Enabled pressed Slider
 			else if(isHovered()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\slide_thumb.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),size,size,WICBitmapInterpolationModeFant);
@@ -8612,11 +8408,7 @@ namespace D2DUI{
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
 			}//Enabled hovered Slider
 			else{
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\slide_thumb.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),size,size,WICBitmapInterpolationModeFant);
@@ -8627,11 +8419,7 @@ namespace D2DUI{
 			}
 		}//Enabled Slider
 		else{
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\slide_thumb.png"));
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),size,size,WICBitmapInterpolationModeFant);
@@ -8788,11 +8576,7 @@ namespace D2DUI{
 	void ScrollBar::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isVerticalScrollingEnabled()==true){
 			if(isPressed()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\scrollbar_track_pressed.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -8802,11 +8586,7 @@ namespace D2DUI{
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
 			else{
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\scrollbar_track.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -8815,11 +8595,7 @@ namespace D2DUI{
 				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\scrollbar_thumb.png"));
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			float topY=(float)(getBounds().top)+((((float)(getBounds().bottom-getBounds().top))/portions)*position);
@@ -8832,11 +8608,7 @@ namespace D2DUI{
 		}
 		else if(isHorizontalScrollingEnabled()==true){
 			if(isPressed()==true){
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\scrollbar_track_pressed_horizontal.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -8846,11 +8618,7 @@ namespace D2DUI{
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
 			else{
-				wchar_t* directory=new wchar_t[MAX_PATH];
-				GetModuleFileNameW(NULL,directory,MAX_PATH);
-				PathRemoveFileSpec(directory);
-				std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\scrollbar_track_horizontal.png"));
-				d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 				d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
@@ -8859,11 +8627,7 @@ namespace D2DUI{
 				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}
-			wchar_t* directory=new wchar_t[MAX_PATH];
-			GetModuleFileNameW(NULL,directory,MAX_PATH);
-			PathRemoveFileSpec(directory);
-			std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\scrollbar_track_horizontal.png"));
-			d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+			d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_thumb_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 			d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 			d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 			float topY=(float)(getBounds().top)+((((float)(getBounds().bottom-getBounds().top))/portions)*position);
