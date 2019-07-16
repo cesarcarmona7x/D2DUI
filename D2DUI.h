@@ -243,7 +243,6 @@ namespace D2DUI{
 			}
 			else{
 				const char* type=typeid(this).name();
-				OutputDebugStringA(type);
 				return (wcscmp(wndId,other.wndId)==0);
 			}
 		}
@@ -1718,6 +1717,18 @@ namespace D2DUI{
 		}
 		virtual void setTextSize(float px){}
 		virtual float getTextSize(){return 0.f;}
+	};
+	class GifView:public ImageView{
+	public:
+		GifView(wchar_t* file): ImageView(file), currentframe(0), loop(false){}
+		~GifView(){}
+		int getCurrentFrame();
+		void setLoop(bool loop);
+		bool isLooping();
+		virtual void draw(std::shared_ptr<D2DHandle> d2d);
+	private:
+		int currentframe;
+		bool loop;
 	};
 	class ImageButton:public WindowBase{
 	public:

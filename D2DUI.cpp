@@ -5297,6 +5297,33 @@ namespace D2DUI{
 		d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 		d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 	}
+	void GifView::setLoop(bool loop){
+		this->loop=loop;
+	}
+	bool GifView::isLooping(){
+		return loop;
+	}
+	int GifView::getCurrentFrame(){
+		return currentframe;
+	}
+	void GifView::draw(std::shared_ptr<D2DHandle> d2d){
+		d2d->imgfactory->CreateDecoderFromFilename(getFilePath(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
+		unsigned int totalframes;
+		d2d->bmpdecoder->GetFrameCount(&totalframes);
+		d2d->bmpdecoder->GetFrame(currentframe,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+		d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
+		d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
+		d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
+		d2d->formatconverter->Initialize(d2d->bmpscaler.Get(),GUID_WICPixelFormat32bppPRGBA,WICBitmapDitherTypeNone,NULL,0.0,WICBitmapPaletteTypeCustom);
+		d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
+		d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+		if(currentframe<(totalframes-1)){
+			currentframe++;
+		}
+		else{
+			if(loop==true)currentframe=0;
+		}
+	}
 	ImageButton::ImageButton(wchar_t* file,wchar_t* text):WindowBase(text){
 		disabledpath=pressedpath=hoveredpath=enabledpath=file;
 		ImageButton::text=text;
