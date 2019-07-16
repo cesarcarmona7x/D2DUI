@@ -5144,11 +5144,7 @@ namespace D2DUI{
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Hovered ToggleButton
 				else{
-					wchar_t* directory=new wchar_t[MAX_PATH];
-					GetModuleFileNameW(NULL,directory,MAX_PATH);
-					PathRemoveFileSpec(directory);
-					std::wstring wdir(directory+std::wstring(L"\\")+std::wstring(L"Images\\UI\\togglebutton.png"));
-					d2d->imgfactory->CreateDecoderFromFilename(wdir.c_str(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
+					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
 					d2d->bmpscaler->Initialize(d2d->bmpframedecoder.Get(),getBounds().right-getBounds().left,getBounds().bottom-getBounds().top,WICBitmapInterpolationModeFant);
 					d2d->imgfactory->CreateFormatConverter(d2d->formatconverter.ReleaseAndGetAddressOf());
