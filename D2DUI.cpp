@@ -3,20 +3,6 @@
 
 #include "stdafx.h"
 using namespace D2DUI;
-std::wstring random_string(size_t length){
-	auto chars=[]()->wchar_t{
-		const wchar_t charset[]={
-			L"0123456789"
-			L"abcdefghijklmnopqrstuvwxyz"
-			L"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		};
-		const size_t maxIndex=(sizeof(charset)-1);
-		return charset[rand()%maxIndex];
-	};
-	std::wstring wstr(length,0);
-	std::generate_n(wstr.begin(),length,chars);
-	return wstr;
-}
 namespace D2DUI{
 	MsgBox::MsgBox(HWND parent,bool modal,wchar_t* text,wchar_t* title,MSGBoxButtons buttons,MSGBoxIcon icon){
 		hwnd=parent;
@@ -135,7 +121,7 @@ namespace D2DUI{
 		setForeground(1.f,1.f,1.f);
 	}
 	void MsgBox::setOpacity(float opacity){
-		this->opacity=opacity;
+		WindowBase::setOpacity(opacity);
 		textContent->setOpacity(opacity);
 		textTitle->setOpacity(opacity);
 		msgboxicon->setOpacity(opacity);
@@ -144,82 +130,44 @@ namespace D2DUI{
 		}
 	}
 	void MsgBox::setLocale(wchar_t* locale){
-		this->locale=locale;
+		WindowBase::setLocale(locale);
 		textContent->setLocale(locale);
 		textTitle->setLocale(locale);
 		for(int i=0;i<buttonsRow->windows.size();i++){
 			buttonsRow->windows.at(i).get().setLocale(locale);
 		}
 	}
-	void MsgBox::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
 	void MsgBox::setFont(wchar_t* font){
-		this->font=font;
+		WindowBase::setFont(font);
 		textTitle->setFont(font);
 		textContent->setFont(font);
 		for(int i=0;i<buttonsRow->windows.size();i++){
 			buttonsRow->windows.at(i).get().setFont(font);
 		}
 	}
-	wchar_t* MsgBox::getFont(){
-		return font;
-	}
 	void MsgBox::setTextSize(float px){
-		this->textSize=px;
+		WindowBase::setTextSize(px);
 		textTitle->setTextSize(px);
 		textContent->setTextSize(px);
 		for(int i=0;i<buttonsRow->windows.size();i++){
 			buttonsRow->windows.at(i).get().setTextSize(px);
 		}
 	}
-	float MsgBox::getTextSize(){
-		return textSize;
-	}
 	void MsgBox::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=R/255.0f;
-		fRGBA[1]=G/255.0f;
-		fRGBA[2]=B/255.0f;
-		fRGBA[3]=A/255.0f;
+		WindowBase::setForeground(R,G,B,A);
 		textTitle->setForeground(R,G,B,A);
 		textContent->setForeground(R,G,B,A);
 		for(int i=0;i<buttonsRow->windows.size();i++){
 			buttonsRow->windows.at(i).get().setForeground(R,G,B,A);
 		}
-	}
-	int* MsgBox::getForegroundInt(){
-		return iRGBA;
 	}
 	void MsgBox::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
+		WindowBase::setForeground(R,G,B,A);
 		textTitle->setForeground(R,G,B,A);
 		textContent->setForeground(R,G,B,A);
 		for(int i=0;i<buttonsRow->windows.size();i++){
 			buttonsRow->windows.at(i).get().setForeground(R,G,B,A);
 		}
-	}
-	float* MsgBox::getForegroundFloat(){
-		return fRGBA;
 	}
 	void MsgBox::reorderComponents(std::shared_ptr<D2DHandle>& d2d){
 		RECT r;
@@ -296,55 +244,17 @@ namespace D2DUI{
 		this->font=font;
 		textContent->setFont(font);
 	}
-	wchar_t* InfoBox::getFont(){
-		return font;
-	}
 	void InfoBox::setTextSize(float px){
-		this->textSize=px;
+		WindowBase::setTextSize(px);
 		textContent->setTextSize(px);
 	}
-	float InfoBox::getTextSize(){
-		return textSize;
-	}
-	void InfoBox::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
 	void InfoBox::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=R/255.0f;
-		fRGBA[1]=G/255.0f;
-		fRGBA[2]=B/255.0f;
-		fRGBA[3]=A/255.0f;
+		WindowBase::setForeground(R,G,B,A);
 		textContent->setForeground(R,G,B,A);
-	}
-	int* InfoBox::getForegroundInt(){
-		return iRGBA;
 	}
 	void InfoBox::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
+		WindowBase::setForeground(R,G,B,A);
 		textContent->setForeground(R,G,B,A);
-	}
-	float* InfoBox::getForegroundFloat(){
-		return fRGBA;
 	}
 	void InfoBox::setOpacity(float opacity){
 		this->opacity=opacity;
@@ -391,58 +301,20 @@ namespace D2DUI{
 		setTextSize(12.0f);
 	}
 	void PopupNotification::setTextSize(float px){
-		this->textSize=px;
+		WindowBase::setTextSize(px);
 		textContent->setTextSize(px);
 	}
-	float PopupNotification::getTextSize(){
-		return textSize;
-	}
 	void PopupNotification::setFont(wchar_t* font){
-		this->font=font;
+		WindowBase::setFont(font);
 		textContent->setFont(font);
 	}
-	wchar_t* PopupNotification::getFont(){
-		return font;
-	}
-	void PopupNotification::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
 	void PopupNotification::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=R/255.0f;
-		fRGBA[1]=G/255.0f;
-		fRGBA[2]=B/255.0f;
-		fRGBA[3]=A/255.0f;
+		WindowBase::setForeground(R,G,B,A);
 		textContent->setForeground(R,G,B,A);
-	}
-	int* PopupNotification::getForegroundInt(){
-		return iRGBA;
 	}
 	void PopupNotification::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
+		WindowBase::setForeground(R,G,B,A);
 		textContent->setForeground(R,G,B,A);
-	}
-	float* PopupNotification::getForegroundFloat(){
-		return fRGBA;		
 	}
 	void PopupNotification::reorderComponents(std::shared_ptr<D2DHandle>& d2d){
 		RECT r;
@@ -514,31 +386,6 @@ namespace D2DUI{
 		setBorder(Border());
 		setRadius(0.0f);
 	}
-	void LinearLayout::setOrientation(LayoutBase::Orientation o){
-		LinearLayout::o=o;
-	}
-	LayoutBase::Orientation LinearLayout::getOrientation(){
-		return o;
-	}
-	void LinearLayout::setBorder(Border b){
-		leftBorder=b;
-		topBorder=b;
-		rightBorder=b;
-		bottomBorder=b;
-	}
-	void LinearLayout::setRadius(float x,float y){
-		LinearLayout::radius_x=x;
-		LinearLayout::radius_y=y;
-		if(radius_y==-1){
-			radius_y=radius_x;
-		}
-	}
-	float LinearLayout::getXRadius(){
-		return radius_x;
-	}
-	float LinearLayout::getYRadius(){
-		return radius_y;
-	}
 	void LinearLayout::add(WindowBase& window){
 		windows.push_back(window);
 		std::wstring wid(random_string(6));
@@ -557,71 +404,6 @@ namespace D2DUI{
 		int maxIndex=(windows.size()+layouts.size())-1;
 		layout.setIndex(maxIndex);
 	}
-	void LinearLayout::setLeftBorder(Border b){
-		leftBorder=b;
-	}
-	void LinearLayout::setTopBorder(Border b){
-		topBorder=b;
-	}
-	void LinearLayout::setRightBorder(Border b){
-		rightBorder=b;
-	}
-	void LinearLayout::setBottomBorder(Border b){
-		bottomBorder=b;
-	}
-	Border LinearLayout::getLeftBorder(){
-		return leftBorder;
-	}
-	Border LinearLayout::getTopBorder(){
-		return topBorder;
-	}
-	Border LinearLayout::getRightBorder(){
-		return rightBorder;
-	}
-	Border LinearLayout::getBottomBorder(){
-		return bottomBorder;
-	}
-	void LinearLayout::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT LinearLayout::getBounds(){
-		return bounds;
-	}
-	void LinearLayout::setBackground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(R/255.0f);
-		fRGBA[1]=(G/255.0f);
-		fRGBA[2]=(B/255.0f);
-		fRGBA[3]=(A/255.0f);
-	}
-	void LinearLayout::setBackground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	void LinearLayout::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
 	void LinearLayout::remove(wchar_t* id){
 		bool isinwindows=false;
 		for(int i=0;i<windows.size();i++){
@@ -631,7 +413,7 @@ namespace D2DUI{
 				break;
 			}
 		}
-		if(isinwindows==false){
+		if(isinwindows){
 			for(int i=0;i<layouts.size();i++){
 				if(wcscmp(layouts.at(i).get().getId(),id)==0){
 					layouts.erase(layouts.begin()+i);
@@ -640,23 +422,11 @@ namespace D2DUI{
 			}
 		}
 	}
-	int LinearLayout::getLeftPadding(){
-		return leftPadding;
-	}
-	int LinearLayout::getTopPadding(){
-		return topPadding;
-	}
-	int LinearLayout::getRightPadding(){
-		return rightPadding;
-	}
-	int LinearLayout::getBottomPadding(){
-		return bottomPadding;
-	}
 	void LinearLayout::reorderComponents(){
 		int top=getTopPadding();
 		int left=getLeftPadding();
 		int components=(windows.size()+layouts.size());
-		if(o==VERTICAL){
+		if(getOrientation()==VERTICAL){
 			for(int i=0;i<components;i++){
 				for(int j=0;j<windows.size();j++){
 					if(windows.at(j).get().getIndex()==i){
@@ -674,7 +444,7 @@ namespace D2DUI{
 				}
 			}
 		}//Vertical Placement
-		else if(o==HORIZONTAL){
+		else if(getOrientation()==HORIZONTAL){
 			for(int i=0;i<components;i++){
 				for(int j=0;j<windows.size();j++){
 					if(windows.at(j).get().getIndex()==i){
@@ -824,7 +594,7 @@ namespace D2DUI{
 				}
 			}
 		}
-		if(inwindows==false){
+		if(inwindows){
 			if(layouts.size()!=0){
 				for(int i=0;i<layouts.size();i++){
 					if(layouts.at(i).get().col==col&&layouts.at(i).get().row==row){
@@ -835,106 +605,6 @@ namespace D2DUI{
 				}
 			}
 		}
-	}
-	void GridLayout::setBackground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=R/255.0f;
-		fRGBA[1]=G/255.0f;
-		fRGBA[2]=B/255.0f;
-		fRGBA[3]=A/255.0f;
-	}
-	void GridLayout::setBackground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	void GridLayout::setBorder(Border b){
-		leftBorder=b;
-		topBorder=b;
-		rightBorder=b;
-		bottomBorder=b;
-	}
-	void GridLayout::setLeftBorder(Border b){
-		leftBorder=b;
-	}
-	void GridLayout::setTopBorder(Border b){
-		topBorder=b;
-	}
-	void GridLayout::setRightBorder(Border b){
-		rightBorder=b;
-	}
-	void GridLayout::setBottomBorder(Border b){
-		bottomBorder=b;
-	}
-	Border GridLayout::getLeftBorder(){
-		return leftBorder;
-	}
-	Border GridLayout::getTopBorder(){
-		return topBorder;
-	}
-	Border GridLayout::getRightBorder(){
-		return rightBorder;
-	}
-	Border GridLayout::getBottomBorder(){
-		return bottomBorder;
-	}
-	void GridLayout::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT GridLayout::getBounds(){
-		return bounds;
-	}
-	void GridLayout::setRadius(float x,float y){
-		radius_x=x;
-		radius_y=y;
-		if(radius_y==-1){
-			radius_y=radius_x;
-		}
-	}
-	float GridLayout::getXRadius(){
-		return radius_x;
-	}
-	float GridLayout::getYRadius(){
-		return radius_y;
-	}
-	void GridLayout::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
-	int GridLayout::getLeftPadding(){
-		return leftPadding;
-	}
-	int GridLayout::getTopPadding(){
-		return topPadding;
-	}
-	int GridLayout::getRightPadding(){
-		return rightPadding;
-	}
-	int GridLayout::getBottomPadding(){
-		return bottomPadding;
-	}
-	void GridLayout::setGravity(LayoutBase::HGravity h,LayoutBase::VGravity v){
-		hg=h;
-		vg=v;
 	}
 	void GridLayout::reorderComponents(){
 		int components=windows.size()+layouts.size();
@@ -1227,103 +897,6 @@ namespace D2DUI{
 			}
 		}
 	}
-	void TableLayout::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT TableLayout::getBounds(){
-		return bounds;
-	}
-	void TableLayout::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
-	int TableLayout::getLeftPadding(){
-		return leftPadding;
-	}
-	int TableLayout::getTopPadding(){
-		return topPadding;
-	}
-	int TableLayout::getRightPadding(){
-		return rightPadding;
-	}
-	int TableLayout::getBottomPadding(){
-		return bottomPadding;
-	}
-	void TableLayout::setRadius(float x,float y){
-		radius_x=x;
-		radius_y=y;
-	}
-	float TableLayout::getXRadius(){
-		return radius_x;
-	}
-	float TableLayout::getYRadius(){
-		return radius_y;
-	}
-	void TableLayout::setBackground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=R/255.0f;
-		fRGBA[1]=G/255.0f;
-		fRGBA[2]=B/255.0f;
-		fRGBA[3]=A/255.0f;
-	}
-	void TableLayout::setBackground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	void TableLayout::setGravity(HGravity hg,VGravity vg){
-		this->hg=hg;
-		this->vg=vg;
-	}
-	void TableLayout::setBorder(Border b){
-		leftBorder=b;
-		topBorder=b;
-		rightBorder=b;
-		bottomBorder=b;
-	}
-	void TableLayout::setLeftBorder(Border b){
-		leftBorder=b;
-	}
-	Border TableLayout::getLeftBorder(){
-		return leftBorder;
-	}
-	void TableLayout::setTopBorder(Border b){
-		topBorder=b;
-	}
-	Border TableLayout::getTopBorder(){
-		return topBorder;
-	}
-	void TableLayout::setRightBorder(Border b){
-		rightBorder=b;
-	}
-	Border TableLayout::getRightBorder(){
-		return rightBorder;
-	}
-	void TableLayout::setBottomBorder(Border b){
-		bottomBorder=b;
-	}
-	Border TableLayout::getBottomBorder(){
-		return bottomBorder;
-	}
 	void TableLayout::reorderComponents(){
 		int components=windows.size()+layouts.size();
 		int left=getBounds().left+getLeftPadding();
@@ -1439,49 +1012,6 @@ namespace D2DUI{
 		setGravity(HGravity::CENTERH,VGravity::CENTERV);
 		setBounds(0,0,0,0);
 	}
-	void TableRow::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT TableRow::getBounds(){
-		return bounds;
-	}
-	void TableRow::setBorder(Border b){
-		leftBorder=b;
-		topBorder=b;
-		rightBorder=b;
-		bottomBorder=b;
-	}
-	void TableRow::setLeftBorder(Border b){
-		leftBorder=b;
-	}
-	void TableRow::setTopBorder(Border b){
-		topBorder=b;
-	}
-	void TableRow::setRightBorder(Border b){
-		rightBorder=b;
-	}
-	void TableRow::setBottomBorder(Border b){
-		bottomBorder=b;
-	}
-	Border TableRow::getLeftBorder(){
-		return leftBorder;
-	}
-	Border TableRow::getTopBorder(){
-		return topBorder;
-	}
-	Border TableRow::getRightBorder(){
-		return rightBorder;
-	}
-	Border TableRow::getBottomBorder(){
-		return bottomBorder;
-	}
-	void TableRow::setGravity(LayoutBase::HGravity h,LayoutBase::VGravity v){
-		hg=h;
-		vg=v;
-	}
 	void TableRow::add(WindowBase& window){
 		windows.push_back(window);
 		std::wstring wid(random_string(6));
@@ -1517,7 +1047,7 @@ namespace D2DUI{
 				}
 			}
 		}
-		if(inwindows==false){
+		if(inwindows){
 			if(layouts.size()!=0){
 				for(int i=0;i<layouts.size();i++){
 					if(wcscmp(layouts.at(i).get().getId(),id)==0){
@@ -1527,50 +1057,6 @@ namespace D2DUI{
 				}
 			}
 		}
-	}
-	void TableRow::setBackground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(R/255.0f);
-		fRGBA[1]=(G/255.0f);
-		fRGBA[2]=(B/255.0f);
-		fRGBA[3]=(A/255.0f);
-	}
-	void TableRow::setBackground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	void TableRow::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
-	int TableRow::getLeftPadding(){
-		return leftPadding;
-	}
-	int TableRow::getTopPadding(){
-		return topPadding;
-	}
-	int TableRow::getRightPadding(){
-		return rightPadding;
-	}
-	int TableRow::getBottomPadding(){
-		return bottomPadding;
 	}
 	void TableRow::reorderComponents(){
 		int components=windows.size()+layouts.size();
@@ -1821,7 +1307,7 @@ namespace D2DUI{
 		}
 		for(int i=0;i<rg.size();i++){
 			rg.at(i).get().setRBIndex(i);
-			if(rg.at(i).get().isSelected()==true){
+			if(rg.at(i).get().isSelected()){
 				setSelectedIndex(rg.at(i).get().getRBIndex());
 			}
 		}//Reorder indexes
@@ -1849,7 +1335,7 @@ namespace D2DUI{
 		}
 		for(int i=0;i<tg.size();i++){
 			tg.at(i).get().setTBIndex(i);
-			if(tg.at(i).get().isSelected()==true){
+			if(tg.at(i).get().isSelected()){
 				setSelectedIndex(tg.at(i).get().getTBIndex());
 			}
 		}//Reorder indexes
@@ -1865,144 +1351,12 @@ namespace D2DUI{
 	int ToggleGroup::getSelectedIndex(){
 		return selectedindex;
 	}
-	TextLabel::TextLabel(wchar_t* text): WindowBase(text){
+	TextLabel::TextLabel(wchar_t* text){
 		states.push_back(NONE);
 		TextLabel::text=text;
 		setForeground(0.f,0.f,0.f);
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
-	}
-	void TextLabel::setTextSize(float px){
-		textsize=px;
-	}
-	float TextLabel::getTextSize(){
-		return textsize;
-	}
-	void TextLabel::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(float)R/255.0f;
-		fRGBA[1]=(float)G/255.0f;
-		fRGBA[2]=(float)B/255.0f;
-		fRGBA[3]=(float)A/255.0f;
-	}
-	void TextLabel::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	float* TextLabel::getForegroundFloat(){
-		return fRGBA;
-	}
-	int* TextLabel::getForegroundInt(){
-		return iRGBA;
-	}
-	void TextLabel::setBounds(int left,int top,int right,int bottom){
-		TextLabel::bounds.left=left;
-		TextLabel::bounds.top=top;
-		TextLabel::bounds.right=right;
-		TextLabel::bounds.bottom=bottom;
-	}
-	RECT TextLabel::getBounds(){
-		RECT r;
-		r.left=bounds.left;
-		r.top=bounds.top;
-		r.right=bounds.right;
-		r.bottom=bounds.bottom;
-		return r;
-	}
-	void TextLabel::setText(wchar_t* text){
-		TextLabel::text=text;
-	}
-	wchar_t* TextLabel::getText(){
-		return text;
-	}
-	void TextLabel::setHorizontalTextAlignment(const int H){
-		hAlignment=const_cast<int&>(H);
-	}
-	int TextLabel::getHorizontalTextAlignment(){
-		return hAlignment;
-	}
-	int TextLabel::getVerticalTextAlignment(){
-		return vAlignment;
-	}
-	void TextLabel::setVerticalTextAlignment(const int V){
-		vAlignment=const_cast<int&>(V);
-	}
-	void TextLabel::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
-	void TextLabel::setFont(wchar_t* font){
-		TextLabel::font=font;
-	}
-	wchar_t* TextLabel::getFont(){
-		return font;
-	}
-	int TextLabel::getLeftPadding(){
-		return leftPadding;
-	}
-	int TextLabel::getTopPadding(){
-		return topPadding;
-	}
-	int TextLabel::getRightPadding(){
-		return rightPadding;
-	}
-	int TextLabel::getBottomPadding(){
-		return bottomPadding;
-	}
-	void TextLabel::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(TextLabel::states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool TextLabel::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
 	}
 	void TextLabel::draw(std::shared_ptr<D2DHandle>& d2d){
 		switch(getHorizontalTextAlignment()){
@@ -2038,7 +1392,7 @@ namespace D2DUI{
 		d2d->textlayout->SetLocaleName(locale,rng);
 		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 	}
-	TextBox::TextBox(wchar_t* text): WindowBase(text){
+	TextBox::TextBox(wchar_t* text){
 		states.push_back(NONE);
 		TextBox::text=text;
 		setHorizontalTextAlignment(HorizontalConstants::LEFT);
@@ -2047,243 +1401,9 @@ namespace D2DUI{
 		setTextSize(12.0f);
 		setFont(L"MS Gothic");
 	}
-	void TextBox::setTextSize(float px){
-		textsize=px;
-	}
-	float TextBox::getTextSize(){
-		return textsize;
-	}
-	void TextBox::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(float)R/255.0f;
-		fRGBA[1]=(float)G/255.0f;
-		fRGBA[2]=(float)B/255.0f;
-		fRGBA[3]=(float)A/255.0f;
-	}
-	void TextBox::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	float* TextBox::getForegroundFloat(){
-		return fRGBA;
-	}
-	int* TextBox::getForegroundInt(){
-		return iRGBA;
-	}
-	void TextBox::setBounds(int left,int top,int right,int bottom){
-		TextBox::bounds.left=left;
-		TextBox::bounds.top=top;
-		TextBox::bounds.right=right;
-		TextBox::bounds.bottom=bottom;
-	}
-	RECT TextBox::getBounds(){
-		RECT r;
-		r.left=bounds.left;
-		r.top=bounds.top;
-		r.right=bounds.right;
-		r.bottom=bounds.bottom;
-		return r;
-	}
-	void TextBox::setText(wchar_t* text){
-		TextBox::text=text;
-	}
-	wchar_t* TextBox::getText(){
-		return text;
-	}
-	void TextBox::setHorizontalTextAlignment(const int H){
-		hAlignment=const_cast<int&>(H);
-	}
-	int TextBox::getHorizontalTextAlignment(){
-		return hAlignment;
-	}
-	int TextBox::getVerticalTextAlignment(){
-		return vAlignment;
-	}
-	void TextBox::setVerticalTextAlignment(const int V){
-		vAlignment=const_cast<int&>(V);
-	}
-	void TextBox::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
-	void TextBox::setFont(wchar_t* font){
-		TextBox::font=font;
-	}
-	wchar_t* TextBox::getFont(){
-		return font;
-	}
-	int TextBox::getLeftPadding(){
-		return leftPadding;
-	}
-	int TextBox::getTopPadding(){
-		return topPadding;
-	}
-	int TextBox::getRightPadding(){
-		return rightPadding;
-	}
-	int TextBox::getBottomPadding(){
-		return bottomPadding;
-	}
-	void TextBox::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool TextBox::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	void TextBox::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool TextBox::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
-	void TextBox::setEditable(bool editable){
-		bool foundinstates=false;
-		if(editable==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==EDITABLE){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(EDITABLE);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==EDITABLE){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool TextBox::isEditable(){
-		bool editable=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==EDITABLE){
-				editable=true;
-				break;
-			}
-		}
-		return editable;
-	}
-	void TextBox::setFocus(bool focus){
-		bool foundinstates=false;
-		if(focus==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==FOCUSED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(FOCUSED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==FOCUSED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool TextBox::hasFocus(){
-		bool focus=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==FOCUSED){
-					focus=true;
-					break;
-				}
-			}
-		}
-		return focus;
-	}
 	void TextBox::draw(std::shared_ptr<D2DHandle>& d2d){
-		if(isEnabled()==true){
-			if(hasFocus()==true){
+		if(isEnabled()){
+			if(hasFocus()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\textbox_focus.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -2418,256 +1538,22 @@ namespace D2DUI{
 			d2d->textlayout.CopyTo(textlayout.ReleaseAndGetAddressOf());
 		}
 	}
-	Button::Button(wchar_t* text): WindowBase(text){
+	Button::Button(wchar_t* text){
 		Button::text=text;
 		setForeground(0.f,0.f,0.f);
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
 	}
-	Button::Button(wchar_t* text,wchar_t* icon): WindowBase(text){
+	Button::Button(wchar_t* text,wchar_t* icon){
 		Button::text=text;
 		Button::icon=icon;
 		setForeground(0.f,0.f,0.f);
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
-	}
-	void Button::setTextSize(float px){
-		textsize=px;
-	}
-	float Button::getTextSize(){
-		return textsize;
-	}
-	void Button::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(float)R/255.0f;
-		fRGBA[1]=(float)G/255.0f;
-		fRGBA[2]=(float)B/255.0f;
-		fRGBA[3]=(float)A/255.0f;
-	}
-	void Button::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	float* Button::getForegroundFloat(){
-		return fRGBA;
-	}
-	int* Button::getForegroundInt(){
-		return iRGBA;
-	}
-	void Button::setFont(wchar_t* font){
-		Button::font=font;
-	}
-	wchar_t* Button::getFont(){
-		return font;
-	}
-	void Button::setIcon(wchar_t* icon){
-		Button::icon=icon;
-	}
-	wchar_t* Button::getIcon(){
-		return icon;
-	}
-	void Button::setBounds(int left,int top,int right,int bottom){
-		Button::bounds.left=left;
-		Button::bounds.top=top;
-		Button::bounds.right=right;
-		Button::bounds.bottom=bottom;
-	}
-	RECT Button::getBounds(){
-		RECT r;
-		r.left=bounds.left;
-		r.top=bounds.top;
-		r.right=bounds.right;
-		r.bottom=bounds.bottom;
-		return r;
-	}
-	void Button::setText(wchar_t* text){
-		Button::text=text;
-	}
-	wchar_t* Button::getText(){
-		return text;
-	}
-	void Button::setHorizontalTextAlignment(const int H){
-		hAlignment=const_cast<int&>(H);
-	}
-	int Button::getHorizontalTextAlignment(){
-		return hAlignment;
-	}
-	void Button::setVerticalTextAlignment(const int V){
-		vAlignment=const_cast<int&>(V);
-	}
-	int Button::getVerticalTextAlignment(){
-		return vAlignment;
-	}
-	int Button::getLeftPadding(){
-		return leftPadding;
-	}
-	int Button::getTopPadding(){
-		return topPadding;
-	}
-	int Button::getRightPadding(){
-		return rightPadding;
-	}
-	int Button::getBottomPadding(){
-		return bottomPadding;
-	}
-	void Button::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	void Button::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool Button::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	bool Button::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
-	void Button::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==HOVERED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(HOVERED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==HOVERED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool Button::isHovered(){
-		bool hovered=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==HOVERED){
-				hovered=true;
-				break;
-			}
-		}	
-		return hovered;
-	}
-	void Button::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(PRESSED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool Button::isPressed(){
-		bool pressed=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==PRESSED){
-				pressed=true;
-				break;
-			}		
-		}
-		return pressed;
-	}
-	void Button::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
 	}
 	void Button::draw(std::shared_ptr<D2DHandle>& d2d){
-		if(isEnabled()==true){
-			if(isPressed()==true){
+		if(isEnabled()){
+			if(isPressed()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -2709,7 +1595,7 @@ namespace D2DUI{
 				d2d->textlayout->SetLocaleName(locale,rng);
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Pressed button
-			else if(isHovered()==true){
+			else if(isHovered()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\button_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -2842,8 +1728,8 @@ namespace D2DUI{
 		ArrowButton::direction=dir;
 	}
 	void ArrowButton::draw(std::shared_ptr<D2DHandle>& d2d){
-		if(isEnabled()==true){
-			if(isPressed()==true){
+		if(isEnabled()){
+			if(isPressed()){
 				if(parentContainer==SPINNER){
 					if(direction==UP){
 						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_pressed_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());	
@@ -2868,7 +1754,7 @@ namespace D2DUI{
 				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
 			}//Pressed enabled ArrowButton
-			else if(isHovered()==true){
+			else if(isHovered()){
 				if(parentContainer==SPINNER){
 					if(direction==UP){
 						d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\spinner_arrowbutton_hovered_up.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
@@ -2962,319 +1848,57 @@ namespace D2DUI{
 		setForeground(0,0,0);
 	}
 	void Spinner::setTextSize(float px){
-		textsize=px;
+		WindowBase::setTextSize(px);
 		valuemodifier->setTextSize(px);
 	}
-	float Spinner::getTextSize(){
-		return textsize;
-	}
 	void Spinner::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(float)R/255.0f;
-		fRGBA[1]=(float)G/255.0f;
-		fRGBA[2]=(float)B/255.0f;
-		fRGBA[3]=(float)A/255.0f;
+		WindowBase::setForeground(R,G,B,A);
 		valuemodifier->setForeground(R,G,B,A);
 	}
 	void Spinner::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
+		WindowBase::setForeground(R,G,B,A);
 		valuemodifier->setForeground(R,G,B,A);
 	}
-	float* Spinner::getForegroundFloat(){
-		return fRGBA;
-	}
-	int* Spinner::getForegroundInt(){
-		return iRGBA;
-	}
 	void Spinner::setFont(wchar_t* font){
-		this->font=font;
+		WindowBase::setFont(font);
 		valuemodifier->setFont(font);
 	}
-	wchar_t* Spinner::getFont(){
-		return font;
-	}
 	void Spinner::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
+		WindowBase::setPadding(left,top,right,bottom);
 		valuemodifier->setPadding(left,top,right,bottom);
 	}
-	int Spinner::getLeftPadding(){
-		return leftPadding;
-	}
-	int Spinner::getTopPadding(){
-		return topPadding;
-	}
-	int Spinner::getRightPadding(){
-		return rightPadding;
-	}
-	int Spinner::getBottomPadding(){
-		return bottomPadding;
-	}
 	void Spinner::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==ENABLED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
+		WindowBase::setEnabled(enabled);
 		valuemodifier->setEnabled(enabled);
 		up->setEnabled(enabled);
 		down->setEnabled(enabled);
 	}
 	void Spinner::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(VISIBLE);
-				valuemodifier->states.push_back(VISIBLE);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
+		WindowBase::setVisible(visible);
 		valuemodifier->setVisible(visible);
 		up->setVisible(visible);
 		down->setVisible(visible);
 	}
-	bool Spinner::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	bool Spinner::isEnabled(){
-		bool enabled=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					enabled=true;
-					break;
-				}
-			}
-		}
-		return enabled;
-	}
-	void Spinner::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==HOVERED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(HOVERED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==HOVERED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool Spinner::isHovered(){
-		bool hovered=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==HOVERED){
-					hovered=true;
-					break;
-				}
-			}
-		}
-		return hovered;
-	}
-	void Spinner::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==PRESSED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(PRESSED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==PRESSED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool Spinner::isPressed(){
-		bool pressed=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					pressed=true;
-					break;
-				}		
-			}
-		}
-		return pressed;
-	}
 	void Spinner::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
+		WindowBase::setBounds(left,top,right,bottom);
 		valuemodifier->setBounds(bounds.left,bounds.top,bounds.right-30,bounds.bottom);
 		up->setBounds(bounds.right-30,bounds.top,bounds.right,bounds.top+((bounds.bottom-bounds.top)/2));
 		down->setBounds(bounds.right-30,bounds.top+((bounds.bottom-bounds.top)/2),bounds.right,bounds.bottom);
 	}
-	RECT Spinner::getBounds(){
-		return bounds;
-	}
 	void Spinner::setHorizontalTextAlignment(const int H){
-		hAlignment=const_cast<int&>(H);
+		WindowBase::setHorizontalTextAlignment(H);
 		valuemodifier->setHorizontalTextAlignment(H);
 	}
-	int Spinner::getHorizontalTextAlignment(){
-		return hAlignment;
-	}
 	void Spinner::setVerticalTextAlignment(const int V){
-		vAlignment=const_cast<int&>(V);
+		WindowBase::setVerticalTextAlignment(V);
 		valuemodifier->setVerticalTextAlignment(V);
 	}
-	int Spinner::getVerticalTextAlignment(){
-		return vAlignment;
-	}
 	void Spinner::setEditable(bool editable){
-		bool foundinstates=false;
-		if(editable==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==EDITABLE){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(EDITABLE);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==EDITABLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
+		WindowBase::setEditable(editable);
 		valuemodifier->setEditable(editable);
 	}
-	bool Spinner::isEditable(){
-		bool editable=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==EDITABLE){
-					editable=true;
-					break;
-				}
-			}
-		}
-		return editable;
-	}
 	void Spinner::setFocus(bool focus){
-		bool foundinstates=false;
-		if(focus==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==FOCUSED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(FOCUSED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==FOCUSED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
+		WindowBase::setFocus(focus);
 		valuemodifier->setFocus(focus);
 	}
 	void Spinner::setValue(int value){
@@ -3299,26 +1923,14 @@ namespace D2DUI{
 	int Spinner::getMinimumValue(){
 		return minValue;
 	}
-	bool Spinner::hasFocus(){
-		bool focus=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==FOCUSED){
-					focus=true;
-					break;
-				}
-			}
-		}
-		return focus;
-	}
 	void Spinner::setLocale(wchar_t* locale){
-		this->locale=locale;
+		WindowBase::setLocale(locale);
 		up->setLocale(locale);
 		down->setLocale(locale);
 		valuemodifier->setLocale(locale);
 	}
 	void Spinner::setOpacity(float opacity){
-		this->opacity=opacity;
+		WindowBase::setOpacity(opacity);
 		up->setOpacity(opacity);
 		down->setOpacity(opacity);
 		valuemodifier->setOpacity(opacity);
@@ -3346,7 +1958,7 @@ namespace D2DUI{
 		up->draw(d2d);
 		down->draw(d2d);
 	}
-	CheckBox::CheckBox(bool checked,wchar_t* text): WindowBase(checked,text){
+	CheckBox::CheckBox(bool checked,wchar_t* text){
 		states.push_back(NONE);
 		setChecked(checked);
 		CheckBox::text=text;
@@ -3354,288 +1966,11 @@ namespace D2DUI{
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
 	}
-	void CheckBox::setTextSize(float px){
-		textsize=px;
-	}
-	float CheckBox::getTextSize(){
-		return textsize;
-	}
-	void CheckBox::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(float)R/255.0f;
-		fRGBA[1]=(float)G/255.0f;
-		fRGBA[2]=(float)B/255.0f;
-		fRGBA[3]=(float)A/255.0f;
-	}
-	void CheckBox::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	float* CheckBox::getForegroundFloat(){
-		return fRGBA;
-	}
-	int* CheckBox::getForegroundInt(){
-		return iRGBA;
-	}
-	void CheckBox::setFont(wchar_t* font){
-		this->font=font;
-	}
-	wchar_t* CheckBox::getFont(){
-		return font;
-	}
-	void CheckBox::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
-	int CheckBox::getLeftPadding(){
-		return leftPadding;
-	}
-	int CheckBox::getTopPadding(){
-		return topPadding;
-	}
-	int CheckBox::getRightPadding(){
-		return rightPadding;
-	}
-	int CheckBox::getBottomPadding(){
-		return bottomPadding;
-	}
-	void CheckBox::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==ENABLED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	void CheckBox::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(VISIBLE);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool CheckBox::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	bool CheckBox::isEnabled(){
-		bool enabled=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					enabled=true;
-					break;
-				}
-			}
-		}
-		return enabled;
-	}
-	void CheckBox::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==HOVERED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(HOVERED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==HOVERED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool CheckBox::isHovered(){
-		bool hovered=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==HOVERED){
-					hovered=true;
-					break;
-				}
-			}
-		}
-		return hovered;
-	}
-	void CheckBox::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==PRESSED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(PRESSED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==PRESSED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool CheckBox::isPressed(){
-		bool pressed=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					pressed=true;
-					break;
-				}		
-			}
-		}
-		return pressed;
-	}
-	void CheckBox::setChecked(bool checked){
-		bool foundinstates=false;
-		if(checked==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==CHECKED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(CHECKED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==CHECKED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool CheckBox::isChecked(){
-		bool checked=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==CHECKED){
-					checked=true;
-					break;
-				}
-			}
-		}
-		return checked;
-	}
-	void CheckBox::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT CheckBox::getBounds(){
-		return bounds;
-	}
-	void CheckBox::setText(wchar_t* text){
-		CheckBox::text=text;
-	}
-	wchar_t* CheckBox::getText(){
-		return CheckBox::text;
-	}
-	void CheckBox::setHorizontalTextAlignment(const int H){
-		hAlignment=const_cast<int&>(H);
-	}
-	int CheckBox::getHorizontalTextAlignment(){
-		return hAlignment;
-	}
-	void CheckBox::setVerticalTextAlignment(const int V){
-		vAlignment=const_cast<int&>(V);
-	}
-	int CheckBox::getVerticalTextAlignment(){
-		return vAlignment;
-	}
 	void CheckBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		HRESULT hr=S_OK;
-		if(isEnabled()==true){
-			if(isChecked()==true){
-				if(isPressed()==true){
+		if(isEnabled()){
+			if(isChecked()){
+				if(isPressed()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -3678,7 +2013,7 @@ namespace D2DUI{
 					d2d->textlayout->SetLocaleName(locale,rng);
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed and checked checkbox
-				else if(isHovered()==true){
+				else if(isHovered()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -3764,7 +2099,7 @@ namespace D2DUI{
 				}//Normal checked checkbox
 			}//Checked checkbox
 			else{
-				if(isPressed()==true){
+				if(isPressed()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -3806,7 +2141,7 @@ namespace D2DUI{
 					d2d->textlayout->SetLocaleName(locale,rng);
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed checkbox
-				else if(isHovered()==true){
+				else if(isHovered()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -3893,7 +2228,7 @@ namespace D2DUI{
 			}//Unchecked checkbox
 		}//Enabled checkbox
 		else{
-			if(isChecked()==true){
+			if(isChecked()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\checkbox_disabled_checked.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -3987,32 +2322,6 @@ namespace D2DUI{
 		DialogueBox::decorationlevel=decorationlevel;
 		decorationopacity=opacity;
 	}
-	void DialogueBox::setBackground(int R,int G,int B,int A){
-		ibgRGBA[0]=R;
-		ibgRGBA[1]=G;
-		ibgRGBA[2]=B;
-		ibgRGBA[3]=A;
-		fbgRGBA[0]=(float)R/255.0f;
-		fbgRGBA[1]=(float)G/255.0f;
-		fbgRGBA[2]=(float)B/255.0f;
-		fbgRGBA[3]=(float)A/255.0f;
-	}
-	void DialogueBox::setBackground(float R,float G,float B,float A){
-		fbgRGBA[0]=R;
-		fbgRGBA[1]=G;
-		fbgRGBA[2]=B;
-		fbgRGBA[3]=A;
-		ibgRGBA[0]=(int)(R*255.0f);
-		ibgRGBA[1]=(int)(G*255.0f);
-		ibgRGBA[2]=(int)(B*255.0f);
-		ibgRGBA[3]=(int)(A*255.0f);
-	}
-	int* DialogueBox::getBackgroundInt(){
-		return ibgRGBA;
-	}
-	float* DialogueBox::getBackgroundFloat(){
-		return fbgRGBA;
-	}
 	void DialogueBox::setDecorationBounds(int left,int top,int right,int bottom){
 		decorationbounds.left=left;
 		decorationbounds.top=top;
@@ -4050,7 +2359,7 @@ namespace D2DUI{
 		if(&decorationfile!=NULL&&getDecorationLevel()==DECORATIONBELOWDIALOGUEBOX){
 			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
 		}
-		d2d->target->CreateSolidColorBrush(ColorF(fbgRGBA[0],fbgRGBA[1],fbgRGBA[2],fbgRGBA[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
+		d2d->target->CreateSolidColorBrush(ColorF(fRGBA_bg[0],fRGBA_bg[1],fRGBA_bg[2],fRGBA_bg[3]*opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
 		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),d2d->solidbrush.Get());
 		if(&decorationfile!=NULL&&getDecorationLevel()==DECORATIONOVERDIALOGUEBOX){
 			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
@@ -4090,7 +2399,7 @@ namespace D2DUI{
 		d2d->solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
 		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 	}
-	RadioButton::RadioButton(RadioGroup& parent,bool selected,wchar_t* text): WindowBase(&parent,selected,text), parent(parent){
+	RadioButton::RadioButton(RadioGroup& parent,bool selected,wchar_t* text): rgParent(parent){
 		setParent(parent);
 		setSelected(selected);
 		RadioButton::text=text;
@@ -4098,275 +2407,14 @@ namespace D2DUI{
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
 	}
-	void RadioButton::setTextSize(float px){
-		textsize=px;
-	}
-	float RadioButton::getTextSize(){
-		return textsize;
-	}
-	void RadioButton::setForeground(int R,int G,int B,int A){
-		iRGBA[0]=R;
-		iRGBA[1]=G;
-		iRGBA[2]=B;
-		iRGBA[3]=A;
-		fRGBA[0]=(float)R/255.0f;
-		fRGBA[1]=(float)G/255.0f;
-		fRGBA[2]=(float)B/255.0f;
-		fRGBA[3]=(float)A/255.0f;
-	}
-	void RadioButton::setForeground(float R,float G,float B,float A){
-		fRGBA[0]=R;
-		fRGBA[1]=G;
-		fRGBA[2]=B;
-		fRGBA[3]=A;
-		iRGBA[0]=(int)(R*255.0f);
-		iRGBA[1]=(int)(G*255.0f);
-		iRGBA[2]=(int)(B*255.0f);
-		iRGBA[3]=(int)(A*255.0f);
-	}
-	float* RadioButton::getForegroundFloat(){
-		return fRGBA;
-	}
-	int* RadioButton::getForegroundInt(){
-		return iRGBA;
-	}
-	void RadioButton::setFont(wchar_t* font){
-		RadioButton::font=font;
-	}
-	wchar_t* RadioButton::getFont(){
-		return font;
-	}
-	void RadioButton::setPadding(int left,int top,int right,int bottom){
-		leftPadding=left;
-		topPadding=top;
-		rightPadding=right;
-		bottomPadding=bottom;
-		if(rightPadding==-1){
-			rightPadding=leftPadding;
-		}
-		if(bottomPadding==-1){
-			bottomPadding=topPadding;
-		}
-	}
-	int RadioButton::getLeftPadding(){
-		return leftPadding;
-	}
-	int RadioButton::getTopPadding(){
-		return topPadding;
-	}
-	int RadioButton::getRightPadding(){
-		return rightPadding;
-	}
-	int RadioButton::getBottomPadding(){
-		return bottomPadding;
-	}
-	void RadioButton::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	void RadioButton::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool RadioButton::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	bool RadioButton::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
 	void RadioButton::setRBIndex(int index){
 		rbIndex=index;
 	}
 	int RadioButton::getRBIndex(){
 		return rbIndex;
 	}
-	void RadioButton::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==HOVERED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(HOVERED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==HOVERED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool RadioButton::isHovered(){
-		bool hovered=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==HOVERED){
-				hovered=true;
-				break;
-			}
-		}	
-		return hovered;
-	}
-	void RadioButton::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(PRESSED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool RadioButton::isPressed(){
-		bool pressed=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==PRESSED){
-				pressed=true;
-				break;
-			}		
-		}
-		return pressed;
-	}
-	void RadioButton::setSelected(bool selected){
-		bool foundinstates=false;
-		if(selected==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==SELECTED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(SELECTED);
-				getParent().setSelectedIndex(getRBIndex());
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==SELECTED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool RadioButton::isSelected(){
-		bool selected=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==SELECTED){
-				selected=true;
-				break;
-			}
-		}
-		return selected;
-	}
-	void RadioButton::setBounds(int left,int top,int right,int bottom){
-		RadioButton::bounds.left=left;
-		RadioButton::bounds.top=top;
-		RadioButton::bounds.right=right;
-		RadioButton::bounds.bottom=bottom;
-	}
-	RECT RadioButton::getBounds(){
-		RECT r;
-		r.left=RadioButton::bounds.left;
-		r.top=RadioButton::bounds.top;
-		r.right=RadioButton::bounds.right;
-		r.bottom=RadioButton::bounds.bottom;
-		return r;
-	}
-	void RadioButton::setText(wchar_t* text){
-		RadioButton::text=text;
-	}
-	wchar_t* RadioButton::getText(){
-		return RadioButton::text;
-	}
-	void RadioButton::setHorizontalTextAlignment(const int H){
-		RadioButton::hAlignment=const_cast<int&>(H);
-	}
-	int RadioButton::getHorizontalTextAlignment(){
-		return RadioButton::hAlignment;
-	}
-	void RadioButton::setVerticalTextAlignment(const int V){
-		RadioButton::vAlignment=const_cast<int&>(V);
-	}
-	int RadioButton::getVerticalTextAlignment(){
-		return RadioButton::vAlignment;
-	}
 	void RadioButton::setParent(RadioGroup& rg){
-		parent=rg;
+		rgParent=rg;
 		parent.add(*this);
 	}
 	void RadioButton::setTag(wchar_t* tag){
@@ -4376,17 +2424,17 @@ namespace D2DUI{
 		return tag;
 	}
 	RadioGroup& RadioButton::getParent(){
-		return parent;
+		return rgParent;
 	}
 	void RadioButton::removeParent(RadioGroup& rg){
-		parent.remove(this->getIndex());
+		rgParent.remove(this->getIndex());
 		setIndex(-1);
 	}
 	void RadioButton::draw(std::shared_ptr<D2DHandle>& d2d){
 		std::wstring wtext(getText());
-		if(isEnabled()==true){
-			if(isSelected()==true){
-				if(isPressed()==true){
+		if(isEnabled()){
+			if(isSelected()){
+				if(isPressed()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -4427,7 +2475,7 @@ namespace D2DUI{
 					d2d->textlayout->SetLocaleName(locale,rng);
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed and selected radiobutton
-				else if(isHovered()==true){
+				else if(isHovered()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -4511,7 +2559,7 @@ namespace D2DUI{
 				}//Normal selected radiobutton
 			}//Selected radiobutton
 			else{
-				if(isPressed()==true){
+				if(isPressed()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -4552,7 +2600,7 @@ namespace D2DUI{
 					d2d->textlayout->SetLocaleName(locale,rng);
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed radiobutton
-				else if(isHovered()==true){
+				else if(isHovered()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -4637,7 +2685,7 @@ namespace D2DUI{
 			}//Unselected radiobutton
 		}//Enabled radiobutton
 		else{
-			if(isSelected()==true){
+			if(isSelected()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\radiobutton_disabled_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -4721,7 +2769,7 @@ namespace D2DUI{
 			}//Unselected disabled radiobutton
 		}//Disabled radiobutton
 	}
-	ToggleButton::ToggleButton(ToggleGroup& parent,bool selected,wchar_t* text,wchar_t* icon):WindowBase(),parent(parent){
+	ToggleButton::ToggleButton(ToggleGroup& parent,bool selected,wchar_t* text,wchar_t* icon):WindowBase(),tgParent(parent){
 		setParent(parent);
 		ToggleButton::text=text;
 		ToggleButton::icon=icon;
@@ -4730,293 +2778,26 @@ namespace D2DUI{
 		setSelected(selected);
 		setFont(L"Microsoft Sans Serif");
 	}
-	void ToggleButton::setTextSize(float px){
-		ToggleButton::textsize=px;
-	}
-	float ToggleButton::getTextSize(){
-		return ToggleButton::textsize;
-	}
-	void ToggleButton::setForeground(int R,int G,int B,int A){
-		ToggleButton::iRGBA[0]=R;
-		ToggleButton::iRGBA[1]=G;
-		ToggleButton::iRGBA[2]=B;
-		ToggleButton::iRGBA[3]=A;
-		ToggleButton::fRGBA[0]=(float)R/255.0f;
-		ToggleButton::fRGBA[1]=(float)G/255.0f;
-		ToggleButton::fRGBA[2]=(float)B/255.0f;
-		ToggleButton::fRGBA[3]=(float)A/255.0f;
-	}
-	void ToggleButton::setForeground(float R,float G,float B,float A){
-		ToggleButton::fRGBA[0]=R;
-		ToggleButton::fRGBA[1]=G;
-		ToggleButton::fRGBA[2]=B;
-		ToggleButton::fRGBA[3]=A;
-		ToggleButton::iRGBA[0]=(int)(R*255.0f);
-		ToggleButton::iRGBA[1]=(int)(G*255.0f);
-		ToggleButton::iRGBA[2]=(int)(B*255.0f);
-		ToggleButton::iRGBA[3]=(int)(A*255.0f);
-	}
-	float* ToggleButton::getForegroundFloat(){
-		return ToggleButton::fRGBA;
-	}
-	int* ToggleButton::getForegroundInt(){
-		return ToggleButton::iRGBA;
-	}
-	void ToggleButton::setFont(wchar_t* font){
-		ToggleButton::font=font;
-	}
-	wchar_t* ToggleButton::getFont(){
-		return ToggleButton::font;
-	}
-	void ToggleButton::setIcon(wchar_t* icon){
-		ToggleButton::icon=icon;
-	}
-	wchar_t* ToggleButton::getIcon(){
-		return ToggleButton::icon;
-	}
-	void ToggleButton::setPadding(int left,int top,int right,int bottom){
-		ToggleButton::leftPadding=left;
-		ToggleButton::topPadding=top;
-		ToggleButton::rightPadding=right;
-		ToggleButton::bottomPadding=bottom;
-		if(ToggleButton::rightPadding==-1){
-			ToggleButton::rightPadding=ToggleButton::leftPadding;
-		}
-		if(ToggleButton::bottomPadding==-1){
-			ToggleButton::bottomPadding=ToggleButton::topPadding;
-		}
-	}
-	int ToggleButton::getLeftPadding(){
-		return ToggleButton::leftPadding;
-	}
-	int ToggleButton::getTopPadding(){
-		return ToggleButton::topPadding;
-	}
-	int ToggleButton::getRightPadding(){
-		return ToggleButton::rightPadding;
-	}
-	int ToggleButton::getBottomPadding(){
-		return ToggleButton::bottomPadding;
-	}
-	void ToggleButton::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ToggleButton::states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==ENABLED){
-					ToggleButton::states.erase(ToggleButton::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	void ToggleButton::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(ToggleButton::states.size()!=0){
-				for(int i=0;i<ToggleButton::states.size();i++){
-					if(ToggleButton::states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					ToggleButton::states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(ToggleButton::states.size()!=0){
-				for(int i=0;i<ToggleButton::states.size();i++){
-					if(ToggleButton::states.at(i)==VISIBLE){
-						ToggleButton::states.erase(ToggleButton::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool ToggleButton::isVisible(){
-		bool visible=false;
-		if(ToggleButton::states.size()!=0){
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	bool ToggleButton::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<ToggleButton::states.size();i++){
-			if(ToggleButton::states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
 	void ToggleButton::setTBIndex(int index){
 		tbIndex=index;
 	}
 	int ToggleButton::getTBIndex(){
 		return tbIndex;
 	}
-	void ToggleButton::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==HOVERED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ToggleButton::states.push_back(HOVERED);
-			}
-		}
-		else{
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==HOVERED){
-					ToggleButton::states.erase(ToggleButton::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool ToggleButton::isHovered(){
-		bool hovered=false;
-		for(int i=0;i<ToggleButton::states.size();i++){
-			if(ToggleButton::states.at(i)==HOVERED){
-				hovered=true;
-				break;
-			}
-		}	
-		return hovered;
-	}
-	void ToggleButton::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==PRESSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ToggleButton::states.push_back(PRESSED);
-			}
-		}
-		else{
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==PRESSED){
-					ToggleButton::states.erase(ToggleButton::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool ToggleButton::isPressed(){
-		bool pressed=false;
-		for(int i=0;i<ToggleButton::states.size();i++){
-			if(ToggleButton::states.at(i)==PRESSED){
-				pressed=true;
-				break;
-			}		
-		}
-		return pressed;
-	}
-	void ToggleButton::setSelected(bool selected){
-		bool foundinstates=false;
-		if(selected==true){
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==SELECTED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ToggleButton::states.push_back(SELECTED);
-				parent.setSelectedIndex(getTBIndex());
-			}
-		}
-		else{
-			for(int i=0;i<ToggleButton::states.size();i++){
-				if(ToggleButton::states.at(i)==SELECTED){
-					ToggleButton::states.erase(ToggleButton::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool ToggleButton::isSelected(){
-		bool selected=false;
-		for(int i=0;i<ToggleButton::states.size();i++){
-			if(ToggleButton::states.at(i)==SELECTED){
-				selected=true;
-				break;
-			}
-		}
-		return selected;
-	}
-	void ToggleButton::setBounds(int left,int top,int right,int bottom){
-		ToggleButton::bounds.left=left;
-		ToggleButton::bounds.top=top;
-		ToggleButton::bounds.right=right;
-		ToggleButton::bounds.bottom=bottom;
-	}
-	RECT ToggleButton::getBounds(){
-		RECT r;
-		r.left=ToggleButton::bounds.left;
-		r.top=ToggleButton::bounds.top;
-		r.right=ToggleButton::bounds.right;
-		r.bottom=ToggleButton::bounds.bottom;
-		return r;
-	}
-	void ToggleButton::setText(wchar_t* text){
-		ToggleButton::text=text;
-	}
-	wchar_t* ToggleButton::getText(){
-		return ToggleButton::text;
-	}
-	void ToggleButton::setHorizontalTextAlignment(const int H){
-		ToggleButton::hAlignment=const_cast<int&>(H);
-	}
-	int ToggleButton::getHorizontalTextAlignment(){
-		return ToggleButton::hAlignment;
-	}
-	void ToggleButton::setVerticalTextAlignment(const int V){
-		ToggleButton::vAlignment=const_cast<int&>(V);
-	}
-	int ToggleButton::getVerticalTextAlignment(){
-		return ToggleButton::vAlignment;
-	}
 	void ToggleButton::setParent(ToggleGroup& rg){
-		parent=rg;
+		tgParent=rg;
 		parent.add(*this);
 	}
 	ToggleGroup& ToggleButton::getParent(){
-		return parent;
+		return tgParent;
 	}
 	void ToggleButton::removeParent(ToggleGroup& rg){
-		parent.remove(this->getIndex());
+		tgParent.remove(this->getIndex());
 		setIndex(-1);
 	}
 	void ToggleButton::draw(std::shared_ptr<D2DHandle>& d2d){ //DrawText measuring are just magic numbers made to fit the image proportions. Use your own proportions when using another image.
-		if(isEnabled()==true){
-			if(isSelected()==true){
+		if(isEnabled()){
+			if(isSelected()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_selected.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -5059,7 +2840,7 @@ namespace D2DUI{
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Selected ToggleButton
 			else{
-				if(isPressed()==true){
+				if(isPressed()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -5101,7 +2882,7 @@ namespace D2DUI{
 					d2d->textlayout->SetLocaleName(locale,rng);
 					d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 				}//Pressed ToggleButton
-				else if(isHovered()==true){
+				else if(isHovered()){
 					d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\togglebutton_hovered.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 					d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 					d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -5230,62 +3011,15 @@ namespace D2DUI{
 		}//Disabled ToggleButton
 	}
 
-	ImageView::ImageView(wchar_t* file): WindowBase(1,file){
+	ImageView::ImageView(wchar_t* file){
 		ImageView::path=file;
 		states.push_back(NONE);
-	}
-	void ImageView::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT ImageView::getBounds(){
-		return bounds;
 	}
 	void ImageView::setFile(wchar_t* file){
 		path=file;
 	}
 	wchar_t* ImageView::getFilePath(){
 		return path;
-	}
-	void ImageView::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==true){
-					states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool ImageView::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
 	}
 	void ImageView::draw(std::shared_ptr<D2DHandle>& d2d){
 		d2d->imgfactory->CreateDecoderFromFilename(getFilePath(),NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
@@ -5321,263 +3055,35 @@ namespace D2DUI{
 			currentframe++;
 		}
 		else{
-			if(loop==true)currentframe=0;
+			if(loop)currentframe=0;
 		}
 	}
-	ImageButton::ImageButton(wchar_t* file,wchar_t* text):WindowBase(text){
+	ImageButton::ImageButton(wchar_t* file,wchar_t* text){
 		disabledpath=pressedpath=hoveredpath=enabledpath=file;
-		ImageButton::text=text;
+		this->text=text;
 		setForeground(0,0,0);
 		setTextSize(12.0f);
 		setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 		setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 		setFont(L"Microsoft Sans Serif");
 	}
-	ImageButton::ImageButton(wchar_t* enabledfile,wchar_t* disabledfile,wchar_t* pressedfile,wchar_t* hoveredfile,wchar_t* text):WindowBase(text){
+	ImageButton::ImageButton(wchar_t* enabledfile,wchar_t* disabledfile,wchar_t* pressedfile,wchar_t* hoveredfile,wchar_t* text){
 		enabledpath=enabledfile;
 		disabledpath=disabledfile;
 		pressedpath=pressedfile;
 		hoveredpath=hoveredfile;
 		states.push_back(NONE);
-		ImageButton::text=text;
+		this->text=text;
 		setForeground(0,0,0);
 		setHorizontalTextAlignment(HorizontalConstants::CENTER_HORIZONTAL);
 		setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
 	}
-	void ImageButton::setBounds(int left,int top,int right,int bottom){
-		ImageButton::bounds.left=left;
-		ImageButton::bounds.top=top;
-		ImageButton::bounds.right=right;
-		ImageButton::bounds.bottom=bottom;
-	}
-	RECT ImageButton::getBounds(){
-		RECT r;
-		r.left=ImageButton::bounds.left;
-		r.top=ImageButton::bounds.top;
-		r.right=ImageButton::bounds.right;
-		r.bottom=ImageButton::bounds.bottom;
-		return r;
-	}
-	void ImageButton::setText(wchar_t* text){
-		ImageButton::text=text;
-	}
-	wchar_t* ImageButton::getText(){
-		return ImageButton::text;
-	}
-	void ImageButton::setTextSize(float px){
-		ImageButton::textsize=px;
-	}
-	float ImageButton::getTextSize(){
-		return ImageButton::textsize;
-	}
-	void ImageButton::setForeground(int R,int G,int B,int A){
-		ImageButton::iRGBA[0]=R;
-		ImageButton::iRGBA[1]=G;
-		ImageButton::iRGBA[2]=B;
-		ImageButton::iRGBA[3]=A;
-		ImageButton::fRGBA[0]=(float)R/255.0f;
-		ImageButton::fRGBA[1]=(float)G/255.0f;
-		ImageButton::fRGBA[2]=(float)B/255.0f;
-		ImageButton::fRGBA[3]=(float)A/255.0f;
-	}
-	void ImageButton::setForeground(float R,float G,float B,float A){
-		ImageButton::fRGBA[0]=R;
-		ImageButton::fRGBA[1]=G;
-		ImageButton::fRGBA[2]=B;
-		ImageButton::fRGBA[3]=A;
-		ImageButton::iRGBA[0]=(int)(R*255.0f);
-		ImageButton::iRGBA[1]=(int)(G*255.0f);
-		ImageButton::iRGBA[2]=(int)(B*255.0f);
-		ImageButton::iRGBA[3]=(int)(A*255.0f);
-	}
-	float* ImageButton::getForegroundFloat(){
-		return ImageButton::fRGBA;
-	}
-	int* ImageButton::getForegroundInt(){
-		return ImageButton::iRGBA;
-	}
-	void ImageButton::setFont(wchar_t* font){
-		ImageButton::font=font;
-	}
-	wchar_t* ImageButton::getFont(){
-		return ImageButton::font;
-	}
-	void ImageButton::setHorizontalTextAlignment(const int H){
-		ImageButton::hAlignment=const_cast<int&>(H);
-	}
-	int ImageButton::getHorizontalTextAlignment(){
-		return ImageButton::hAlignment;
-	}
-	void ImageButton::setVerticalTextAlignment(const int V){
-		ImageButton::vAlignment=const_cast<int&>(V);
-	}
-	int ImageButton::getVerticalTextAlignment(){
-		return ImageButton::vAlignment;
-	}
-	void ImageButton::setPadding(int left,int top,int right,int bottom){
-		ImageButton::leftPadding=left;
-		ImageButton::topPadding=top;
-		ImageButton::rightPadding=right;
-		ImageButton::bottomPadding=bottom;
-		if(ImageButton::rightPadding==-1){
-			ImageButton::rightPadding=ImageButton::leftPadding;
-		}
-		if(ImageButton::bottomPadding==-1){
-			ImageButton::bottomPadding=ImageButton::topPadding;
-		}
-	}
-	int ImageButton::getLeftPadding(){
-		return ImageButton::leftPadding;
-	}
-	int ImageButton::getTopPadding(){
-		return ImageButton::topPadding;
-	}
-	int ImageButton::getRightPadding(){
-		return ImageButton::rightPadding;
-	}
-	int ImageButton::getBottomPadding(){
-		return ImageButton::bottomPadding;
-	}
-	void ImageButton::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<ImageButton::states.size();i++){
-				if(ImageButton::states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ImageButton::states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<ImageButton::states.size();i++){
-				if(ImageButton::states.at(i)==ENABLED){
-					ImageButton::states.erase(ImageButton::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	void ImageButton::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(ImageButton::states.size()!=0){
-				for(int i=0;i<ImageButton::states.size();i++){
-					if(ImageButton::states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					ImageButton::states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(ImageButton::states.size()!=0){
-				for(int i=0;i<ImageButton::states.size();i++){
-					if(ImageButton::states.at(i)==VISIBLE){
-						ImageButton::states.erase(ImageButton::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool ImageButton::isVisible(){
-		bool visible=false;
-		if(ImageButton::states.size()!=0){
-			for(int i=0;i<ImageButton::states.size();i++){
-				if(ImageButton::states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	bool ImageButton::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<ImageButton::states.size();i++){
-			if(ImageButton::states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
-	void ImageButton::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			for(int i=0;i<ImageButton::states.size();i++){
-				if(ImageButton::states.at(i)==HOVERED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ImageButton::states.push_back(HOVERED);
-			}
-		}
-		else{
-			for(int i=0;i<ImageButton::states.size();i++){
-				if(ImageButton::states.at(i)==HOVERED){
-					ImageButton::states.erase(ImageButton::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool ImageButton::isHovered(){
-		bool hovered=false;
-		for(int i=0;i<ImageButton::states.size();i++){
-			if(ImageButton::states.at(i)==HOVERED){
-				hovered=true;
-				break;
-			}
-		}	
-		return hovered;
-	}
-	void ImageButton::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			for(int i=0;i<ImageButton::states.size();i++){
-				if(ImageButton::states.at(i)==PRESSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ImageButton::states.push_back(PRESSED);
-			}
-		}
-		else{
-			for(int i=0;i<ImageButton::states.size();i++){
-				if(ImageButton::states.at(i)==PRESSED){
-					ImageButton::states.erase(ImageButton::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	bool ImageButton::isPressed(){
-		bool pressed=false;
-		for(int i=0;i<ImageButton::states.size();i++){
-			if(ImageButton::states.at(i)==PRESSED){
-				pressed=true;
-				break;
-			}		
-		}
-		return pressed;
-	}
 	void ImageButton::draw(std::shared_ptr<D2DHandle>& d2d){
 		std::wstring wtext(getText());
-		if(isEnabled()==true){
-			if(isPressed()==true&&(wcscmp(pressedpath,L"")!=0)){
+		if(isEnabled()){
+			if(isPressed()&&(wcscmp(pressedpath,L"")!=0)){
 				d2d->imgfactory->CreateDecoderFromFilename(pressedpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -5618,7 +3124,7 @@ namespace D2DUI{
 				d2d->textlayout->SetLocaleName(locale,rng);
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),d2d->textlayout.Get(),d2d->solidbrush.Get());
 			}//Pressed ImageButton
-			else if(isHovered()==true&&(wcscmp(hoveredpath,L"")!=0)){
+			else if(isHovered()&&(wcscmp(hoveredpath,L"")!=0)){
 				d2d->imgfactory->CreateDecoderFromFilename(hoveredpath,NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -5803,6 +3309,7 @@ namespace D2DUI{
 		return textSize;
 	}
 	template<> float ListItem<newifstream>::getTextSize(){
+
 		return textSize;
 	}
 	template<> void ListItem<wchar_t*>::setTextSize(float px){
@@ -5812,7 +3319,7 @@ namespace D2DUI{
 		ListItem::textSize=px;
 	}
 	template<> wchar_t*& ListItem<wchar_t*>::getData(){
-		if(isString()==true){
+		if(isString()){
 			return t;
 		}
 		else{
@@ -5820,7 +3327,7 @@ namespace D2DUI{
 		}
 	}
 	template<> newifstream& ListItem<newifstream>::getData(){
-		if(isFile()==true){
+		if(isFile()){
 			return t;
 		}
 	}
@@ -5854,7 +3361,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<wchar_t*>::setEnabled(bool enabled){
 		bool foundinstates=false;
-		if(enabled==true){
+		if(enabled){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==ENABLED){
@@ -5863,7 +3370,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(ENABLED);
 			}
 		}
@@ -5880,7 +3387,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<newifstream>::setEnabled(bool enabled){
 		bool foundinstates=false;
-		if(enabled==true){
+		if(enabled){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==ENABLED){
@@ -5889,7 +3396,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(ENABLED);
 			}
 		}
@@ -5930,7 +3437,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<wchar_t*>::setPressed(bool pressed){
 		bool foundinstates=false;
-		if(pressed==true){
+		if(pressed){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==PRESSED){
@@ -5939,7 +3446,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(PRESSED);
 			}
 		}
@@ -5956,7 +3463,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<newifstream>::setPressed(bool pressed){
 		bool foundinstates=false;
-		if(pressed==true){
+		if(pressed){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==PRESSED){
@@ -5965,7 +3472,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(PRESSED);
 			}
 		}
@@ -6006,7 +3513,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<wchar_t*>::setHovered(bool hovered){
 		bool foundinstates=false;
-		if(hovered==true){
+		if(hovered){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==HOVERED){
@@ -6015,7 +3522,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(HOVERED);
 			}
 		}
@@ -6032,7 +3539,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<newifstream>::setHovered(bool hovered){
 		bool foundinstates=false;
-		if(hovered==true){
+		if(hovered){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==HOVERED){
@@ -6041,7 +3548,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(HOVERED);
 			}
 		}
@@ -6082,7 +3589,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<wchar_t*>::setSelected(bool selected){
 		bool foundinstates=false;
-		if(selected==true){
+		if(selected){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==SELECTED){
@@ -6091,7 +3598,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(SELECTED);
 			}
 		}
@@ -6108,7 +3615,7 @@ namespace D2DUI{
 	}
 	template<> void ListItem<newifstream>::setSelected(bool selected){
 		bool foundinstates=false;
-		if(selected==true){
+		if(selected){
 			if(states.size()!=0){
 				for(int i=0;i<states.size();i++){
 					if(states.at(i)==SELECTED){
@@ -6117,7 +3624,7 @@ namespace D2DUI{
 					}
 				}
 			}
-			if(foundinstates==false){
+			if(foundinstates){
 				states.push_back(SELECTED);
 			}
 		}
@@ -6156,876 +3663,6 @@ namespace D2DUI{
 		}
 		return selected;
 	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setTextSize(float px){
-		ComboBox::textsize=px;
-		tb->setTextSize(px);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setTextSize(float px){
-		ComboBox::textsize=px;
-		tb->setTextSize(px);
-	}
-	template<> float ComboBox<ListItem<wchar_t*>>::getTextSize(){
-		return ComboBox::textsize;
-	}
-	template<> float ComboBox<ListItem<newifstream>>::getTextSize(){
-		return ComboBox::textsize;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setForeground(int R,int G,int B,int A){
-		ComboBox::iRGBA[0]=R;
-		ComboBox::iRGBA[1]=G;
-		ComboBox::iRGBA[2]=B;
-		ComboBox::iRGBA[3]=A;
-		ComboBox::fRGBA[0]=(float)R/255.0f;
-		ComboBox::fRGBA[1]=(float)G/255.0f;
-		ComboBox::fRGBA[2]=(float)B/255.0f;
-		ComboBox::fRGBA[3]=(float)A/255.0f;
-		tb->setForeground(R,G,B,A);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setForeground(int R,int G,int B,int A){
-		ComboBox::iRGBA[0]=R;
-		ComboBox::iRGBA[1]=G;
-		ComboBox::iRGBA[2]=B;
-		ComboBox::iRGBA[3]=A;
-		ComboBox::fRGBA[0]=(float)R/255.0f;
-		ComboBox::fRGBA[1]=(float)G/255.0f;
-		ComboBox::fRGBA[2]=(float)B/255.0f;
-		ComboBox::fRGBA[3]=(float)A/255.0f;
-		tb->setForeground(R,G,B,A);
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setForeground(float R,float G,float B,float A){
-		ComboBox::fRGBA[0]=R;
-		ComboBox::fRGBA[1]=G;
-		ComboBox::fRGBA[2]=B;
-		ComboBox::fRGBA[3]=A;
-		ComboBox::iRGBA[0]=(int)(R*255.0f);
-		ComboBox::iRGBA[1]=(int)(G*255.0f);
-		ComboBox::iRGBA[2]=(int)(B*255.0f);
-		ComboBox::iRGBA[3]=(int)(A*255.0f);
-		tb->setForeground(R,G,B,A);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setForeground(float R,float G,float B,float A){
-		ComboBox::fRGBA[0]=R;
-		ComboBox::fRGBA[1]=G;
-		ComboBox::fRGBA[2]=B;
-		ComboBox::fRGBA[3]=A;
-		ComboBox::iRGBA[0]=(int)(R*255.0f);
-		ComboBox::iRGBA[1]=(int)(G*255.0f);
-		ComboBox::iRGBA[2]=(int)(B*255.0f);
-		ComboBox::iRGBA[3]=(int)(A*255.0f);
-		tb->setForeground(R,G,B,A);
-	}
-	template<> float* ComboBox<ListItem<wchar_t*>>::getForegroundFloat(){
-		return ComboBox::fRGBA;
-	}
-	template<> float* ComboBox<ListItem<newifstream>>::getForegroundFloat(){
-		return ComboBox::fRGBA;
-	}
-	template<> int* ComboBox<ListItem<wchar_t*>>::getForegroundInt(){
-		return ComboBox::iRGBA;
-	}
-	template<> int* ComboBox<ListItem<newifstream>>::getForegroundInt(){
-		return ComboBox::iRGBA;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-		tb->setBounds(left,top,right-30,bottom);
-		dropdown->setBounds(tb->getBounds().right,top,right,bottom);
-		vScrollBar->setBounds(getBounds().right-20,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight());
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-		tb->setBounds(left,top,right-30,bottom);
-		dropdown->setBounds(tb->getBounds().right,top,right,bottom);
-		vScrollBar->setBounds(getBounds().right-20,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight());
-	}
-	template<> RECT ComboBox<ListItem<wchar_t*>>::getBounds(){
-		RECT r;
-		r.left=ComboBox::bounds.left;
-		r.top=ComboBox::bounds.top;
-		r.right=ComboBox::bounds.right;
-		r.bottom=ComboBox::bounds.bottom;
-		return r;
-	}
-	template<> RECT ComboBox<ListItem<newifstream>>::getBounds(){
-		RECT r;
-		r.left=ComboBox::bounds.left;
-		r.top=ComboBox::bounds.top;
-		r.right=ComboBox::bounds.right;
-		r.bottom=ComboBox::bounds.bottom;
-		return r;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setText(wchar_t* text){
-		ComboBox::text=text;
-		tb->setText(text);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setText(wchar_t* text){
-		ComboBox::text=text;
-		tb->setText(text);
-	}
-	template<> wchar_t* ComboBox<ListItem<wchar_t*>>::getText(){
-		return ComboBox::text;
-	}
-
-	template<> wchar_t* ComboBox<ListItem<newifstream>>::getText(){
-		return ComboBox::text;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setHorizontalTextAlignment(const int H){
-		ComboBox::hAlignment=const_cast<int&>(H);
-		tb->setHorizontalTextAlignment(H);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setHorizontalTextAlignment(const int H){
-		ComboBox::hAlignment=const_cast<int&>(H);
-		tb->setHorizontalTextAlignment(H);
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getHorizontalTextAlignment(){
-		return ComboBox::hAlignment;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getHorizontalTextAlignment(){
-		return ComboBox::hAlignment;
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getVerticalTextAlignment(){
-		return ComboBox::vAlignment;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getVerticalTextAlignment(){
-		return ComboBox::vAlignment;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setVerticalTextAlignment(const int V){
-		ComboBox::vAlignment=const_cast<int&>(V);
-		tb->setVerticalTextAlignment(V);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setVerticalTextAlignment(const int V){
-		ComboBox::vAlignment=const_cast<int&>(V);
-		tb->setVerticalTextAlignment(V);
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setPadding(int left,int top,int right,int bottom){
-		ComboBox::leftPadding=left;
-		ComboBox::topPadding=top;
-		ComboBox::rightPadding=right;
-		ComboBox::bottomPadding=bottom;
-		if(ComboBox::rightPadding==-1){
-			ComboBox::rightPadding=ComboBox::leftPadding;
-		}
-		if(ComboBox::bottomPadding==-1){
-			ComboBox::bottomPadding=ComboBox::topPadding;
-		}
-		tb->setPadding(left,top,right,bottom);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setPadding(int left,int top,int right,int bottom){
-		ComboBox::leftPadding=left;
-		ComboBox::topPadding=top;
-		ComboBox::rightPadding=right;
-		ComboBox::bottomPadding=bottom;
-		if(ComboBox::rightPadding==-1){
-			ComboBox::rightPadding=ComboBox::leftPadding;
-		}
-		if(ComboBox::bottomPadding==-1){
-			ComboBox::bottomPadding=ComboBox::topPadding;
-		}
-		tb->setPadding(left,top,right,bottom);
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getLeftPadding(){
-		return ComboBox::leftPadding;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getLeftPadding(){
-		return ComboBox::leftPadding;
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getTopPadding(){
-		return ComboBox::topPadding;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getTopPadding(){
-		return ComboBox::topPadding;
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getRightPadding(){
-		return ComboBox::rightPadding;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getRightPadding(){
-		return ComboBox::rightPadding;
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getBottomPadding(){
-		return ComboBox::bottomPadding;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getBottomPadding(){
-		return ComboBox::bottomPadding;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(ComboBox::states.size()!=0){
-				for(int i=0;i<ComboBox::states.size();i++){
-					if(ComboBox::states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					ComboBox::states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(ComboBox::states.size()!=0){
-				for(int i=0;i<ComboBox::states.size();i++){
-					if(ComboBox::states.at(i)==VISIBLE){
-						ComboBox::states.erase(ComboBox::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-		tb->setVisible(visible);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(ComboBox::states.size()!=0){
-				for(int i=0;i<ComboBox::states.size();i++){
-					if(ComboBox::states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					ComboBox::states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(ComboBox::states.size()!=0){
-				for(int i=0;i<ComboBox::states.size();i++){
-					if(ComboBox::states.at(i)==VISIBLE){
-						ComboBox::states.erase(ComboBox::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-		tb->setVisible(visible);
-	}
-	template<> bool ComboBox<ListItem<wchar_t*>>::isVisible(){
-		bool visible=false;
-		if(ComboBox::states.size()!=0){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	template<> bool ComboBox<ListItem<newifstream>>::isVisible(){
-		bool visible=false;
-		if(ComboBox::states.size()!=0){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ComboBox::states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==ENABLED){
-					ComboBox::states.erase(ComboBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-		tb->setEnabled(enabled);
-		dropdown->setEnabled(enabled);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ComboBox::states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==ENABLED){
-					ComboBox::states.erase(ComboBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-		tb->setEnabled(enabled);
-		dropdown->setEnabled(enabled);
-	}
-	template<> bool ComboBox<ListItem<wchar_t*>>::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<ComboBox::states.size();i++){
-			if(ComboBox::states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
-	template<> bool ComboBox<ListItem<newifstream>>::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<ComboBox::states.size();i++){
-			if(ComboBox::states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setFont(wchar_t* font){
-		ComboBox::font=font;
-		tb->setFont(font);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setFont(wchar_t* font){
-		ComboBox::font=font;
-		tb->setFont(font);
-	}
-	template<> wchar_t* ComboBox<ListItem<wchar_t*>>::getFont(){
-		return ComboBox::font;
-	}
-	template<> wchar_t* ComboBox<ListItem<newifstream>>::getFont(){
-		return ComboBox::font;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setEditable(bool editable){
-		bool foundinstates=false;
-		if(editable==true){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==EDITABLE){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ComboBox::states.push_back(EDITABLE);
-			}
-		}
-		else{
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==EDITABLE){
-					ComboBox::states.erase(ComboBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-		tb->setEditable(editable);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setEditable(bool editable){
-		bool foundinstates=false;
-		if(editable==true){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==EDITABLE){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ComboBox::states.push_back(EDITABLE);
-			}
-		}
-		else{
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==EDITABLE){
-					ComboBox::states.erase(ComboBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-		tb->setEditable(editable);
-	}
-	template<> bool ComboBox<ListItem<wchar_t*>>::isEditable(){
-		bool editable=false;
-		for(int i=0;i<ComboBox::states.size();i++){
-			if(ComboBox::states.at(i)==EDITABLE){
-				editable=true;
-				break;
-			}
-		}
-		return editable;
-	}
-	template<> bool ComboBox<ListItem<newifstream>>::isEditable(){
-		bool editable=false;
-		for(int i=0;i<ComboBox::states.size();i++){
-			if(ComboBox::states.at(i)==EDITABLE){
-				editable=true;
-				break;
-			}
-		}
-		return editable;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setFocus(bool focus){
-		bool foundinstates=false;
-		if(focus==true){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==FOCUSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ComboBox::states.push_back(FOCUSED);
-			}
-		}
-		else{
-			for(int i=0;i<ComboBox::states.at(i);i++){
-				if(ComboBox::states.at(i)==FOCUSED){
-					ComboBox::states.erase(ComboBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-		tb->setFocus(focus);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setFocus(bool focus){
-		bool foundinstates=false;
-		if(focus==true){
-			for(int i=0;i<ComboBox::states.size();i++){
-				if(ComboBox::states.at(i)==FOCUSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ComboBox::states.push_back(FOCUSED);
-			}
-		}
-		else{
-			for(int i=0;i<ComboBox::states.at(i);i++){
-				if(ComboBox::states.at(i)==FOCUSED){
-					ComboBox::states.erase(ComboBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-		tb->setFocus(focus);
-	}
-	template<> bool ComboBox<ListItem<wchar_t*>>::hasFocus(){
-		bool focus=false;
-		for(int i=0;i<ComboBox::states.size();i++){
-			if(ComboBox::states.at(i)==FOCUSED){
-				focus=true;
-				break;
-			}
-		}
-		return focus;
-	}
-	template<> bool ComboBox<ListItem<newifstream>>::hasFocus(){
-		bool focus=false;
-		for(int i=0;i<ComboBox::states.size();i++){
-			if(ComboBox::states.at(i)==FOCUSED){
-				focus=true;
-				break;
-			}
-		}
-		return focus;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setSelectedItem(ListItem<wchar_t*>& t){
-		selecteditem=t;
-		auto it=std::find(list.begin(),list.end(),t);
-		int c=std::distance(list.begin(),it);
-		setSelectedIndex(c);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setSelectedItem(ListItem<newifstream>& t){
-		selecteditem=t;
-		std::vector<ListItem<newifstream>>::iterator it=std::find(list.begin(),list.end(),t);
-		int c=std::distance(list.begin(),it);
-		setSelectedIndex(c);
-	}
-	template<> ListItem<wchar_t*>& ComboBox<ListItem<wchar_t*>>::getSelectedItem(){
-		return selecteditem;
-	}
-	template<> ListItem<newifstream>& ComboBox<ListItem<newifstream>>::getSelectedItem(){
-		return selecteditem;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setSelectedIndex(int index){
-		ComboBox::index=index;
-		for(int i=0;i<list.size();i++){
-			list.at(i).setSelected(false);
-		}
-		list.at(index).setSelected(true);
-		setText(list.at(index).getData());
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setSelectedIndex(int index){
-		ComboBox::index=index;
-		for(int i=0;i<list.size();i++){
-			list.at(i).setSelected(false);
-		}
-		list.at(index).setSelected(true);
-		setText(list.at(index).getData().getFilename());
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getSelectedIndex(){
-		return ComboBox::index;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getSelectedIndex(){
-		return ComboBox::index;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::remove(int index){
-		list.erase(list.begin()+index);
-		int itemheight=((int)list.at(index).getTextSize())+getTopPadding()+getBottomPadding();
-		setTotalHeight(getTotalHeight()-itemheight);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::remove(int index){
-		list.erase(list.begin()+index);
-		int itemheight=((int)list.at(index).getTextSize())+getTopPadding()+getBottomPadding();
-		setTotalHeight(getTotalHeight()-itemheight);
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::add(ListItem<wchar_t*> t){
-		int itemheight=((int)t.getTextSize())+getTopPadding()+getBottomPadding();
-		int top=0;
-		if(list.size()!=0){
-			top=list.at(list.size()-1).getBounds().bottom;
-		}
-		t.setBounds(0,top,getBounds().right,top+itemheight);
-		list.push_back(t);
-		setTotalHeight(getTotalHeight()+itemheight);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::add(ListItem<newifstream> t){
-		int itemheight=((int)t.getTextSize())+getTopPadding()+getBottomPadding();
-		int top=0;
-		if(list.size()!=0){
-			top=list.at(list.size()-1).getBounds().bottom;
-		}
-		t.setBounds(0,top,getBounds().right,top+itemheight);
-		list.push_back(t);
-		setTotalHeight(getTotalHeight()+itemheight);
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::addAll(std::vector<ListItem<wchar_t*>> ts){
-		for(ListItem<wchar_t*>& t:ts){
-			int itemheight=((int)getTextSize())+getTopPadding()+getBottomPadding();
-			int top=0;
-			if(list.size()!=0){
-				top=list.at(list.size()-1).getBounds().bottom;
-			}
-			t.setBounds(0,top,getBounds().right,top+itemheight);
-			list.push_back(t);
-			setTotalHeight(getTotalHeight()+itemheight);
-		} 
-	}
-	template<> void ComboBox<ListItem<newifstream>>::addAll(std::vector<ListItem<newifstream>> ts){
-		for(ListItem<newifstream>& t:ts){
-			int itemheight=((int)t.getTextSize())+getTopPadding()+getBottomPadding();
-			int top=0;
-			if(list.size()!=0){
-				top=list.at(list.size()-1).getBounds().bottom;
-			}
-			t.setBounds(0,top,getBounds().right,top+itemheight);
-			list.push_back(t);
-			setTotalHeight(getTotalHeight()+itemheight);
-		} 
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setDropdownHeight(int height){
-		ComboBox::dropdownheight=height;
-		if(getDropdownHeight()<getTotalHeight()&&vScrollBar->isVerticalScrollingEnabled()==false){
-			vScrollBar->enableVerticalScrolling();
-			vScrollBar->setBounds(getBounds().right-20,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight());
-			if(height!=0){
-				vScrollBar->portions=(float)getTotalHeight()/(float)getDropdownHeight();
-				if(vScrollBar->portions<1)vScrollBar->portions=1;	
-			}
-			else{
-				vScrollBar->portions=1;
-			}
-		}
-		else{
-			vScrollBar->disableVerticalScrolling();
-		}
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setDropdownHeight(int height){
-		ComboBox::dropdownheight=height;
-		if(getDropdownHeight()<getTotalHeight()&&vScrollBar->isVerticalScrollingEnabled()==false){
-			vScrollBar->enableVerticalScrolling();
-			vScrollBar->setBounds(getBounds().right-20,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight());
-			if(height!=0){
-				vScrollBar->portions=(float)((float)getTotalHeight()/(float)getDropdownHeight());
-				if(vScrollBar->portions<1)vScrollBar->portions=1;	
-			}
-			else{
-				vScrollBar->portions=1;
-				vScrollBar->position=0;
-			}
-		}
-		else{
-			vScrollBar->portions=1;
-			vScrollBar->position=0;
-			vScrollBar->disableVerticalScrolling();
-		}
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setHoveredItemColor(int R,int G,int B,int A){
-		iRGBA_hovered[0]=R;
-		iRGBA_hovered[1]=G;
-		iRGBA_hovered[2]=B;
-		iRGBA_hovered[3]=A;
-		fRGBA_hovered[0]=R/255.0f;
-		fRGBA_hovered[1]=G/255.0f;
-		fRGBA_hovered[2]=B/255.0f;
-		fRGBA_hovered[3]=A/255.0f;
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setHoveredItemColor(int R,int G,int B,int A){
-		iRGBA_hovered[0]=R;
-		iRGBA_hovered[1]=G;
-		iRGBA_hovered[2]=B;
-		iRGBA_hovered[3]=A;
-		fRGBA_hovered[0]=R/255.0f;
-		fRGBA_hovered[1]=G/255.0f;
-		fRGBA_hovered[2]=B/255.0f;
-		fRGBA_hovered[3]=A/255.0f;
-	}
-	template<> int* ComboBox<ListItem<wchar_t*>>::getHoveredItemColorInt(){
-		return iRGBA_hovered;
-	}
-	template<> int* ComboBox<ListItem<newifstream>>::getHoveredItemColorInt(){
-		return iRGBA_hovered;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setHoveredItemColor(float R,float G,float B,float A){
-		fRGBA_hovered[0]=R;
-		fRGBA_hovered[1]=G;
-		fRGBA_hovered[2]=B;
-		fRGBA_hovered[3]=A;
-		iRGBA_hovered[0]=(int)(R*255.0f);
-		iRGBA_hovered[1]=(int)(G*255.0f);
-		iRGBA_hovered[2]=(int)(B*255.0f);
-		iRGBA_hovered[3]=(int)(A*255.0f);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setHoveredItemColor(float R,float G,float B,float A){
-		fRGBA_hovered[0]=R;
-		fRGBA_hovered[1]=G;
-		fRGBA_hovered[2]=B;
-		fRGBA_hovered[3]=A;
-		iRGBA_hovered[0]=(int)(R*255.0f);
-		iRGBA_hovered[1]=(int)(G*255.0f);
-		iRGBA_hovered[2]=(int)(B*255.0f);
-		iRGBA_hovered[3]=(int)(A*255.0f);
-	}
-	template<> float* ComboBox<ListItem<wchar_t*>>::getHoveredItemColorFloat(){
-		return fRGBA_hovered;
-	}
-	template<> float* ComboBox<ListItem<newifstream>>::getHoveredItemColorFloat(){
-		return fRGBA_hovered;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setPressedItemColor(int R,int G,int B,int A){
-		iRGBA_pressed[0]=R;
-		iRGBA_pressed[1]=G;
-		iRGBA_pressed[2]=B;
-		iRGBA_pressed[3]=A;
-		fRGBA_pressed[0]=R/255.0f;
-		fRGBA_pressed[1]=G/255.0f;
-		fRGBA_pressed[2]=B/255.0f;
-		fRGBA_pressed[3]=A/255.0f;
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setPressedItemColor(int R,int G,int B,int A){
-		iRGBA_pressed[0]=R;
-		iRGBA_pressed[1]=G;
-		iRGBA_pressed[2]=B;
-		iRGBA_pressed[3]=A;
-		fRGBA_pressed[0]=R/255.0f;
-		fRGBA_pressed[1]=G/255.0f;
-		fRGBA_pressed[2]=B/255.0f;
-		fRGBA_pressed[3]=A/255.0f;
-	}
-	template<> int* ComboBox<ListItem<wchar_t*>>::getPressedItemColorInt(){
-		return iRGBA_pressed;
-	}
-	template<> int* ComboBox<ListItem<newifstream>>::getPressedItemColorInt(){
-		return iRGBA_pressed;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setPressedItemColor(float R,float G,float B,float A){
-		fRGBA_pressed[0]=R;
-		fRGBA_pressed[1]=G;
-		fRGBA_pressed[2]=B;
-		fRGBA_pressed[3]=A;
-		iRGBA_pressed[0]=(int)(R*255.0f);
-		iRGBA_pressed[1]=(int)(G*255.0f);
-		iRGBA_pressed[2]=(int)(B*255.0f);
-		iRGBA_pressed[3]=(int)(A*255.0f);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setPressedItemColor(float R,float G,float B,float A){
-		fRGBA_pressed[0]=R;
-		fRGBA_pressed[1]=G;
-		fRGBA_pressed[2]=B;
-		fRGBA_pressed[3]=A;
-		iRGBA_pressed[0]=(int)(R*255.0f);
-		iRGBA_pressed[1]=(int)(G*255.0f);
-		iRGBA_pressed[2]=(int)(B*255.0f);
-		iRGBA_pressed[3]=(int)(A*255.0f);
-	}
-	template<> float* ComboBox<ListItem<wchar_t*>>::getPressedItemColorFloat(){
-		return fRGBA_pressed;
-	}
-	template<> float* ComboBox<ListItem<newifstream>>::getPressedItemColorFloat(){
-		return fRGBA_pressed;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setSelectedItemColor(int R,int G,int B,int A){
-		iRGBA_selected[0]=R;
-		iRGBA_selected[1]=G;
-		iRGBA_selected[2]=B;
-		iRGBA_selected[3]=A;
-		fRGBA_selected[0]=R/255.0f;
-		fRGBA_selected[1]=G/255.0f;
-		fRGBA_selected[2]=B/255.0f;
-		fRGBA_selected[3]=A/255.0f;
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setSelectedItemColor(int R,int G,int B,int A){
-		iRGBA_selected[0]=R;
-		iRGBA_selected[1]=G;
-		iRGBA_selected[2]=B;
-		iRGBA_selected[3]=A;
-		fRGBA_selected[0]=R/255.0f;
-		fRGBA_selected[1]=G/255.0f;
-		fRGBA_selected[2]=B/255.0f;
-		fRGBA_selected[3]=A/255.0f;
-	}
-	template<> int* ComboBox<ListItem<wchar_t*>>::getSelectedItemColorInt(){
-		return iRGBA_selected;
-	}
-	template<> int* ComboBox<ListItem<newifstream>>::getSelectedItemColorInt(){
-		return iRGBA_selected;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setSelectedItemColor(float R,float G,float B,float A){
-		fRGBA_selected[0]=R;
-		fRGBA_selected[1]=G;
-		fRGBA_selected[2]=B;
-		fRGBA_selected[3]=A;
-		iRGBA_selected[0]=(int)(R*255.0f);
-		iRGBA_selected[1]=(int)(G*255.0f);
-		iRGBA_selected[2]=(int)(B*255.0f);
-		iRGBA_selected[3]=(int)(A*255.0f);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setSelectedItemColor(float R,float G,float B,float A){
-		fRGBA_selected[0]=R;
-		fRGBA_selected[1]=G;
-		fRGBA_selected[2]=B;
-		fRGBA_selected[3]=A;
-		iRGBA_selected[0]=(int)(R*255.0f);
-		iRGBA_selected[1]=(int)(G*255.0f);
-		iRGBA_selected[2]=(int)(B*255.0f);
-		iRGBA_selected[3]=(int)(A*255.0f);
-	}
-	template<> float* ComboBox<ListItem<wchar_t*>>::getSelectedItemColorFloat(){
-		return fRGBA_selected;
-	}
-	template<> float* ComboBox<ListItem<newifstream>>::getSelectedItemColorFloat(){
-		return fRGBA_selected;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setDisabledItemColor(int R,int G,int B,int A){
-		iRGBA_disabled[0]=R;
-		iRGBA_disabled[1]=G;
-		iRGBA_disabled[2]=B;
-		iRGBA_disabled[3]=A;
-		fRGBA_disabled[0]=R/255.0f;
-		fRGBA_disabled[1]=G/255.0f;
-		fRGBA_disabled[2]=B/255.0f;
-		fRGBA_disabled[3]=A/255.0f;
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setDisabledItemColor(int R,int G,int B,int A){
-		iRGBA_disabled[0]=R;
-		iRGBA_disabled[1]=G;
-		iRGBA_disabled[2]=B;
-		iRGBA_disabled[3]=A;
-		fRGBA_disabled[0]=R/255.0f;
-		fRGBA_disabled[1]=G/255.0f;
-		fRGBA_disabled[2]=B/255.0f;
-		fRGBA_disabled[3]=A/255.0f;
-	}
-	template<> int* ComboBox<ListItem<wchar_t*>>::getDisabledItemColorInt(){
-		return iRGBA_disabled;
-	}
-	template<> int* ComboBox<ListItem<newifstream>>::getDisabledItemColorInt(){
-		return iRGBA_disabled;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setDisabledItemColor(float R,float G,float B,float A){
-		fRGBA_disabled[0]=R;
-		fRGBA_disabled[1]=G;
-		fRGBA_disabled[2]=B;
-		fRGBA_disabled[3]=A;
-		iRGBA_disabled[0]=(int)(R*255.0f);
-		iRGBA_disabled[1]=(int)(G*255.0f);
-		iRGBA_disabled[2]=(int)(B*255.0f);
-		iRGBA_disabled[3]=(int)(A*255.0f);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setDisabledItemColor(float R,float G,float B,float A){
-		fRGBA_disabled[0]=R;
-		fRGBA_disabled[1]=G;
-		fRGBA_disabled[2]=B;
-		fRGBA_disabled[3]=A;
-		iRGBA_disabled[0]=(int)(R*255.0f);
-		iRGBA_disabled[1]=(int)(G*255.0f);
-		iRGBA_disabled[2]=(int)(B*255.0f);
-		iRGBA_disabled[3]=(int)(A*255.0f);
-	}
-	template<> float* ComboBox<ListItem<wchar_t*>>::getDisabledItemColorFloat(){
-		return ComboBox::fRGBA_disabled;
-	}
-	template<> float* ComboBox<ListItem<newifstream>>::getDisabledItemColorFloat(){
-		return ComboBox::fRGBA_disabled;
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getDropdownHeight(){
-		return ComboBox::dropdownheight;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getDropdownHeight(){
-		return ComboBox::dropdownheight;
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setTotalHeight(int height){
-		ComboBox::totalheight=height;
-		if(getDropdownHeight()<getTotalHeight()&&vScrollBar->isVerticalScrollingEnabled()==false){
-			vScrollBar->enableVerticalScrolling();
-		}
-		if(getDropdownHeight()!=0){
-			vScrollBar->portions=(float)getTotalHeight()/(float)getDropdownHeight();
-			if(vScrollBar->portions<1)vScrollBar->portions=1;
-		}
-		else{
-			vScrollBar->portions=1;
-		}
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setTotalHeight(int height){
-		ComboBox::totalheight=height;
-		if(getDropdownHeight()<getTotalHeight()&&vScrollBar->isVerticalScrollingEnabled()==false){
-			vScrollBar->enableVerticalScrolling();
-		}
-		if(getDropdownHeight()!=0){
-			vScrollBar->portions=(float)getTotalHeight()/(float)getDropdownHeight();
-			if(vScrollBar->portions<1){
-				vScrollBar->portions=1;
-				vScrollBar->position=0;
-			}
-		}
-		else{
-			vScrollBar->portions=1;
-			vScrollBar->position=0;
-		}
-	}
-	template<> int ComboBox<ListItem<wchar_t*>>::getTotalHeight(){
-		return ComboBox::totalheight;
-	}
-	template<> int ComboBox<ListItem<newifstream>>::getTotalHeight(){
-		return ComboBox::totalheight;
-	}
 	template<> void ComboBox<ListItem<wchar_t*>>::drawDropdown(std::shared_ptr<D2DHandle>& d2d){
 		d2d->target->CreateSolidColorBrush(ColorF(ColorF::White,opacity),d2d->solidbrush.ReleaseAndGetAddressOf());
 		d2d->target->FillRectangle(RectF(getBounds().left,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight()),d2d->solidbrush.Get());
@@ -7034,16 +3671,16 @@ namespace D2DUI{
 		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(0,-topY));
 		for(int i=0;i<list.size();i++){
-			if(list.at(i).isEnabled()==true){
-				if(list.at(i).isSelected()==true){
+			if(list.at(i).isEnabled()){
+				if(list.at(i).isSelected()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_selected[0],fRGBA_selected[1],fRGBA_selected[2],fRGBA_selected[3]*opacity));
 					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
-				else if(list.at(i).isPressed()==true){
+				else if(list.at(i).isPressed()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_pressed[0],fRGBA_pressed[1],fRGBA_pressed[2],fRGBA_pressed[3]*opacity));
 					d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
-				else if(list.at(i).isHovered()==true){
+				else if(list.at(i).isHovered()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_hovered[0],fRGBA_hovered[1],fRGBA_hovered[2],fRGBA_hovered[3]*opacity));
 					d2d->target->FillRectangle(RectF(list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
@@ -7096,16 +3733,16 @@ namespace D2DUI{
 		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(0,-topY));
 		for(int i=0;i<list.size();i++){
-			if(list.at(i).isEnabled()==true){
-				if(list.at(i).isSelected()==true){
+			if(list.at(i).isEnabled()){
+				if(list.at(i).isSelected()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_selected[0],fRGBA_selected[1],fRGBA_selected[2],fRGBA_selected[3]*opacity));
 					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
-				else if(list.at(i).isPressed()==true){
+				else if(list.at(i).isPressed()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_pressed[0],fRGBA_pressed[1],fRGBA_pressed[2],fRGBA_pressed[3]*opacity));
 					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
-				else if(list.at(i).isHovered()==true){
+				else if(list.at(i).isHovered()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_hovered[0],fRGBA_hovered[1],fRGBA_hovered[2],fRGBA_hovered[3]*opacity));
 					d2d->target->FillRectangle(RectF(getBounds().left+list.at(i).getBounds().left,getBounds().top+list.at(i).getBounds().top,getBounds().left+list.at(i).getBounds().right,getBounds().top+list.at(i).getBounds().bottom),d2d->solidbrush.Get());
 				}
@@ -7151,34 +3788,6 @@ namespace D2DUI{
 		d2d->target->PopAxisAlignedClip();
 		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setLocale(wchar_t* locale){
-		this->locale=locale;
-		tb->setLocale(locale);
-		vScrollBar->setLocale(locale);
-		hScrollBar->setLocale(locale);
-		dropdown->setLocale(locale);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setLocale(wchar_t* locale){
-		this->locale=locale;
-		tb->setLocale(locale);
-		vScrollBar->setLocale(locale);
-		hScrollBar->setLocale(locale);
-		dropdown->setLocale(locale);
-	}
-	template<> void ComboBox<ListItem<wchar_t*>>::setOpacity(float opacity){
-		this->opacity=opacity;
-		tb->setOpacity(opacity);
-		vScrollBar->setOpacity(opacity);
-		hScrollBar->setOpacity(opacity);
-		dropdown->setOpacity(opacity);
-	}
-	template<> void ComboBox<ListItem<newifstream>>::setOpacity(float opacity){
-		this->opacity=opacity;
-		tb->setOpacity(opacity);
-		vScrollBar->setOpacity(opacity);
-		hScrollBar->setOpacity(opacity);
-		dropdown->setOpacity(opacity);
-	}
 	template<> void ComboBox<ListItem<wchar_t*>>::draw(std::shared_ptr<D2DHandle>& d2d){
 		tb->draw(d2d);
 		dropdown->draw(d2d);
@@ -7186,876 +3795,6 @@ namespace D2DUI{
 	template<> void ComboBox<ListItem<newifstream>>::draw(std::shared_ptr<D2DHandle>& d2d){
 		tb->draw(d2d);
 		dropdown->draw(d2d);
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setSelectedItem(ListItem<wchar_t*>& t){
-		selecteditem=t;
-		auto it=std::find(list.begin(),list.end(),t);
-		int c=std::distance(list.begin(),it);
-		setSelectedIndex(c);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setSelectedItem(ListItem<newifstream>& t){
-		selecteditem=t;
-		auto it=std::find(list.begin(),list.end(),t);
-		int c=std::distance(list.begin(),it);
-		setSelectedIndex(c);
-	}
-	template<> ListItem<wchar_t*>& ListBox<ListItem<wchar_t*>>::getSelectedItem(){
-		return selecteditem;
-	}
-	template<> ListItem<newifstream>& ListBox<ListItem<newifstream>>::getSelectedItem(){
-		return selecteditem;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setSelectedIndex(int index){
-		ListBox::index=index;
-		for(int i=0;i<list.size();i++){
-			list.at(i).setSelected(false);
-		}
-		list.at(index).setSelected(true);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setSelectedIndex(int index){
-		ListBox::index=index;
-		for(int i=0;i<list.size();i++){
-			list.at(i).setSelected(false);
-		}
-		list.at(index).setSelected(true);
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getSelectedIndex(){
-		return index;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getSelectedIndex(){
-		return index;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::remove(int index){
-		list.erase(list.begin()+index);
-	}
-	template<> void ListBox<ListItem<newifstream>>::remove(int index){
-		list.erase(list.begin()+index);
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setFont(wchar_t* font){
-		ListBox::font=font;
-	}
-	template<> void ListBox<ListItem<newifstream>>::setFont(wchar_t* font){
-		ListBox::font=font;
-	}
-	template<> wchar_t* ListBox<ListItem<wchar_t*>>::getFont(){
-		return ListBox::font;
-	}
-	template<> wchar_t* ListBox<ListItem<newifstream>>::getFont(){
-		return ListBox::font;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setTextSize(float px){
-		ListBox::textsize=px;
-	}
-	template<> void ListBox<ListItem<newifstream>>::setTextSize(float px){
-		ListBox::textsize=px;
-	}
-	template<> float ListBox<ListItem<wchar_t*>>::getTextSize(){
-		return ListBox::textsize;
-	}
-	template<> float ListBox<ListItem<newifstream>>::getTextSize(){
-		return ListBox::textsize;
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getLeftPadding(){
-		return ListBox::leftPadding;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getLeftPadding(){
-		return ListBox::leftPadding;
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getTopPadding(){
-		return ListBox::topPadding;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getTopPadding(){
-		return ListBox::topPadding;
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getRightPadding(){
-		return ListBox::rightPadding;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getRightPadding(){
-		return ListBox::rightPadding;
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getBottomPadding(){
-		return ListBox::bottomPadding;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getBottomPadding(){
-		return ListBox::bottomPadding;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setTotalHeight(int totalheight){
-		ListBox::totalheight=totalheight;
-		int height=getBounds().bottom-getBounds().top;
-		int vpheight=getViewportBounds().bottom-getViewportBounds().top;
-		if(vpheight<totalheight){
-			setViewportBounds(viewportbounds.left,viewportbounds.top,viewportbounds.right,viewportbounds.top+totalheight);
-		}
-		if(height!=0){
-			vScrollBar->portions=totalheight/height;
-			if(vScrollBar->portions<1){
-				vScrollBar->portions=1;
-				vScrollBar->position=0;
-			}
-		}
-		else{
-			vScrollBar->portions=1;
-			vScrollBar->position=0;
-		}
-	}
-	template<> void ListBox<ListItem<newifstream>>::setTotalHeight(int totalheight){
-		ListBox::totalheight=totalheight;
-		int height=getBounds().bottom-getBounds().top;
-		int vpheight=getViewportBounds().bottom-getViewportBounds().top;
-		if(vpheight<totalheight){
-			setViewportBounds(viewportbounds.left,viewportbounds.top,viewportbounds.right,viewportbounds.top+totalheight);
-		}
-		if(height!=0){
-			vScrollBar->portions=totalheight/height;
-			if(vScrollBar->portions<1){
-				vScrollBar->portions=1;
-				vScrollBar->position=0;
-			}
-		}
-		else{
-			vScrollBar->portions=1;
-			vScrollBar->position=0;
-		}
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getTotalHeight(){
-		return ListBox::totalheight;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getTotalHeight(){
-		return ListBox::totalheight;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setViewportBounds(int left,int top,int right,int bottom){
-		ListBox::viewportbounds.left=left;
-		ListBox::viewportbounds.top=top;
-		ListBox::viewportbounds.right=right;
-		ListBox::viewportbounds.bottom=bottom;
-		if(IsRectEmpty(&getBounds())==false){
-			int vpwidth=getViewportBounds().right-getViewportBounds().left;
-			int width=getBounds().right-getBounds().left;
-			int vpheight=getViewportBounds().bottom-getViewportBounds().top;
-			int height=getBounds().bottom-getBounds().top;
-			if(vpwidth>width){
-				hScrollBar->enableHorizontalScrolling();
-				hScrollBar->portions=vpwidth/width;
-			}
-			else{
-				hScrollBar->disableHorizontalScrolling();
-				hScrollBar->portions=1;
-				hScrollBar->position=0;
-				if(viewportbounds.left<bounds.left){
-					viewportbounds.left=bounds.left;
-					viewportbounds.right=viewportbounds.left+vpwidth;
-				}
-			}
-			if(vpheight>height){
-				vScrollBar->enableVerticalScrolling();
-				vScrollBar->portions=vpheight/height;
-			}
-			else{
-				vScrollBar->disableVerticalScrolling();
-				vScrollBar->portions=1;
-				vScrollBar->position=0;
-				if(viewportbounds.top<bounds.top){
-					viewportbounds.top=bounds.top;
-					viewportbounds.bottom=viewportbounds.top+vpheight;
-				}
-			}
-		}
-	}	
-	template<> void ListBox<ListItem<newifstream>>::setViewportBounds(int left,int top,int right,int bottom){
-		ListBox::viewportbounds.left=left;
-		ListBox::viewportbounds.top=top;
-		ListBox::viewportbounds.right=right;
-		ListBox::viewportbounds.bottom=bottom;
-		if(IsRectEmpty(&getBounds())==false){
-			int vpwidth=getViewportBounds().right-getViewportBounds().left;
-			int width=getBounds().right-getBounds().left;
-			int vpheight=getViewportBounds().bottom-getViewportBounds().top;
-			int height=getBounds().bottom-getBounds().top;
-			if(vpwidth>width){
-				hScrollBar->enableHorizontalScrolling();
-				hScrollBar->portions=vpwidth/width;
-			}
-			else{
-				hScrollBar->disableHorizontalScrolling();
-				hScrollBar->portions=1;
-				hScrollBar->position=0;
-				if(viewportbounds.left<bounds.left){
-					viewportbounds.left=bounds.left;
-					viewportbounds.right=viewportbounds.left+vpwidth;
-				}
-			}
-			if(vpheight>height){
-				vScrollBar->enableVerticalScrolling();
-				vScrollBar->portions=vpheight/height;
-			}
-			else{
-				vScrollBar->disableVerticalScrolling();
-				vScrollBar->portions=1;
-				vScrollBar->position=0;
-				if(viewportbounds.top<bounds.top){
-					viewportbounds.top=bounds.top;
-					viewportbounds.bottom=viewportbounds.top+vpheight;
-				}
-			}
-		}
-	}	
-	template<> RECT ListBox<ListItem<wchar_t*>>::getViewportBounds(){
-		return ListBox::viewportbounds;
-	}
-	template<> RECT ListBox<ListItem<newifstream>>::getViewportBounds(){
-		return ListBox::viewportbounds;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(ListBox::states.size()!=0){
-				for(int i=0;i<ListBox::states.size();i++){
-					if(ListBox::states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					ListBox::states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(ListBox::states.size()!=0){
-				for(int i=0;i<ListBox::states.size();i++){
-					if(ListBox::states.at(i)==VISIBLE){
-						ListBox::states.erase(ListBox::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	template<> void ListBox<ListItem<newifstream>>::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(ListBox::states.size()!=0){
-				for(int i=0;i<ListBox::states.size();i++){
-					if(ListBox::states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					ListBox::states.push_back(VISIBLE);
-				}
-			}
-		}
-		else{
-			if(ListBox::states.size()!=0){
-				for(int i=0;i<ListBox::states.size();i++){
-					if(ListBox::states.at(i)==VISIBLE){
-						ListBox::states.erase(ListBox::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	template<> bool ListBox<ListItem<wchar_t*>>::isVisible(){
-		bool visible=false;
-		if(ListBox::states.size()!=0){
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	template<> bool ListBox<ListItem<newifstream>>::isVisible(){
-		bool visible=false;
-		if(ListBox::states.size()!=0){
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ListBox::states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==ENABLED){
-					ListBox::states.erase(ListBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	template<> void ListBox<ListItem<newifstream>>::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==ENABLED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ListBox::states.push_back(ENABLED);
-			}
-		}
-		else{
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==ENABLED){
-					ListBox::states.erase(ListBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	template<> bool ListBox<ListItem<wchar_t*>>::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<ListBox::states.size();i++){
-			if(ListBox::states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
-	template<> bool ListBox<ListItem<newifstream>>::isEnabled(){
-		bool enabled=false;
-		for(int i=0;i<ListBox::states.size();i++){
-			if(ListBox::states.at(i)==ENABLED){
-				enabled=true;
-				break;
-			}
-		}
-		return enabled;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==HOVERED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ListBox::states.push_back(HOVERED);
-			}
-		}
-		else{
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==HOVERED){
-					ListBox::states.erase(ListBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	template<> void ListBox<ListItem<newifstream>>::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==HOVERED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				ListBox::states.push_back(HOVERED);
-			}
-		}
-		else{
-			for(int i=0;i<ListBox::states.size();i++){
-				if(ListBox::states.at(i)==HOVERED){
-					ListBox::states.erase(ListBox::states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	template<> bool ListBox<ListItem<wchar_t*>>::isHovered(){
-		bool hovered=false;
-		for(int i=0;i<ListBox::states.size();i++){
-			if(ListBox::states.at(i)==HOVERED){
-				hovered=true;
-				break;
-			}
-		}	
-		return hovered;
-	}
-	template<> bool ListBox<ListItem<newifstream>>::isHovered(){
-		bool hovered=false;
-		for(int i=0;i<ListBox::states.size();i++){
-			if(ListBox::states.at(i)==HOVERED){
-				hovered=true;
-				break;
-			}
-		}	
-		return hovered;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setBounds(int left,int top,int right,int bottom){
-		ListBox::bounds.left=left;
-		ListBox::bounds.top=top;
-		ListBox::bounds.right=right;
-		ListBox::bounds.bottom=bottom;
-		vScrollBar->setBounds(getBounds().right-20,getBounds().top,getBounds().right,hScrollBar->isHorizontalScrollingEnabled()==true?getBounds().bottom-20:getBounds().bottom);
-		hScrollBar->setBounds(getBounds().left,getBounds().bottom-20,vScrollBar->isVerticalScrollingEnabled()==true?getBounds().right-20:getBounds().right,getBounds().bottom);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setBounds(int left,int top,int right,int bottom){
-		ListBox::bounds.left=left;
-		ListBox::bounds.top=top;
-		ListBox::bounds.right=right;
-		ListBox::bounds.bottom=bottom;
-		vScrollBar->setBounds(getBounds().right-20,getBounds().top,getBounds().right,hScrollBar->isHorizontalScrollingEnabled()==true?getBounds().bottom-20:getBounds().bottom);
-		hScrollBar->setBounds(getBounds().left,getBounds().bottom-20,vScrollBar->isVerticalScrollingEnabled()==true?getBounds().right-20:getBounds().right,getBounds().bottom);
-	}
-	template<> RECT ListBox<ListItem<wchar_t*>>::getBounds(){
-		RECT r;
-		r.left=ListBox::bounds.left;
-		r.top=ListBox::bounds.top;
-		r.right=ListBox::bounds.right;
-		r.bottom=ListBox::bounds.bottom;
-		return r;
-	}
-	template<> RECT ListBox<ListItem<newifstream>>::getBounds(){
-		RECT r;
-		r.left=ListBox::bounds.left;
-		r.top=ListBox::bounds.top;
-		r.right=ListBox::bounds.right;
-		r.bottom=ListBox::bounds.bottom;
-		return r;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(PRESSED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	template<> void ListBox<ListItem<newifstream>>::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					foundinstates=true;
-					break;
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(PRESSED);
-			}
-		}
-		else{
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					states.erase(states.begin()+i);
-					break;
-				}
-			}
-		}
-	}
-	template<> bool ListBox<ListItem<wchar_t*>>::isPressed(){
-		bool pressed=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==PRESSED){
-				pressed=true;
-				break;
-			}		
-		}
-		return pressed;
-	}
-	template<> bool ListBox<ListItem<newifstream>>::isPressed(){
-		bool pressed=false;
-		for(int i=0;i<states.size();i++){
-			if(states.at(i)==PRESSED){
-				pressed=true;
-				break;
-			}		
-		}
-		return pressed;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setHorizontalTextAlignment(const int H){
-		ListBox::hAlignment=const_cast<int&>(H);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setHorizontalTextAlignment(const int H){
-		ListBox::hAlignment=const_cast<int&>(H);
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getHorizontalTextAlignment(){
-		return ListBox::hAlignment;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getHorizontalTextAlignment(){
-		return ListBox::hAlignment;
-	}
-	template<> int ListBox<ListItem<wchar_t*>>::getVerticalTextAlignment(){
-		return ListBox::vAlignment;
-	}
-	template<> int ListBox<ListItem<newifstream>>::getVerticalTextAlignment(){
-		return ListBox::vAlignment;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setVerticalTextAlignment(const int V){
-		ListBox::vAlignment=const_cast<int&>(V);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setVerticalTextAlignment(const int V){
-		ListBox::vAlignment=const_cast<int&>(V);
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setPadding(int left,int top,int right,int bottom){
-		ListBox::leftPadding=left;
-		ListBox::topPadding=top;
-		ListBox::rightPadding=right;
-		ListBox::bottomPadding=bottom;
-		if(ListBox::rightPadding==-1){
-			ListBox::rightPadding=ListBox::leftPadding;
-		}
-		if(ListBox::bottomPadding==-1){
-			ListBox::bottomPadding=ListBox::topPadding;
-		}
-	}
-	template<> void ListBox<ListItem<newifstream>>::setPadding(int left,int top,int right,int bottom){
-		ListBox::leftPadding=left;
-		ListBox::topPadding=top;
-		ListBox::rightPadding=right;
-		ListBox::bottomPadding=bottom;
-		if(ListBox::rightPadding==-1){
-			ListBox::rightPadding=ListBox::leftPadding;
-		}
-		if(ListBox::bottomPadding==-1){
-			ListBox::bottomPadding=ListBox::topPadding;
-		}
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::add(ListItem<wchar_t*> t){
-		int itemheight=((int)t.getTextSize())+getTopPadding()+getBottomPadding();
-		int top=0;
-		if(list.size()!=0){
-			top=list.at(list.size()-1).getBounds().bottom;
-		}
-		if(vScrollBar->isVerticalScrollingEnabled()==true){
-			t.setBounds(0,top,getBounds().right,top+itemheight);
-		}
-		else{
-			t.setBounds(0,top,getBounds().right,top+itemheight);
-		}
-		list.push_back(t);
-		setTotalHeight(getTotalHeight()+itemheight);
-	}
-	template<> void ListBox<ListItem<newifstream>>::add(ListItem<newifstream> t){
-		int itemheight=((int)t.getTextSize())+getTopPadding()+getBottomPadding();
-		int top=0;
-		if(list.size()!=0){
-			top=list.at(list.size()-1).getBounds().bottom;
-		}
-		if(vScrollBar->isVerticalScrollingEnabled()==true){
-			t.setBounds(0,top,getViewportBounds().right,top+itemheight);
-		}
-		else{
-			t.setBounds(0,top,getViewportBounds().right,top+itemheight);
-		}
-		list.push_back(t);
-		setTotalHeight(getTotalHeight()+itemheight);
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::addAll(std::vector<ListItem<wchar_t*>> t){
-		for(ListItem<wchar_t*> t1:t){
-			list.push_back(t1);
-		}
-		int itemheight=((int)getTextSize())+getTopPadding()+getBottomPadding();
-		setTotalHeight(getTotalHeight()+(itemheight*t.size()));
-	}
-	template<> void ListBox<ListItem<newifstream>>::addAll(std::vector<ListItem<newifstream>> t){
-		for(ListItem<newifstream> t1:t){
-			list.push_back(t1);
-		}
-		int itemheight=((int)getTextSize())+getTopPadding()+getBottomPadding();
-		setTotalHeight(getTotalHeight()+(itemheight*t.size()));
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setForeground(int R,int G,int B,int A){
-		ListBox::iRGBA[0]=R;
-		ListBox::iRGBA[1]=G;
-		ListBox::iRGBA[2]=B;
-		ListBox::iRGBA[3]=A;
-		ListBox::fRGBA[0]=(float)R/255.0f;
-		ListBox::fRGBA[1]=(float)G/255.0f;
-		ListBox::fRGBA[2]=(float)B/255.0f;
-		ListBox::fRGBA[3]=(float)A/255.0f;
-	}
-	template<> void ListBox<ListItem<newifstream>>::setForeground(int R,int G,int B,int A){
-		ListBox::iRGBA[0]=R;
-		ListBox::iRGBA[1]=G;
-		ListBox::iRGBA[2]=B;
-		ListBox::iRGBA[3]=A;
-		ListBox::fRGBA[0]=(float)R/255.0f;
-		ListBox::fRGBA[1]=(float)G/255.0f;
-		ListBox::fRGBA[2]=(float)B/255.0f;
-		ListBox::fRGBA[3]=(float)A/255.0f;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setForeground(float R,float G,float B,float A){
-		ListBox::fRGBA[0]=R;
-		ListBox::fRGBA[1]=G;
-		ListBox::fRGBA[2]=B;
-		ListBox::fRGBA[3]=A;
-		ListBox::iRGBA[0]=(int)(R*255.0f);
-		ListBox::iRGBA[1]=(int)(G*255.0f);
-		ListBox::iRGBA[2]=(int)(B*255.0f);
-		ListBox::iRGBA[3]=(int)(A*255.0f);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setForeground(float R,float G,float B,float A){
-		ListBox::fRGBA[0]=R;
-		ListBox::fRGBA[1]=G;
-		ListBox::fRGBA[2]=B;
-		ListBox::fRGBA[3]=A;
-		ListBox::iRGBA[0]=(int)(R*255.0f);
-		ListBox::iRGBA[1]=(int)(G*255.0f);
-		ListBox::iRGBA[2]=(int)(B*255.0f);
-		ListBox::iRGBA[3]=(int)(A*255.0f);
-	}
-	template<> float* ListBox<ListItem<wchar_t*>>::getForegroundFloat(){
-		return ListBox::fRGBA;
-	}
-	template<> float* ListBox<ListItem<newifstream>>::getForegroundFloat(){
-		return ListBox::fRGBA;
-	}
-	template<> int* ListBox<ListItem<wchar_t*>>::getForegroundInt(){
-		return ListBox::iRGBA;
-	}
-	template<> int* ListBox<ListItem<newifstream>>::getForegroundInt(){
-		return ListBox::iRGBA;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setHoveredItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_hovered[0]=R;
-		ListBox::iRGBA_hovered[1]=G;
-		ListBox::iRGBA_hovered[2]=B;
-		ListBox::iRGBA_hovered[3]=A;
-		ListBox::fRGBA_hovered[0]=R/255.0f;
-		ListBox::fRGBA_hovered[1]=G/255.0f;
-		ListBox::fRGBA_hovered[2]=B/255.0f;
-		ListBox::fRGBA_hovered[3]=A/255.0f;
-	}
-	template<> void ListBox<ListItem<newifstream>>::setHoveredItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_hovered[0]=R;
-		ListBox::iRGBA_hovered[1]=G;
-		ListBox::iRGBA_hovered[2]=B;
-		ListBox::iRGBA_hovered[3]=A;
-		ListBox::fRGBA_hovered[0]=R/255.0f;
-		ListBox::fRGBA_hovered[1]=G/255.0f;
-		ListBox::fRGBA_hovered[2]=B/255.0f;
-		ListBox::fRGBA_hovered[3]=A/255.0f;
-	}
-	template<> int* ListBox<ListItem<wchar_t*>>::getHoveredItemColorInt(){
-		return ListBox::iRGBA_hovered;
-	}
-	template<> int* ListBox<ListItem<newifstream>>::getHoveredItemColorInt(){
-		return ListBox::iRGBA_hovered;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setHoveredItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_hovered[0]=R;
-		ListBox::fRGBA_hovered[1]=G;
-		ListBox::fRGBA_hovered[2]=B;
-		ListBox::fRGBA_hovered[3]=A;
-		ListBox::iRGBA_hovered[0]=(int)(R*255.0f);
-		ListBox::iRGBA_hovered[1]=(int)(G*255.0f);
-		ListBox::iRGBA_hovered[2]=(int)(B*255.0f);
-		ListBox::iRGBA_hovered[3]=(int)(A*255.0f);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setHoveredItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_hovered[0]=R;
-		ListBox::fRGBA_hovered[1]=G;
-		ListBox::fRGBA_hovered[2]=B;
-		ListBox::fRGBA_hovered[3]=A;
-		ListBox::iRGBA_hovered[0]=(int)(R*255.0f);
-		ListBox::iRGBA_hovered[1]=(int)(G*255.0f);
-		ListBox::iRGBA_hovered[2]=(int)(B*255.0f);
-		ListBox::iRGBA_hovered[3]=(int)(A*255.0f);
-	}
-	template<> float* ListBox<ListItem<wchar_t*>>::getHoveredItemColorFloat(){
-		return ListBox::fRGBA_hovered;
-	}
-	template<> float* ListBox<ListItem<newifstream>>::getHoveredItemColorFloat(){
-		return ListBox::fRGBA_hovered;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setPressedItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_pressed[0]=R;
-		ListBox::iRGBA_pressed[1]=G;
-		ListBox::iRGBA_pressed[2]=B;
-		ListBox::iRGBA_pressed[3]=A;
-		ListBox::fRGBA_pressed[0]=R/255.0f;
-		ListBox::fRGBA_pressed[1]=G/255.0f;
-		ListBox::fRGBA_pressed[2]=B/255.0f;
-		ListBox::fRGBA_pressed[3]=A/255.0f;
-	}
-	template<> void ListBox<ListItem<newifstream>>::setPressedItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_pressed[0]=R;
-		ListBox::iRGBA_pressed[1]=G;
-		ListBox::iRGBA_pressed[2]=B;
-		ListBox::iRGBA_pressed[3]=A;
-		ListBox::fRGBA_pressed[0]=R/255.0f;
-		ListBox::fRGBA_pressed[1]=G/255.0f;
-		ListBox::fRGBA_pressed[2]=B/255.0f;
-		ListBox::fRGBA_pressed[3]=A/255.0f;
-	}
-	template<> int* ListBox<ListItem<wchar_t*>>::getPressedItemColorInt(){
-		return ListBox::iRGBA_pressed;
-	}
-	template<> int* ListBox<ListItem<newifstream>>::getPressedItemColorInt(){
-		return ListBox::iRGBA_pressed;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setPressedItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_pressed[0]=R;
-		ListBox::fRGBA_pressed[1]=G;
-		ListBox::fRGBA_pressed[2]=B;
-		ListBox::fRGBA_pressed[3]=A;
-		ListBox::iRGBA_pressed[0]=(int)(R*255.0f);
-		ListBox::iRGBA_pressed[1]=(int)(G*255.0f);
-		ListBox::iRGBA_pressed[2]=(int)(B*255.0f);
-		ListBox::iRGBA_pressed[3]=(int)(A*255.0f);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setPressedItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_pressed[0]=R;
-		ListBox::fRGBA_pressed[1]=G;
-		ListBox::fRGBA_pressed[2]=B;
-		ListBox::fRGBA_pressed[3]=A;
-		ListBox::iRGBA_pressed[0]=(int)(R*255.0f);
-		ListBox::iRGBA_pressed[1]=(int)(G*255.0f);
-		ListBox::iRGBA_pressed[2]=(int)(B*255.0f);
-		ListBox::iRGBA_pressed[3]=(int)(A*255.0f);
-	}
-	template<> float* ListBox<ListItem<wchar_t*>>::getPressedItemColorFloat(){
-		return ListBox::fRGBA_pressed;
-	}
-	template<> float* ListBox<ListItem<newifstream>>::getPressedItemColorFloat(){
-		return ListBox::fRGBA_pressed;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setSelectedItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_selected[0]=R;
-		ListBox::iRGBA_selected[1]=G;
-		ListBox::iRGBA_selected[2]=B;
-		ListBox::iRGBA_selected[3]=A;
-		ListBox::fRGBA_selected[0]=R/255.0f;
-		ListBox::fRGBA_selected[1]=G/255.0f;
-		ListBox::fRGBA_selected[2]=B/255.0f;
-		ListBox::fRGBA_selected[3]=A/255.0f;
-	}
-	template<> void ListBox<ListItem<newifstream>>::setSelectedItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_selected[0]=R;
-		ListBox::iRGBA_selected[1]=G;
-		ListBox::iRGBA_selected[2]=B;
-		ListBox::iRGBA_selected[3]=A;
-		ListBox::fRGBA_selected[0]=R/255.0f;
-		ListBox::fRGBA_selected[1]=G/255.0f;
-		ListBox::fRGBA_selected[2]=B/255.0f;
-		ListBox::fRGBA_selected[3]=A/255.0f;
-	}
-	template<> int* ListBox<ListItem<wchar_t*>>::getSelectedItemColorInt(){
-		return iRGBA_selected;
-	}
-	template<> int* ListBox<ListItem<newifstream>>::getSelectedItemColorInt(){
-		return iRGBA_selected;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setSelectedItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_selected[0]=R;
-		ListBox::fRGBA_selected[1]=G;
-		ListBox::fRGBA_selected[2]=B;
-		ListBox::fRGBA_selected[3]=A;
-		ListBox::iRGBA_selected[0]=(int)(R*255.0f);
-		ListBox::iRGBA_selected[1]=(int)(G*255.0f);
-		ListBox::iRGBA_selected[2]=(int)(B*255.0f);
-		ListBox::iRGBA_selected[3]=(int)(A*255.0f);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setSelectedItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_selected[0]=R;
-		ListBox::fRGBA_selected[1]=G;
-		ListBox::fRGBA_selected[2]=B;
-		ListBox::fRGBA_selected[3]=A;
-		ListBox::iRGBA_selected[0]=(int)(R*255.0f);
-		ListBox::iRGBA_selected[1]=(int)(G*255.0f);
-		ListBox::iRGBA_selected[2]=(int)(B*255.0f);
-		ListBox::iRGBA_selected[3]=(int)(A*255.0f);
-	}
-	template<> float* ListBox<ListItem<wchar_t*>>::getSelectedItemColorFloat(){
-		return fRGBA_selected;
-	}
-	template<> float* ListBox<ListItem<newifstream>>::getSelectedItemColorFloat(){
-		return fRGBA_selected;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setDisabledItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_disabled[0]=R;
-		ListBox::iRGBA_disabled[1]=G;
-		ListBox::iRGBA_disabled[2]=B;
-		ListBox::iRGBA_disabled[3]=A;
-		ListBox::fRGBA_disabled[0]=R/255.0f;
-		ListBox::fRGBA_disabled[1]=G/255.0f;
-		ListBox::fRGBA_disabled[2]=B/255.0f;
-		ListBox::fRGBA_disabled[3]=A/255.0f;
-	}
-	template<> void ListBox<ListItem<newifstream>>::setDisabledItemColor(int R,int G,int B,int A){
-		ListBox::iRGBA_disabled[0]=R;
-		ListBox::iRGBA_disabled[1]=G;
-		ListBox::iRGBA_disabled[2]=B;
-		ListBox::iRGBA_disabled[3]=A;
-		ListBox::fRGBA_disabled[0]=R/255.0f;
-		ListBox::fRGBA_disabled[1]=G/255.0f;
-		ListBox::fRGBA_disabled[2]=B/255.0f;
-		ListBox::fRGBA_disabled[3]=A/255.0f;
-	}
-	template<> int* ListBox<ListItem<wchar_t*>>::getDisabledItemColorInt(){
-		return ListBox::iRGBA_disabled;
-	}
-	template<> int* ListBox<ListItem<newifstream>>::getDisabledItemColorInt(){
-		return ListBox::iRGBA_disabled;
-	}
-	template<> void ListBox<ListItem<wchar_t*>>::setDisabledItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_disabled[0]=R;
-		ListBox::fRGBA_disabled[1]=G;
-		ListBox::fRGBA_disabled[2]=B;
-		ListBox::fRGBA_disabled[3]=A;
-		ListBox::iRGBA_disabled[0]=(int)(R*255.0f);
-		ListBox::iRGBA_disabled[1]=(int)(G*255.0f);
-		ListBox::iRGBA_disabled[2]=(int)(B*255.0f);
-		ListBox::iRGBA_disabled[3]=(int)(A*255.0f);
-	}
-	template<> void ListBox<ListItem<newifstream>>::setDisabledItemColor(float R,float G,float B,float A){
-		ListBox::fRGBA_disabled[0]=R;
-		ListBox::fRGBA_disabled[1]=G;
-		ListBox::fRGBA_disabled[2]=B;
-		ListBox::fRGBA_disabled[3]=A;
-		ListBox::iRGBA_disabled[0]=(int)(R*255.0f);
-		ListBox::iRGBA_disabled[1]=(int)(G*255.0f);
-		ListBox::iRGBA_disabled[2]=(int)(B*255.0f);
-		ListBox::iRGBA_disabled[3]=(int)(A*255.0f);
-	}
-	template<> float* ListBox<ListItem<wchar_t*>>::getDisabledItemColorFloat(){
-		return ListBox::fRGBA_disabled;
-	}
-	template<> float* ListBox<ListItem<newifstream>>::getDisabledItemColorFloat(){
-		return ListBox::fRGBA_disabled;
 	}
 	template<> void ListBox<ListItem<wchar_t*>>::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(getViewportBounds().right>getBounds().right){
@@ -8074,14 +3813,14 @@ namespace D2DUI{
 		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(-leftY,-topY));
 		for(int i=0;i<list.size();i++){
-			if(list.at(i).isEnabled()==true){
-				if(list.at(i).isSelected()==true){
+			if(list.at(i).isEnabled()){
+				if(list.at(i).isSelected()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_selected[0],fRGBA_selected[1],fRGBA_selected[2],fRGBA_selected[3]*opacity));
 				}//Selected enabled ListItem
-				else if(list.at(i).isPressed()==true){
+				else if(list.at(i).isPressed()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_pressed[0],fRGBA_pressed[1],fRGBA_pressed[2],fRGBA_pressed[3]*opacity));
 				}//Pressed enabled ListItem
-				else if(list.at(i).isHovered()==true){
+				else if(list.at(i).isHovered()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_hovered[0],fRGBA_hovered[1],fRGBA_hovered[2],fRGBA_hovered[3]*opacity));
 				}//Hovered enabled ListItem
 			}//Enabled ListItem
@@ -8126,10 +3865,10 @@ namespace D2DUI{
 		}
 		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 		d2d->target->PopAxisAlignedClip();
-		if(hScrollBar->isHorizontalScrollingEnabled()==true){
+		if(hScrollBar->isHorizontalScrollingEnabled()){
 			hScrollBar->draw(d2d);
 		}
-		if(vScrollBar->isVerticalScrollingEnabled()==true){
+		if(vScrollBar->isVerticalScrollingEnabled()){
 			vScrollBar->draw(d2d);
 		}
 	}
@@ -8149,14 +3888,14 @@ namespace D2DUI{
 		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(-leftY,-topY));
 		for(int i=0;i<list.size();i++){
-			if(list.at(i).isEnabled()==true){
-				if(list.at(i).isSelected()==true){
+			if(list.at(i).isEnabled()){
+				if(list.at(i).isSelected()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_selected[0],fRGBA_selected[1],fRGBA_selected[2],fRGBA_selected[3]*opacity));
 				}//Selected enabled ListItem
-				else if(list.at(i).isPressed()==true){
+				else if(list.at(i).isPressed()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_pressed[0],fRGBA_pressed[1],fRGBA_pressed[2],fRGBA_pressed[3]*opacity));
 				}//Pressed enabled ListItem
-				else if(list.at(i).isHovered()==true){
+				else if(list.at(i).isHovered()){
 					d2d->solidbrush->SetColor(ColorF(fRGBA_hovered[0],fRGBA_hovered[1],fRGBA_hovered[2],fRGBA_hovered[3]*opacity));
 				}//Hovered enabled ListItem
 			}//Enabled ListItem
@@ -8201,10 +3940,10 @@ namespace D2DUI{
 		}
 		d2d->target->RestoreDrawingState(d2d->targetstate.Get());
 		d2d->target->PopAxisAlignedClip();
-		if(hScrollBar->isHorizontalScrollingEnabled()==true){
+		if(hScrollBar->isHorizontalScrollingEnabled()){
 			hScrollBar->draw(d2d);
 		}
-		if(vScrollBar->isVerticalScrollingEnabled()==true){
+		if(vScrollBar->isVerticalScrollingEnabled()){
 			vScrollBar->draw(d2d);
 		}
 	}
@@ -8214,167 +3953,6 @@ namespace D2DUI{
 		Slider::value=value;
 		Slider::step=step;
 		states.push_back(NONE);
-	}
-	void Slider::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT Slider::getBounds(){
-		return bounds;
-	}
-	void Slider::setEnabled(bool enabled){
-		bool foundinstates=false;
-		if(enabled==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==ENABLED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}	
-			if(foundinstates==false){
-				states.push_back(ENABLED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==ENABLED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool Slider::isEnabled(){
-		bool enabled=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==ENABLED){
-					enabled=true;
-					break;
-				}
-			}
-		}
-		return enabled;
-	}
-	void Slider::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(VISIBLE);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==VISIBLE){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool Slider::isVisible(){
-		bool visible=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	void Slider::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==PRESSED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(PRESSED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==PRESSED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool Slider::isPressed(){
-		bool pressed=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==PRESSED){
-					pressed=true;
-					break;
-				}
-			}
-		}
-		return pressed;
-	}
-	void Slider::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==HOVERED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				states.push_back(HOVERED);
-			}
-		}
-		else{
-			if(states.size()!=0){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==HOVERED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool Slider::isHovered(){
-		bool hovered=false;
-		if(states.size()!=0){
-			for(int i=0;i<states.size();i++){
-				if(states.at(i)==HOVERED){
-					hovered=true;
-					break;
-				}
-			}
-		}
-		return hovered;
 	}
 	void Slider::setMaximumValue(int maxValue){
 		Slider::maxValue=maxValue;
@@ -8409,8 +3987,8 @@ namespace D2DUI{
 		int top=getBounds().top+((size/2)-(trackheight/2));
 		float thumbleft=(float)(getBounds().left)+(((float)(getBounds().right-getBounds().left))/((float)(maxValue/step))*(float)value);
 		d2d->target->FillRectangle(RectF((float)getBounds().left+pad,top,(float)getBounds().right-pad,(float)(top+trackheight)),d2d->solidbrush.Get());
-		if(isEnabled()==true){
-			if(isPressed()==true){
+		if(isEnabled()){
+			if(isPressed()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -8420,7 +3998,7 @@ namespace D2DUI{
 				d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 				d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
 			}//Enabled pressed Slider
-			else if(isHovered()==true){
+			else if(isHovered()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\slide_thumb.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -8470,135 +4048,18 @@ namespace D2DUI{
 	bool ScrollBar::isVerticalScrollingEnabled(){
 		return vScroll;
 	}
-	void ScrollBar::setPressed(bool pressed){
-		bool foundinstates=false;
-		if(pressed==true){
-			if(ScrollBar::states.size()!=0){
-				for(int i=0;i<ScrollBar::states.size();i++){
-					if(ScrollBar::states.at(i)==PRESSED){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				ScrollBar::states.push_back(PRESSED);
-			}
-		}
-		else{
-			if(ScrollBar::states.size()!=0){
-				for(int i=0;i<ScrollBar::states.size();i++){
-					if(ScrollBar::states.at(i)==PRESSED){
-						ScrollBar::states.erase(ScrollBar::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool ScrollBar::isPressed(){
-		bool pressed=false;
-		if(ScrollBar::states.size()!=0){
-			for(int i=0;i<ScrollBar::states.size();i++){
-				if(ScrollBar::states.at(i)==PRESSED){
-					pressed=true;
-					break;
-				}
-			}
-		}
-		return pressed;
-	}
-	void ScrollBar::setVisible(bool visible){
-		bool foundinstates=false;
-		if(visible==true){
-			if(ScrollBar::states.size()!=0){
-				for(int i=0;i<ScrollBar::states.size();i++){
-					if(ScrollBar::states.at(i)==VISIBLE){
-						foundinstates=true;
-						break;
-					}
-				}
-			}
-			if(foundinstates==false){
-				ScrollBar::states.push_back(VISIBLE);
-			}
-		}
-		else{
-			if(ScrollBar::states.size()!=0){
-				for(int i=0;i<ScrollBar::states.size();i++){
-					if(ScrollBar::states.at(i)==VISIBLE){
-						ScrollBar::states.erase(ScrollBar::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool ScrollBar::isVisible(){
-		bool visible=false;
-		if(ScrollBar::states.size()!=0){
-			for(int i=0;i<ScrollBar::states.size();i++){
-				if(ScrollBar::states.at(i)==VISIBLE){
-					visible=true;
-					break;
-				}
-			}
-		}
-		return visible;
-	}
-	void ScrollBar::setHovered(bool hovered){
-		bool foundinstates=false;
-		if(hovered==true){
-			if(ScrollBar::states.size()!=0){
-				for(int i=0;i<ScrollBar::states.size();i++){
-					if(ScrollBar::states.at(i)==HOVERED){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(foundinstates==false){
-					ScrollBar::states.push_back(HOVERED);
-				}
-			}
-		}
-		else{
-			if(ScrollBar::states.size()!=0){
-				for(int i=0;i<ScrollBar::states.size();i++){
-					if(ScrollBar::states.at(i)==HOVERED){
-						ScrollBar::states.erase(ScrollBar::states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
-	}
-	bool ScrollBar::isHovered(){
-		bool hovered=false;
-		if(ScrollBar::states.size()!=0){
-			for(int i=0;i<ScrollBar::states.size();i++){
-				if(ScrollBar::states.at(i)==HOVERED){
-					hovered=true;
-					break;
-				}
-			}
-		}
-		return hovered;
-	}
-	void ScrollBar::setBounds(int left,int top,int right,int bottom){
-		bounds.left=left;
-		bounds.top=top;
-		bounds.right=right;
-		bounds.bottom=bottom;
-	}
-	RECT ScrollBar::getBounds(){
-		return bounds;
-	}
 	void ScrollBar::scrollTo(float position){
 		ScrollBar::position=position;
 	}
+	void ScrollBar::setOrientation(Orientation o){
+		this->o=o;
+	}
+	ScrollBar::Orientation ScrollBar::getOrientation(){
+		return o;
+	}
 	void ScrollBar::draw(std::shared_ptr<D2DHandle>& d2d){
-		if(isVerticalScrollingEnabled()==true){
-			if(isPressed()==true){
+		if(isVerticalScrollingEnabled()){
+			if(isPressed()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
@@ -8629,8 +4090,8 @@ namespace D2DUI{
 			d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,d2d->bmp.ReleaseAndGetAddressOf());
 			d2d->target->DrawBitmap(d2d->bmp.Get(),RectF((float)getBounds().left,topY,(float)getBounds().right,topY+height),opacity);	
 		}
-		else if(isHorizontalScrollingEnabled()==true){
-			if(isPressed()==true){
+		else if(isHorizontalScrollingEnabled()){
+			if(isPressed()){
 				d2d->imgfactory->CreateDecoderFromFilename(L"Images\\UI\\scrollbar_track_pressed_horizontal.png",NULL,GENERIC_READ,WICDecodeMetadataCacheOnLoad,d2d->bmpdecoder.ReleaseAndGetAddressOf());
 				d2d->bmpdecoder->GetFrame(0,d2d->bmpframedecoder.ReleaseAndGetAddressOf());
 				d2d->imgfactory->CreateBitmapScaler(d2d->bmpscaler.ReleaseAndGetAddressOf());
