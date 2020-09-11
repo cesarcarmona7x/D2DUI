@@ -5,6 +5,7 @@
 #define D2DUI_INCLUDED
 #include "stdafx.h"
 namespace D2DUI{
+	class D2DUIDrawableItem;
 	class newifstream{
 	public:
 		newifstream(wchar_t* filename=L""){
@@ -35,24 +36,19 @@ namespace D2DUI{
 		PRESSED=5,
 		CHECKED=6,
 		SELECTED=7,
-		VISIBLE=8
+		VISIBLE=8,
+		DROPDOWN_VISIBLE=9
 	}WINDOW_STATES;
-	class HorizontalConstants{
-	public:
-		HorizontalConstants(){}
-		~HorizontalConstants(){}
-		static const int LEFT=0;
-		static const int CENTER_HORIZONTAL=1;
-		static const int RIGHT=2;
-	};
-	class VerticalConstants{
-	public:
-		VerticalConstants(){}
-		~VerticalConstants(){}
-		static const int TOP=3;
-		static const int CENTER_VERTICAL=4;
-		static const int BOTTOM=5;
-	};
+	typedef enum HorizontalConstants{
+		LEFT=0,
+		CENTER_HORIZONTAL=1,
+		RIGHT=2
+	}HorizontalConstants;
+	typedef enum VerticalConstants{
+		TOP=3,
+		CENTER_VERTICAL=4,
+		BOTTOM=5
+	}VerticalConstants;
 	class TabControlConstants{
 	public:
 		TabControlConstants(){}
@@ -71,7 +67,8 @@ namespace D2DUI{
 	class LayoutBase;
 	class WindowBase{
 	public:
-		WindowBase():parent(*(LayoutBase*)NULL){}
+		WindowBase(){
+		}
 		~WindowBase(){}
 		virtual void setOpacity(float opacity=1.0f){
 			this->opacity=opacity;
@@ -132,15 +129,13 @@ namespace D2DUI{
 			this->row=row;
 			this->col=col;
 		}
-		virtual void setParentLayout(LayoutBase& layout);
-		virtual LayoutBase& getParentLayout(){
-			return parent;
-		}
+		virtual void setParentLayout(std::shared_ptr<LayoutBase> layout);
+		virtual std::shared_ptr<LayoutBase> getParentLayout();
 		//Sets the text for the window.
-		virtual void setText(wchar_t* text){
+		virtual void setText(std::wstring text){
 			this->text=text;
 		}
-		virtual wchar_t* getText(){
+		virtual std::wstring getText(){
 			return text;
 		}
 		//Sets the font for the window.
@@ -171,19 +166,19 @@ namespace D2DUI{
 			return icon;
 		}
 		//Sets the text's horizontal alignment.
-		virtual void setHorizontalTextAlignment(const int h){
-			this->hAlignment=const_cast<int&>(h);
+		virtual void setHorizontalTextAlignment(HorizontalConstants h){
+			hAlignment=h;
 		}
-		//Retrieves the horizontal text alignment as an int.
-		virtual int getHorizontalTextAlignment(){
+		//Retrieves the horizontal text alignment as HorizontalConstants.
+		virtual HorizontalConstants getHorizontalTextAlignment(){
 			return hAlignment;
 		}
 		//Set the text's vertical alignment.
-		virtual void setVerticalTextAlignment(const int v){
-			this->vAlignment=const_cast<int&>(v);
+		virtual void setVerticalTextAlignment(VerticalConstants v){
+			vAlignment=v;
 		}
-		//Retrieves the vertical text alignment as an int.
-		virtual int getVerticalTextAlignment(){
+		//Retrieves the vertical text alignment as VerticalConstants.
+		virtual VerticalConstants getVerticalTextAlignment(){
 			return vAlignment;
 		}
 		//Defines the colour of the text. Values go from 0.0 to 1.0
@@ -342,28 +337,7 @@ namespace D2DUI{
 			return pressed;
 		}
 		//Selects the current button from the group.
-		virtual void setSelected(bool selected){
-			bool foundinstates=false;
-			if(selected){
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==SELECTED){
-						foundinstates=true;
-						break;
-					}
-				}
-				if(!foundinstates){
-					states.push_back(SELECTED);
-				}
-			}
-			else{
-				for(int i=0;i<states.size();i++){
-					if(states.at(i)==SELECTED){
-						states.erase(states.begin()+i);
-						break;
-					}
-				}
-			}
-		}
+		virtual void setSelected(bool selected){}
 		//Retrieves if the button is the one being selected.
 		virtual bool isSelected(){
 			bool selected=false;
@@ -534,15 +508,19 @@ namespace D2DUI{
 				return false;
 			}
 			else{
-				const char* type=typeid(this).name();
 				return (wcscmp(wndId,other.wndId)==0);
 			}
 		}
 		int row,col;
 		int height;
 		int width;
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d)=0;
+		ComPtr<ID2D1Bitmap> bmp,bmp_disabled,bmp_pressed,bmp_hovered,bmp_selected,bmp_pressed_selected,bmp_hovered_selected,bmp_disabled_selected,bmp_focused,bmp_checked,bmp_pressed_checked,bmp_hovered_checked,bmp_disabled_checked;
+		ComPtr<IDWriteTextLayout>textlayout;
+		ComPtr<ID2D1SolidColorBrush>solidbrush;
+		std::shared_ptr<LayoutBase> parent;
+		D2DUIDrawableItem* drawing;
 	protected:
-		LayoutBase& parent;
 		std::vector<D2DUI::WINDOW_STATES>states;
 		wchar_t* wndId;
 		wchar_t* locale;
@@ -559,15 +537,15 @@ namespace D2DUI{
 		int topPadding;
 		int rightPadding;
 		int bottomPadding;
-		int vAlignment;
-		int hAlignment;
-		wchar_t* text;
+		VerticalConstants vAlignment;
+		HorizontalConstants hAlignment;
+		std::wstring text;
 		wchar_t* icon;
 	};
 	class ScrollBar:public WindowBase{
 	public:
 		ScrollBar(){
-			states.push_back(NONE);
+			states.push_back(WINDOW_STATES::NONE);
 			portions=1;
 			position=0;
 		}
@@ -590,11 +568,14 @@ namespace D2DUI{
 		bool hScroll;
 		Orientation o;
 		void setOrientation(Orientation o);
+		virtual void setVisible(bool visible);
 		Orientation getOrientation();
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		ComPtr<ID2D1Bitmap>bmp_thumb;
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setFont(wchar_t* font){}
 		virtual wchar_t* getFont(){return L"";}
 		virtual void setFocus(bool focus){}
@@ -616,10 +597,10 @@ namespace D2DUI{
 		virtual int getTopPadding(){return 0;}
 		virtual int getRightPadding(){return 0;}
 		virtual int getBottomPadding(){return 0;}
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getHorizontalTextAlignment(){return 0;}
-		virtual int getVerticalTextAlignment(){return 0;}
+		virtual void setHorizontalTextAlignment(HorizontalConstants H){}
+		virtual void setVerticalTextAlignment(VerticalConstants V){}
+		virtual HorizontalConstants getHorizontalTextAlignment(){return LEFT;}
+		virtual VerticalConstants getVerticalTextAlignment(){return TOP;}
 		virtual void setChecked(bool checked){}
 		virtual bool isChecked(){return false;}
 		virtual void setSelected(bool selected){}
@@ -662,7 +643,7 @@ namespace D2DUI{
 	};
 	class LayoutBase{
 	public:
-		LayoutBase(): parent(*(LayoutBase*)NULL){}
+		LayoutBase(){}
 		~LayoutBase(){}
 		enum Orientation{
 			VERTICAL=0,
@@ -773,6 +754,12 @@ namespace D2DUI{
 				bottomPadding=topPadding;
 			}
 		}
+		virtual void setSpacing(int spacing){
+			this->spacing=spacing;
+		}
+		virtual int getSpacing(){
+			return spacing;
+		}
 		virtual int getLeftPadding(){
 			return leftPadding;
 		}
@@ -833,12 +820,8 @@ namespace D2DUI{
 				return wcscmp(this->layId,other.layId)==0;
 			}
 		}
-		LayoutBase& operator= (LayoutBase& other){
-			return other;
-		}
-		virtual void setParentLayout(LayoutBase& parent){
-			this->parent=parent;
-		}
+		virtual void setParentLayout(std::shared_ptr<LayoutBase> parent);
+		virtual std::shared_ptr<LayoutBase> getParentLayout();
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d)=0;
 		int row;
 		int col;
@@ -846,8 +829,12 @@ namespace D2DUI{
 		int height;
 		std::vector<std::reference_wrapper<WindowBase>>windows;
 		std::vector<std::reference_wrapper<LayoutBase>>layouts;
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d)=0;
+		ComPtr<ID2D1SolidColorBrush> solidbrush;
+		D2DUIDrawableItem* drawing;
 	protected:
-		LayoutBase& parent;
+		ComPtr<ID2D1StrokeStyle> strokestyle;
+		std::shared_ptr<LayoutBase> parent;
 		RECT bounds,viewportbounds;
 		HGravity hg;
 		VGravity vg;
@@ -866,7 +853,46 @@ namespace D2DUI{
 		int topPadding;
 		int rightPadding;
 		int bottomPadding;
+		int spacing;
 	};
+	class D2DUIDrawableItem{
+	public:
+		D2DUIDrawableItem(){}
+		D2DUIDrawableItem(WindowBase& parentWindow,bool visible){
+			drawWindow.push_back(parentWindow);
+			this->visible=visible;
+		}
+		D2DUIDrawableItem(LayoutBase& parentLayout,bool visible){
+			drawLayout.push_back(parentLayout);
+			this->visible=visible;
+		}
+		~D2DUIDrawableItem(){}
+		std::vector<std::reference_wrapper<WindowBase>> drawWindow;
+		std::vector<std::reference_wrapper<LayoutBase>> drawLayout;
+		void setVisible(bool visible){this->visible=visible;}
+		bool isVisible(){return visible;}
+	private:
+		bool visible;
+	};
+	class D2DUISystem{
+	public:
+		/*
+		Layer description (objects in the same layer will be drawn by order of addition):
+		1. Used for drawing normal objects.
+		2. Used for drawing dropdowns.
+		3. Used for drawing modal objects (MsgBox, InfoBox, PopupNotification, etc.) and its children.
+		4. Used for drawing dropdowns inside modal objects (see above).
+		*/
+		void addDrawToQueue(int layer,D2DUIDrawableItem& draw);
+		//Call this in your loop update. Once adding at least one item to the drawing system, you won't need to manually add the draw, customDraw or drawDropdown for each element.
+		void draw(std::shared_ptr<D2DHandle>& d2d);
+		std::map<int,std::vector<std::reference_wrapper<D2DUIDrawableItem>>>drawOrder;
+		static D2DUISystem& getInstance();
+	private:
+		D2DUISystem(){}
+		~D2DUISystem(){}
+	};
+
 	class LinearLayout:public LayoutBase{
 	public:
 		LinearLayout(Orientation o=VERTICAL);
@@ -875,6 +901,7 @@ namespace D2DUI{
 		virtual void add(LayoutBase& t);
 		virtual void remove(wchar_t* id);
 		virtual void reorderComponents();
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setViewportBounds(int left,int top,int right,int bottom){}
@@ -898,6 +925,7 @@ namespace D2DUI{
 		virtual void add(LayoutBase& layout,int row,int col);
 		virtual void remove(int row,int col);
 		virtual void reorderComponents();
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setScrollbarVisible(bool visible){}
@@ -919,6 +947,7 @@ namespace D2DUI{
 		virtual void remove(wchar_t* id);
 		virtual void reorderComponents();
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setScrollbarVisible(bool visible){}
 		virtual void setViewportBounds(int left,int top,int right,int bottom){}
@@ -941,6 +970,7 @@ namespace D2DUI{
 		virtual void remove(wchar_t* id);
 		virtual void reorderComponents();
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setViewportBounds(int left,int top,int right,int bottom){}
 		virtual RECT getViewportBounds(){return RECT();}
@@ -960,6 +990,9 @@ namespace D2DUI{
 		~RelativeLayout(){}
 		virtual void add(WindowBase& window,WindowBase& left=*((WindowBase*)NULL),WindowBase& top=*((WindowBase*)NULL),WindowBase& right=*((WindowBase*)NULL),WindowBase& bottom=*(WindowBase*)NULL);
 		virtual void remove(wchar_t* id);
+		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+		virtual void reorderComponents();
 	private:
 		virtual void setViewportBounds(int left,int top,int right,int bottom){}
 		virtual void setScrollbarVisible(bool visible){}
@@ -967,7 +1000,7 @@ namespace D2DUI{
 	};
 	class RadioButton:public WindowBase{
 	public:
-		RadioButton(RadioGroup& parent,bool selected=false,wchar_t* text=L"");
+		RadioButton(RadioGroup& parent,bool selected=false,std::wstring text=L"");
 		~RadioButton(){}
 		wchar_t* tag;
 		RadioGroup& rgParent;
@@ -977,8 +1010,14 @@ namespace D2DUI{
 		void removeParent(RadioGroup& rg);
 		int rbIndex;
 		RadioGroup& getParent();
+		virtual void setSelected(bool selected) override;
 		void setRBIndex(int index);
 		int getRBIndex();
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setChecked(bool checked){}
@@ -1000,19 +1039,26 @@ namespace D2DUI{
 		void remove(int index);
 		void setSelectedIndex(int index);
 		int getSelectedIndex();
+	private:
 		int selectedindex;
 	};
 	class ToggleButton:public WindowBase{
 	public:
-		ToggleButton(ToggleGroup& parent,bool selected=false,wchar_t* text=L"",wchar_t* icon=L"");
+		ToggleButton(ToggleGroup& parent,bool selected=false,std::wstring text=L"",wchar_t* icon=L"");
 		~ToggleButton(){}
 		ToggleGroup& tgParent;
+		virtual void setSelected(bool selected) override;
 		void setParent(ToggleGroup& tg);
 		void removeParent(ToggleGroup& tg);
 		void setTBIndex(int index);
+		void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
 		int getTBIndex();
 		int tbIndex;
 		ToggleGroup& getParent();
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setChecked(bool checked){}
@@ -1030,9 +1076,10 @@ namespace D2DUI{
 		std::vector<std::reference_wrapper<ToggleButton>> tg;
 		void add(ToggleButton& tb);
 		void remove(int index);
-		int selectedindex;
 		void setSelectedIndex(int index);
 		int getSelectedIndex();
+	private:
+		int selectedindex;
 	};
 	class TabControl:public LayoutBase{
 	public:
@@ -1052,9 +1099,14 @@ namespace D2DUI{
 	};
 	class TextLabel:public WindowBase{
 	public:
-		TextLabel(wchar_t* text=L"");
+		TextLabel(std::wstring text=L"");
 		~TextLabel(){}
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setIcon(wchar_t* icon){}
 		virtual wchar_t* getIcon(){return L"";}
@@ -1075,13 +1127,19 @@ namespace D2DUI{
 	};
 	class TextBox:public WindowBase{
 	public:
-		TextBox(wchar_t* text=L"");
+		TextBox(std::wstring text=L"");
 		~TextBox(){}
 		int caretPos;
 		BOOL trail,inside;
-		ComPtr<IDWriteTextLayout> textlayout;
 		RECT caretRect;
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
+		virtual void measureCaret(int x,int y);
+		virtual void measureCaret(int pos);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setChecked(bool checked){}
 		virtual bool isChecked(){return false;}
@@ -1097,10 +1155,14 @@ namespace D2DUI{
 	};
 	class Button:public WindowBase{
 	public:
-		Button(wchar_t* text=L"");
-		Button(wchar_t* text,wchar_t* icon=L"");
+		Button(std::wstring text=L"",wchar_t* icon=L"");
 		~Button(){}
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
 	private:
 		virtual void setEditable(bool editable){}
 		virtual bool isEditable(){return false;}
@@ -1126,18 +1188,20 @@ namespace D2DUI{
 		ArrowButton_Type parentContainer;
 		ArrowButton_Direction direction;
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d) override;
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d) override;
 	private:
-		virtual void setHorizontalTextAlignment(const int H) override{}
-		virtual void setVerticalTextAlignment(const int V) override{}
-		virtual int getHorizontalTextAlignment() override{return 0;}
-		virtual int getVerticalTextAlignment() override{return 0;}
+		ComPtr<ID2D1Bitmap>bmp_up,bmp_down,bmp_pressed_up,bmp_pressed_down,bmp_hovered_up,bmp_hovered_down,bmp_disabled_up,bmp_disabled_down;
+		virtual void setHorizontalTextAlignment(HorizontalConstants H) override{}
+		virtual void setVerticalTextAlignment(VerticalConstants V) override{}
+		virtual HorizontalConstants getHorizontalTextAlignment() override{return LEFT;}
+		virtual VerticalConstants getVerticalTextAlignment() override{return TOP;}
 		virtual void setPadding(int left,int top,int right=-1,int bottom=-1) override{}
 		virtual int getLeftPadding() override{return 0;}
 		virtual int getTopPadding() override{return 0;}
 		virtual int getRightPadding() override{return 0;}
 		virtual int getBottomPadding() override{return 0;}
-		virtual wchar_t* getText() override{return L"";}
-		virtual void setText(wchar_t* text) override{}
+		virtual std::wstring getText() override{return L"";}
+		virtual void setText(std::wstring text) override{}
 		virtual wchar_t* getFont() override{return L"";}
 		virtual wchar_t* getIcon() override{return L"";}
 		virtual void setIcon(wchar_t* icon) override{}
@@ -1155,14 +1219,9 @@ namespace D2DUI{
 	};
 	class DialogueBox:public TextLabel{
 	public:
-		DialogueBox(wchar_t* text=L"");
+		DialogueBox(std::wstring text=L"");
 		~DialogueBox(){}
-		wchar_t* decorationfile;
-		RECT decorationbounds;
-		float decorationopacity;
-		bool shadowenabled;
-		int showedcharacters;
-		DIALOGUEBOX_DECORATION_LEVEL decorationlevel;
+		int showncharacters;
 		void setDecoration(wchar_t* file,DIALOGUEBOX_DECORATION_LEVEL decorationlevel=DECORATIONATSAMELEVELDIALOGUEBOX,float opacity=1.0f);
 		wchar_t* getDecoration();
 		DIALOGUEBOX_DECORATION_LEVEL getDecorationLevel();
@@ -1171,7 +1230,17 @@ namespace D2DUI{
 		RECT getDecorationBounds();
 		void setTextShadow(bool shadow);
 		bool hasTextShadow();
+		bool usesDecoration();
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d) override;
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+		std::vector<ComPtr<IDWriteTextLayout>>letterlayouts;
+	private:
+		bool useDecoration;
+		wchar_t* decorationfile;
+		RECT decorationbounds;
+		float decorationopacity;
+		bool shadowenabled;
+		DIALOGUEBOX_DECORATION_LEVEL decorationlevel;
 	};
 	class Spinner:public WindowBase{
 	public:
@@ -1192,8 +1261,8 @@ namespace D2DUI{
 		virtual void setVisible(bool visible);
 		virtual void setEnabled(bool enabled);
 		virtual void setPadding(int left,int top,int right=-1,int bottom=-1);
-		virtual void setHorizontalTextAlignment(const int H);
-		virtual void setVerticalTextAlignment(const int V);
+		virtual void setHorizontalTextAlignment(HorizontalConstants H);
+		virtual void setVerticalTextAlignment(VerticalConstants V);
 		virtual void setEditable(bool editable);
 		virtual void setFocus(bool focus);
 		virtual void setFont(wchar_t* font);
@@ -1203,6 +1272,7 @@ namespace D2DUI{
 		virtual void setOpacity(float opacity=1.0f);
 		virtual void setLocale(wchar_t* locale);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	protected:
 		std::shared_ptr<TextBox> valuemodifier;
 	private:
@@ -1212,14 +1282,19 @@ namespace D2DUI{
 		virtual bool isSelected(){return false;}
 		virtual void setIcon(wchar_t* icon){}
 		virtual wchar_t* getIcon(){return L"";}
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 	};
 	class CheckBox:public WindowBase{
 	public:
-		CheckBox(bool checked=true,wchar_t* text=L"");
+		CheckBox(bool checked=true,std::wstring text=L"");
 		~CheckBox(){}
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
 	private:
 		virtual void setSelected(bool selected){}
 		virtual bool isSelected(){return false;}
@@ -1230,15 +1305,16 @@ namespace D2DUI{
 		virtual void setFocus(bool focus){}
 		virtual bool hasFocus(){return false;}
 	};
-	template<class T> class ListItem{
+	class ListItem{
 	public:
 		ListItem(){
-			states.push_back(NONE);
+			states.push_back(WINDOW_STATES::NONE);
 		}
 		~ListItem(){
 		}
 		std::vector<D2DUI::WINDOW_STATES> states;
-		T t;
+		ComPtr<IDWriteTextLayout>textlayout;
+		std::wstring text;
 		wchar_t* tag;
 		RECT bounds;
 		wchar_t* font;
@@ -1263,8 +1339,8 @@ namespace D2DUI{
 		bool isHovered();
 		void setPressed(bool pressed);
 		bool isPressed();
-		T& getData();
-		bool operator== (const ListItem<T>& other) const{
+		std::wstring getData();
+		bool operator== (const ListItem& other) const{
 			wchar_t* tag1=new wchar_t[wcslen(this->tag)];
 			wcscpy(tag1,this->tag);
 			wchar_t* tag2=new wchar_t[wcslen(other.tag)];
@@ -1272,19 +1348,19 @@ namespace D2DUI{
 			return wcscmp(tag1,tag2)==0;
 		}
 	};
-	template<class T> class ListBase{
+	class ListBase{
 	public:
 		ListBase(){}
 		~ListBase(){}
-		std::vector<T> list;
-		virtual T& getSelectedItem(){
+		std::vector<ListItem> list;
+		virtual ListItem& getSelectedItem(){
 			return selecteditem;
 		}
-		virtual void setSelectedItem(T& t){
+		virtual void setSelectedItem(ListItem& t){
 			selecteditem=t;
 			auto it=std::find(list.begin(),list.end(),t);
 			int c=std::distance(list.begin(),it);
-			setSelectedIndex(c);	
+			setSelectedIndex(c);
 		}
 		virtual void setSelectedIndex(int index){
 			selectedindex=index;
@@ -1414,17 +1490,27 @@ namespace D2DUI{
 		//Retrieves the final height.
 		virtual int getTotalHeight()=0;
 		//Adds 1 element to the list.
-		virtual void add(T t)=0;
+		virtual void add(ListItem t)=0;
 		//Adds a vector to the list.
-		virtual void addAll(std::vector<T> t)=0;
+		virtual void addAll(std::vector<ListItem> t)=0;
+		//Removes 1 element from the list
 		virtual void remove(int index)=0;
 		virtual void drawDropdown(std::shared_ptr<D2DHandle>& d2d)=0;
+		virtual void useCustomDrawMode(bool useCustomDraw){
+			this->useCustomDraw=useCustomDraw;
+		}
+		virtual bool usesCustomDrawMode(){
+			return useCustomDraw;
+		}
+		std::function<void(std::shared_ptr<D2DHandle>&)> customDraw;
+		std::function<void(std::shared_ptr<D2DHandle>&)> customRecreateResources;
 	protected:
+		bool useCustomDraw;
 		RECT viewportbounds;
 		int dropdownheight;
 		int totalheight;
 		int selectedindex;
-		T selecteditem;
+		ListItem selecteditem;
 		float fRGBA_hovered[4];
 		int iRGBA_hovered[4];
 		float fRGBA_pressed[4];
@@ -1434,15 +1520,13 @@ namespace D2DUI{
 		float fRGBA_disabled[4];
 		int iRGBA_disabled[4];
 	};
-	template<class T> class ComboBox:public WindowBase,public ListBase<T>{
+	class ComboBox:public WindowBase,public ListBase{
 	public:
 		ComboBox(){
-			states.push_back(NONE);
+			dropdownvisible=false;
+			states.push_back(WINDOW_STATES::NONE);
 			tb=std::shared_ptr<TextBox>(new TextBox());
 			dropdown=std::shared_ptr<ArrowButton>(new ArrowButton());
-			hScrollBar=std::shared_ptr<ScrollBar>(new ScrollBar());
-			hScrollBar->disableVerticalScrolling();
-			hScrollBar->disableHorizontalScrolling();
 			vScrollBar=std::shared_ptr<ScrollBar>(new ScrollBar());
 			vScrollBar->position=0;
 			vScrollBar->portions=1;
@@ -1450,33 +1534,29 @@ namespace D2DUI{
 			vScrollBar->disableVerticalScrolling();
 			setTotalHeight(0);
 			setDropdownHeight(0);
-			setFont(L"Microsoft Sans Serif");
+			setFont(L"Comic Sans MS");
 			setTextSize(12.0f);
 			setForeground(0.f,0.f,0.f,1.f);
+			drawing=new D2DUIDrawableItem(*this,false);
+			useCustomDraw=false;
 		}
 		~ComboBox(){
 			tb.reset();
 			dropdown.reset();
 			vScrollBar.reset();
-			hScrollBar.reset();
 		}
-		std::function<void()> onClick;
-		std::function<void()> onItemSelected;
-		std::function<void()> onItemPressed;
-		std::function<void()> onItemHovered;
-		std::function<void()> onItemEnabled;
 		std::shared_ptr<TextBox> tb;
 		virtual void setTextSize(float px){
 			WindowBase::setTextSize(px);
 			tb->setTextSize(px);
 		}
-		virtual void setText(wchar_t* text){
+		virtual void setText(std::wstring text){
 			WindowBase::setText(text);
 			tb->setText(text);
 		}
 		virtual void setFont(wchar_t* font){
-			WindowBase::setText(font);
-			tb->setText(text);
+			WindowBase::setFont(font);
+			tb->setFont(font);
 		}
 		virtual void setEnabled(bool enabled){
 			WindowBase::setEnabled(enabled);
@@ -1491,6 +1571,7 @@ namespace D2DUI{
 			WindowBase::setVisible(visible);
 			tb->setVisible(visible);
 			dropdown->setVisible(visible);
+			drawing->setVisible(visible);
 		}
 		virtual void setFocus(bool focus){
 			WindowBase::setFocus(focus);
@@ -1499,7 +1580,7 @@ namespace D2DUI{
 		virtual void setBounds(int left,int top,int right,int bottom){
 			WindowBase::setBounds(left,top,right,bottom);
 			tb->setBounds(left,top,right-30,bottom);
-			dropdown->setBounds(tb->getBounds().left,top,right,bottom);
+			dropdown->setBounds(tb->getBounds().right,top,right,bottom);
 			vScrollBar->setBounds(getBounds().right-20,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight());
 		}
 		virtual void setForeground(int R,int G,int B,int A=255){
@@ -1511,7 +1592,6 @@ namespace D2DUI{
 			tb->setForeground(R,G,B,A);
 		}
 		std::shared_ptr<ArrowButton> dropdown;
-		std::shared_ptr<ScrollBar> hScrollBar;
 		std::shared_ptr<ScrollBar> vScrollBar;
 		virtual void setLocale(wchar_t* locale){
 			WindowBase::setLocale(locale);
@@ -1528,17 +1608,17 @@ namespace D2DUI{
 			WindowBase::setPadding(left,top,right,bottom);
 			tb->setPadding(left,top,right,bottom);
 		}
-		virtual void setHorizontalTextAlignment(const int H){
+		virtual void setHorizontalTextAlignment(HorizontalConstants H){
 			WindowBase::setHorizontalTextAlignment(H);
 			tb->setHorizontalTextAlignment(H);
 		}
-		virtual void setVerticalTextAlignment(const int V){
+		virtual void setVerticalTextAlignment(VerticalConstants V){
 			WindowBase::setVerticalTextAlignment(V);
 			tb->setVerticalTextAlignment(V);
 		}
 		virtual void setDropdownHeight(int height){
 			ComboBox::dropdownheight=height;
-			if(getDropdownHeight()<getTotalHeight()&&vScrollBar->isVerticalScrollingEnabled()){
+			if(getDropdownHeight()<getTotalHeight()){
 				vScrollBar->enableVerticalScrolling();
 				vScrollBar->setBounds(getBounds().right-20,getBounds().bottom,getBounds().right,getBounds().bottom+getDropdownHeight());
 				if(height!=0){
@@ -1561,7 +1641,7 @@ namespace D2DUI{
 		}
 		virtual void setTotalHeight(int height){
 			ComboBox::totalheight=height;
-			if(getDropdownHeight()<getTotalHeight()&&vScrollBar->isVerticalScrollingEnabled()){
+			if(getDropdownHeight()<getTotalHeight()){
 				vScrollBar->enableVerticalScrolling();
 			}
 			if(getDropdownHeight()!=0){
@@ -1579,24 +1659,24 @@ namespace D2DUI{
 		virtual int getTotalHeight(){
 			return totalheight;
 		}
-		virtual void add(T t){
+		virtual void add(ListItem t){
 			int itemheight=((int)t.getTextSize())+getTopPadding()+getBottomPadding();
-			int top=0;
+			int top=getBounds().bottom;
 			if(list.size()!=0){
 				top=list.at(list.size()-1).getBounds().bottom;
 			}
-			t.setBounds(0,top,getBounds().right,top+itemheight);
+			t.setBounds(getBounds().left,top,getBounds().right,top+itemheight);
 			list.push_back(t);
 			setTotalHeight(getTotalHeight()+itemheight);
 		}
-		virtual void addAll(std::vector<T> ts){
-			for(T& t:ts){
+		virtual void addAll(std::vector<ListItem> ts){
+			for(ListItem& t:ts){
 				int itemheight=((int)getTextSize())+getTopPadding()+getBottomPadding();
-				int top=0;
+				int top=getBounds().bottom;
 				if(list.size()!=0){
 					top=list.at(list.size()-1).getBounds().bottom;
 				}
-				t.setBounds(0,top,getBounds().right,top+itemheight);
+				t.setBounds(getBounds().left,top,getBounds().right,top+itemheight);
 				list.push_back(t);
 				setTotalHeight(getTotalHeight()+itemheight);
 			} 
@@ -1606,12 +1686,18 @@ namespace D2DUI{
 			int itemheight=((int)list.at(index).getTextSize())+getTopPadding()+getBottomPadding();
 			setTotalHeight(getTotalHeight()-itemheight);
 		}
-		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
-		virtual void drawDropdown(std::shared_ptr<D2DHandle>& d2d);
-		ComboBox<T>& operator= (ComboBox<T>& other){
-			return other;
+		void showDropdown(bool visible){
+			this->dropdownvisible=visible;
 		}
+		bool isDropdownVisible(){
+			return dropdownvisible;
+		}
+		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		std::function<void(std::shared_ptr<D2DHandle>& d2d)> customDrawDropdown;
+		virtual void drawDropdown(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
+		bool dropdownvisible;
 		virtual void setIcon(wchar_t* icon){}
 		virtual wchar_t* getIcon(){return L"";}
 		virtual void setHovered(bool hovered){}
@@ -1625,7 +1711,7 @@ namespace D2DUI{
 		virtual void setViewportBounds(int left,int top,int right,int bottom){}
 		virtual RECT getViewportBounds(){return RECT();}
 	};
-	template<class T> class ListBox:public WindowBase,public ListBase<T>{
+	class ListBox:public WindowBase,public ListBase{
 	public:
 		ListBox(){
 			hScrollBar=std::shared_ptr<ScrollBar>(new ScrollBar);
@@ -1639,7 +1725,9 @@ namespace D2DUI{
 			vScrollBar->position=0;
 			vScrollBar->portions=1;
 			setTotalHeight(0);
-			states.push_back(NONE);
+			states.push_back(WINDOW_STATES::NONE);
+			drawing=new D2DUIDrawableItem(*this,false);
+			useCustomDraw=false;
 		}
 		~ListBox(){}
 		std::shared_ptr<ScrollBar> hScrollBar;
@@ -1693,7 +1781,7 @@ namespace D2DUI{
 		virtual RECT getViewportBounds(){
 			return viewportbounds;
 		}
-		virtual void add(T t){
+		virtual void add(ListItem t){
 			int itemheight=((int)t.getTextSize())+getTopPadding()+getBottomPadding();
 			int top=0;
 			if(list.size()!=0){
@@ -1730,8 +1818,8 @@ namespace D2DUI{
 		virtual int getTotalHeight(){
 			return totalheight;
 		}
-		virtual void addAll(std::vector<T> t){
-			for(T t1:t){
+		virtual void addAll(std::vector<ListItem> t){
+			for(ListItem& t1:t){
 				list.push_back(t1);
 			}
 			int itemheight=((int)getTextSize())+getTopPadding()+getBottomPadding();
@@ -1740,15 +1828,20 @@ namespace D2DUI{
 		virtual void remove(int index){
 			list.erase(list.begin()+index);
 		}
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setDropdownHeight(int height){}
 		virtual int getDropdownHeight(){return 0;}
 		virtual void setFocus(bool focus){}
 		virtual bool hasFocus(){return false;}
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
-		virtual void setIcon(wchar_t* text){}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
+		virtual void setIcon(std::wstring text){}
 		virtual wchar_t* getIcon(){return L"";}
 		virtual void drawDropdown(std::shared_ptr<D2DHandle>& d2d){}
 		virtual void setSelected(bool selected){}
@@ -1774,12 +1867,17 @@ namespace D2DUI{
 		int getMinimumValue();
 		void setStep(int step);
 		int getStep();
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual int getHorizontalTextAlignment(){return 0;}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getVerticalTextAlignment(){return 0;}
+		virtual void setHorizontalTextAlignment(HorizontalConstants H){}
+		virtual HorizontalConstants getHorizontalTextAlignment(){return LEFT;}
+		virtual void setVerticalTextAlignment(VerticalConstants V){}
+		virtual VerticalConstants getVerticalTextAlignment(){return TOP;}
 		virtual void setPadding(int left,int top,int right=-1,int bottom=-1){}
 		virtual int getTopPadding(){return 0;}
 		virtual int getLeftPadding(){return 0;}
@@ -1790,8 +1888,8 @@ namespace D2DUI{
 		virtual void setChecked(bool checked){}
 		virtual bool isChecked(){return false;}
 		virtual void setTextSize(float px){}
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setFont(wchar_t* font){}
 		virtual wchar_t* getFont(){return L"";}
 		virtual void setIcon(wchar_t* icon){}
@@ -1820,9 +1918,14 @@ namespace D2DUI{
 		void setFile(wchar_t* file);
 		wchar_t* getFilePath();
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setEnabled(bool enabled){}
 		virtual bool isEnabled(){return false;}
 		virtual void setHovered(bool hovered){}
@@ -1844,10 +1947,10 @@ namespace D2DUI{
 		virtual bool isEditable(){return false;}
 		virtual void setFocus(bool focus){}
 		virtual bool hasFocus(){return false;}
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual int getHorizontalTextAlignment(){return -1;}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getVerticalTextAlignment(){return -1;}
+		virtual void setHorizontalTextAlignment(HorizontalConstants H){}
+		virtual HorizontalConstants getHorizontalTextAlignment(){return LEFT;}
+		virtual void setVerticalTextAlignment(VerticalConstants V){}
+		virtual VerticalConstants getVerticalTextAlignment(){return TOP;}
 		virtual void setFont(wchar_t* font){}
 		virtual wchar_t* getFont(){return L"";}
 		virtual void setForeground(int R,int G,int B,int A=255){}
@@ -1870,15 +1973,30 @@ namespace D2DUI{
 		int getCurrentFrame();
 		void setLoop(bool loop);
 		bool isLooping();
-		virtual void draw(std::shared_ptr<D2DHandle> d2d);
-	private:
+		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+	protected:
+		unsigned int totalframes;
+		std::vector<ComPtr<ID2D1Bitmap>> frame_bmp;
 		int currentframe;
 		bool loop;
 	};
+	class OpacityMaskGifView:public GifView{
+	public:
+		OpacityMaskGifView(wchar_t* imagefile,wchar_t* maskfile): GifView(imagefile), maskfile(maskfile){}
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		wchar_t* getMaskFile();
+		void setMaskFile(wchar_t* maskfile);
+	private:
+		std::vector<ComPtr<ID2D1Bitmap>>bmp_masks;
+		ComPtr<ID2D1BitmapBrush> bmp_brush;
+		wchar_t* maskfile;
+	};
 	class ImageButton:public WindowBase{
 	public:
-		ImageButton(wchar_t* file=L"", wchar_t* text=L"");
-		ImageButton(wchar_t* enabledfile,wchar_t* disabledfile,wchar_t* pressedfile,wchar_t* hoveredfile,wchar_t* text=L"");
+		ImageButton(wchar_t* file=L"", std::wstring text=L"");
+		ImageButton(wchar_t* enabledfile,wchar_t* disabledfile,wchar_t* pressedfile,wchar_t* hoveredfile,std::wstring text=L"");
 		~ImageButton(){}
 		wchar_t* enabledpath;
 		wchar_t* disabledpath;
@@ -1888,6 +2006,11 @@ namespace D2DUI{
 		void setDisabledFile(wchar_t* file);
 		void setPressedFile(wchar_t* file);
 		void setHoveredFile(wchar_t* file);
+		virtual void setVisible(bool visible){
+			WindowBase::setVisible(visible);
+			drawing->setVisible(visible);
+		}
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
 		virtual void setIcon(wchar_t* icon){}
@@ -1905,49 +2028,63 @@ namespace D2DUI{
 	public:
 		SlotBase(){}
 		~SlotBase(){}
-		virtual void setGameDate(wchar_t* gamedate)=0;
-		virtual wchar_t* getGameDate()=0;
-		virtual void setSystemDate(wchar_t* sysdate)=0;
-		virtual wchar_t* getSystemDate()=0;
-		virtual void setStoryArc(wchar_t* storyarc)=0;
-		virtual wchar_t* getStoryArc()=0;
-		virtual void setLastDialogue(wchar_t* dialogue)=0;
-		virtual wchar_t* getLastDialogue()=0;
+		
+		virtual void setGameDate(std::wstring date){
+			gamedate->setText(date);
+		}
+		virtual std::wstring getGameDate(){
+			return gamedate->getText();
+		}
+		virtual void setSystemDate(std::wstring date){
+			systemdate->setText(date);
+		}
+		virtual std::wstring getSystemDate(){
+			return gamedate->getText();
+		}
+		virtual void setStoryArc(std::wstring storyarc){
+			arc->setText(storyarc);
+		}
+		virtual std::wstring getStoryArc(){
+			return arc->getText();
+		}
+		virtual void setThumbnail(wchar_t* thumb){
+			thumbnail->setFile(thumb);
+		}
+		virtual wchar_t* getThumbnail(){
+			return thumbnail->getFilePath();
+		}
+		virtual void setSlotNumber(int slotnumber){
+			this->slotnumber=slotnumber;
+		}
+		virtual int getSlotNumber(){
+			return slotnumber;
+		}
+	protected:
+		int slotnumber;
+		std::shared_ptr<TextLabel> gamedate;
+		std::shared_ptr<TextLabel> systemdate;
+		std::shared_ptr<TextLabel> arc;
+		std::shared_ptr<ImageView> thumbnail;
 	};
 	class LoadSlot:public WindowBase, public SlotBase{
 	public:
-		LoadSlot(wchar_t* gamedate=L"NO DATA",wchar_t* sysdate=L"",wchar_t* storyarc=L"");
+		LoadSlot(std::wstring gamedate=L"NO DATA",std::wstring sysdate=L"",std::wstring storyarc=L"",wchar_t* thumb=L"");
 		~LoadSlot(){
-			delete gd;
-			delete sd;
-			delete arc;
-			delete tn;
 		}
-		TextLabel* gd;
-		TextLabel* sd;
-		TextLabel* arc;
-		wchar_t* lastdialogue;
-		ImageView* tn;
-		virtual void setGameDate(wchar_t* gamedate);
-		virtual wchar_t* getGameDate();
-		virtual void setSystemDate(wchar_t* sysdate);
-		virtual wchar_t* getSystemDate();
-		virtual void setStoryArc(wchar_t* storyarc);
-		virtual wchar_t* getStoryArc();
-		virtual void setLastDialogue(wchar_t* dialogue);
-		virtual wchar_t* getLastDialogue();
-		virtual void setEnabled(bool enabled);
-		virtual bool isEnabled();
-		virtual void setHovered(bool hovered);
-		virtual bool isHovered();
-		virtual void setPressed(bool pressed);
-		virtual bool isPressed();
 		virtual void setBounds(int left,int top,int right,int bottom);
-		virtual RECT getBounds();
+		virtual void setHorizontalTextAlignment(HorizontalConstants H);
+		virtual void setVerticalTextAlignment(VerticalConstants V);
+		virtual void setFont(wchar_t* font);
+		virtual void setForeground(int R,int G,int B,int A=255);
+		virtual void setForeground(float R,float G,float B,float A=1.0f);
+		virtual void setTextSize(float px);
+		virtual void setOpacity(float opacity=1.f);
+		virtual void setLocale(wchar_t* locale);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setChecked(bool checked){}
 		virtual bool isChecked(){return false;}
 		virtual void setSelected(bool selected){}
@@ -1963,55 +2100,25 @@ namespace D2DUI{
 		virtual bool isEditable(){return false;}
 		virtual void setFocus(bool focus){}
 		virtual bool hasFocus(){return false;}
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual int getHorizontalTextAlignment(){return -1;}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getVerticalTextAlignment(){return -1;}
-		virtual void setFont(wchar_t* font){}
-		virtual wchar_t* getFont(){return L"";}
-		virtual void setForeground(int R,int G,int B,int A=255){}
-		virtual void setForeground(float R,float G,float B,float A=1.0f){}
-		virtual int* getForegroundInt(){
-			int color[4]={0,0,0,0};
-			return color;
-		}
-		virtual float* getForegroundFloat(){
-			float color[4]={0.f,0.f,0.f,0.f};
-			return color;
-		}
-		virtual void setTextSize(float px){}
-		virtual float getTextSize(){return 0.f;}
 	};
 	class SaveSlot:public WindowBase, public SlotBase{
 	public:
-		SaveSlot(wchar_t* gamedate=L"NO DATA",wchar_t* sysdate=L"",wchar_t* storyarc=L"");
+		SaveSlot(std::wstring gamedate=L"NO DATA",std::wstring sysdate=L"",std::wstring storyarc=L"",wchar_t* thumb=L"");
 		~SaveSlot(){}
-		TextLabel* gd;
-		TextLabel* sd;
-		TextLabel* arc;
-		ImageButton* trashcan;
-		wchar_t* lastdialogue;
-		ImageView* tn;
-		virtual void setGameDate(wchar_t* gamedate);
-		virtual wchar_t* getGameDate();
-		virtual void setSystemDate(wchar_t* sysdate);
-		virtual wchar_t* getSystemDate();
-		virtual void setStoryArc(wchar_t* storyarc);
-		virtual wchar_t* getStoryArc();
-		virtual void setLastDialogue(wchar_t* dialogue);
-		virtual wchar_t* getLastDialogue();
-		virtual void setEnabled(bool enabled);
-		virtual bool isEnabled();
-		virtual void setHovered(bool hovered);
-		virtual bool isHovered();
-		virtual void setPressed(bool pressed);
-		virtual bool isPressed();
 		virtual void setBounds(int left,int top,int right,int bottom);
-		virtual RECT getBounds();
+		virtual void setHorizontalTextAlignment(HorizontalConstants H);
+		virtual void setVerticalTextAlignment(VerticalConstants V);
+		virtual void setFont(wchar_t* font);
+		virtual void setForeground(int R,int G,int B,int A=255);
+		virtual void setForeground(float R,float G,float B,float A=1.0f);
+		virtual void setTextSize(float px);
+		virtual void setOpacity(float opacity=1.f);
+		virtual void setLocale(wchar_t* locale);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setChecked(bool checked){}
 		virtual bool isChecked(){return false;}
 		virtual void setSelected(bool selected){}
@@ -2027,24 +2134,6 @@ namespace D2DUI{
 		virtual bool isEditable(){return false;}
 		virtual void setFocus(bool focus){}
 		virtual bool hasFocus(){return false;}
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual int getHorizontalTextAlignment(){return -1;}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getVerticalTextAlignment(){return -1;}
-		virtual void setFont(wchar_t* font){}
-		virtual wchar_t* getFont(){return L"";}
-		virtual void setForeground(int R,int G,int B,int A=255){}
-		virtual void setForeground(float R,float G,float B,float A=1.0f){}
-		virtual int* getForegroundInt(){
-			int color[4]={0,0,0,0};
-			return color;
-		}
-		virtual float* getForegroundFloat(){
-			float color[4]={0.f,0.f,0.f,0.f};
-			return color;
-		}
-		virtual void setTextSize(float px){}
-		virtual float getTextSize(){return 0.f;}
 	};
 	typedef enum MSGBoxButtons{
 		MSGBOX_OK=1,
@@ -2091,13 +2180,15 @@ namespace D2DUI{
 	};
 	class MsgBox:public WindowBase, public DialogBase{
 	public:
-		MsgBox(HWND parent,bool modal,wchar_t* text,wchar_t* title,MSGBoxButtons buttons,MSGBoxIcon icon);
+		MsgBox(HWND parent,bool modal,std::wstring text,std::wstring title,MSGBoxButtons buttons,MSGBoxIcon icon);
 		~MsgBox(){
 		}
 		std::shared_ptr<TextLabel> textContent, textTitle;
 		std::shared_ptr<ImageView> msgboxicon;
 		virtual void setTextSize(float px);
-		virtual void setFont(wchar_t* text);
+		virtual void setFont(wchar_t* font);
+		virtual void setBackground(int R,int G,int B,int A=255);
+		virtual void setBackground(float R,float G,float B,float A=1.f);
 		virtual void setForeground(int R,int G,int B,int A=255);
 		virtual void setForeground(float R,float G,float B,float A=1.f);
 		virtual void setOpacity(float opacity=1.0f) override;
@@ -2105,18 +2196,21 @@ namespace D2DUI{
 		std::shared_ptr<TableRow> contentRow;
 		std::shared_ptr<GridLayout> buttonsRow;
 		std::shared_ptr<Button> btnOk, btnYes, btnNo, btnCancel;
+		virtual void Show();
+		virtual void Hide();
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
 	protected:
 		virtual void reorderComponents(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setEnabled(bool enabled){}
 		virtual bool isEnabled(){return false;}
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getHorizontalTextAlignment(){return 0;}
-		virtual int getVerticalTextAlignment(){return 0;}
+		virtual void setHorizontalTextAlignment(HorizontalConstants H){}
+		virtual void setVerticalTextAlignment(VerticalConstants V){}
+		virtual HorizontalConstants getHorizontalTextAlignment(){return LEFT;}
+		virtual VerticalConstants getVerticalTextAlignment(){return TOP;}
 		virtual void setPressed(bool pressed){}
 		virtual bool isPressed(){return false;}
 		virtual void setHovered(bool hovered){}
@@ -2138,28 +2232,31 @@ namespace D2DUI{
 	};
 	class InfoBox:public WindowBase, public DialogBase{
 	public:
-		InfoBox(HWND parent,wchar_t* text);
+		InfoBox(HWND parent,std::wstring text);
 		~InfoBox(){
 		}
 		std::shared_ptr<TextLabel> textContent;
 		virtual void setTextSize(float px);
-		virtual void setFont(wchar_t* text);
+		virtual void setFont(wchar_t* font);
 		virtual void setForeground(int R,int G,int B,int A=255);
 		virtual void setForeground(float R,float G,float B,float A=1.f);
 		virtual void setOpacity(float opacity=1.0f) override;
 		virtual void setLocale(wchar_t* locale) override;
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+		virtual void Show();
+		virtual void Hide();
 	protected:
 		virtual void reorderComponents(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setEnabled(bool enabled){}
 		virtual bool isEnabled(){return false;}
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getHorizontalTextAlignment(){return 0;}
-		virtual int getVerticalTextAlignment(){return 0;}
+		virtual void setHorizontalTextAlignment(HorizontalConstants H){}
+		virtual void setVerticalTextAlignment(VerticalConstants V){}
+		virtual HorizontalConstants getHorizontalTextAlignment(){return LEFT;}
+		virtual VerticalConstants getVerticalTextAlignment(){return TOP;}
 		virtual void setPressed(bool pressed){}
 		virtual bool isPressed(){return false;}
 		virtual void setHovered(bool hovered){}
@@ -2179,26 +2276,28 @@ namespace D2DUI{
 	};
 	class PopupNotification:public WindowBase, public DialogBase{
 	public:
-		PopupNotification(HWND parent,wchar_t* text,long duration);
+		PopupNotification(HWND parent,std::wstring text,long duration);
 		~PopupNotification(){}
 		long duration;
 		virtual void setTextSize(float px);
-		virtual void setFont(wchar_t* text);
+		virtual void setFont(wchar_t* font);
 		virtual void setForeground(int R,int G,int B,int A=255);
 		virtual void setForeground(float R,float G,float B,float A=1.f);
-		TextLabel* textContent;
+		std::shared_ptr<TextLabel> textContent;
 		virtual void draw(std::shared_ptr<D2DHandle>& d2d);
+		virtual void recreateResources(std::shared_ptr<D2DHandle>& d2d);
+		void startPopup();
 	protected:
 		virtual void reorderComponents(std::shared_ptr<D2DHandle>& d2d);
 	private:
-		virtual void setText(wchar_t* text){}
-		virtual wchar_t* getText(){return L"";}
+		virtual void setText(std::wstring text){}
+		virtual std::wstring getText(){return L"";}
 		virtual void setEnabled(bool enabled){}
 		virtual bool isEnabled(){return false;}
-		virtual void setHorizontalTextAlignment(const int H){}
-		virtual void setVerticalTextAlignment(const int V){}
-		virtual int getHorizontalTextAlignment(){return 0;}
-		virtual int getVerticalTextAlignment(){return 0;}
+		virtual void setHorizontalTextAlignment(HorizontalConstants H){}
+		virtual void setVerticalTextAlignment(VerticalConstants V){}
+		virtual HorizontalConstants getHorizontalTextAlignment(){return LEFT;}
+		virtual VerticalConstants getVerticalTextAlignment(){return TOP;}
 		virtual void setPressed(bool pressed){}
 		virtual bool isPressed(){return false;}
 		virtual void setHovered(bool hovered){}
