@@ -1,7 +1,4 @@
-﻿#ifdef XBOX
-#endif
-#ifdef _WIN32
-#ifndef D2DUI_INCLUDED
+﻿#ifndef D2DUI_INCLUDED
 #define D2DUI_INCLUDED
 #include "stdafx.h"
 namespace D2DUI{
@@ -678,6 +675,7 @@ namespace D2DUI{
 		virtual int getHeight(){
 			return height;
 		}
+		virtual void setVisible(bool visible);
 		virtual void add(WindowBase& window)=0;
 		virtual void add(WindowBase& window,int row,int col)=0;
 		virtual void add(LayoutBase& layout)=0;
@@ -963,7 +961,9 @@ namespace D2DUI{
 	};
 	class TableLayout:public LayoutBase{
 	public:
-		TableLayout(){}
+		TableLayout(){
+			drawing=new D2DUIDrawableItem(*this,false);
+		}
 		~TableLayout(){}
 		std::vector<std::reference_wrapper<TableRow>> rows;
 		virtual void add(TableRow& row);
@@ -2059,12 +2059,12 @@ namespace D2DUI{
 		virtual int getSlotNumber(){
 			return slotnumber;
 		}
+		std::shared_ptr<ImageView> thumbnail;
 	protected:
 		int slotnumber;
 		std::shared_ptr<TextLabel> gamedate;
 		std::shared_ptr<TextLabel> systemdate;
 		std::shared_ptr<TextLabel> arc;
-		std::shared_ptr<ImageView> thumbnail;
 	};
 	class LoadSlot:public WindowBase, public SlotBase{
 	public:
@@ -2316,5 +2316,4 @@ namespace D2DUI{
 		virtual wchar_t* getIcon(){return L"";}
 	};
 }
-#endif//Windows code
 #endif

@@ -49,6 +49,7 @@ namespace D2DUI{
 		this->modal=modal;
 		showing=false;
 		textContent=std::shared_ptr<TextLabel>(new TextLabel(text));
+		textContent->setVisible(true);
 		textContent->setPadding(0,0);
 		textContent->setHorizontalTextAlignment(HorizontalConstants::LEFT);
 		textContent->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
@@ -58,6 +59,7 @@ namespace D2DUI{
 		this->buttons=buttons;
 		this->msgicon=icon;
 		contentRow=std::shared_ptr<TableRow>(new TableRow(2));
+		contentRow->setVisible(true);
 		contentRow->setBackground(0.f,0.f,0.f);
 		textTitle->setPadding(0,0);
 		contentRow->setPadding(0,0);
@@ -84,11 +86,13 @@ namespace D2DUI{
 		switch(buttons){
 		case MSGBOX_OK:
 			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout());
+			buttonsRow->setVisible(true);
 			buttonsRow->setBackground(0.f,0.f,0.f);
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
 			buttonsRow->setSpacing(10);
 			btnOk=std::shared_ptr<Button>(new Button(L"OK",L""));
+			btnOk->setVisible(true);
 			btnOk->setEnabled(true);
 			btnOk->setSize(100,30);
 			btnOk->setPadding(0,0);
@@ -99,11 +103,13 @@ namespace D2DUI{
 			break;
 		case MSGBOX_OKCANCEL:
 			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout(2,1));
+			buttonsRow->setVisible(true);
 			buttonsRow->setBackground(0.f,0.f,0.f);
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
 			buttonsRow->setSpacing(10);
 			btnOk=std::shared_ptr<Button>(new Button(L"OK",L""));
+			btnOk->setVisible(true);
 			btnOk->setLocale(L"en-us");
 			btnOk->setEnabled(true);
 			btnOk->setSize(100,30);
@@ -112,6 +118,7 @@ namespace D2DUI{
 			btnOk->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnOk,1,1);
 			btnCancel=std::shared_ptr<Button>(new Button(L"Cancel",L""));
+			btnCancel->setVisible(true);
 			btnCancel->setLocale(L"en-us");
 			btnCancel->setEnabled(true);
 			btnCancel->setSize(100,30);
@@ -122,11 +129,13 @@ namespace D2DUI{
 			break;
 		case MSGBOX_YESNO:
 			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout(2,1));
+			buttonsRow->setVisible(true);
 			buttonsRow->setBackground(0.f,0.f,0.f);
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
 			buttonsRow->setSpacing(10);
 			btnYes=std::shared_ptr<Button>(new Button(L"Yes",L""));
+			btnYes->setVisible(true);
 			btnYes->setEnabled(true);
 			btnYes->setSize(100,30);
 			btnYes->setPadding(0,0);
@@ -134,6 +143,7 @@ namespace D2DUI{
 			btnYes->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnYes,1,1);
 			btnNo=std::shared_ptr<Button>(new Button(L"No",L""));
+			btnNo->setVisible(true);
 			btnNo->setEnabled(true);
 			btnNo->setSize(100,30);
 			btnNo->setPadding(0,0);
@@ -143,11 +153,13 @@ namespace D2DUI{
 			break;
 		case MSGBOX_YESNOCANCEL:
 			buttonsRow=std::shared_ptr<GridLayout>(new GridLayout(3,1));
+			buttonsRow->setVisible(true);
 			buttonsRow->setBackground(0.f,0.f,0.f);
 			buttonsRow->setGravity(LayoutBase::HGravity::CENTERH,LayoutBase::VGravity::CENTERV);
 			buttonsRow->setPadding(0,0);
 			buttonsRow->setSpacing(10);
 			btnYes=std::shared_ptr<Button>(new Button(L"Yes",L""));
+			btnYes->setVisible(true);
 			btnYes->setEnabled(true);
 			btnYes->setSize(100,30);
 			btnYes->setPadding(0,0);
@@ -155,6 +167,7 @@ namespace D2DUI{
 			btnYes->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnYes,1,1);
 			btnNo=std::shared_ptr<Button>(new Button(L"No",L""));
+			btnNo->setVisible(true);
 			btnNo->setEnabled(true);
 			btnNo->setSize(100,30);
 			btnNo->setPadding(0,0);
@@ -162,6 +175,7 @@ namespace D2DUI{
 			btnNo->setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
 			buttonsRow->add(*btnNo,2,1);
 			btnCancel=std::shared_ptr<Button>(new Button(L"Cancel",L""));
+			btnCancel->setVisible(true);
 			btnCancel->setEnabled(true);
 			btnCancel->setSize(100,30);
 			btnCancel->setPadding(0,0);
@@ -464,6 +478,9 @@ namespace D2DUI{
 	std::shared_ptr<LayoutBase> LayoutBase::getParentLayout(){
 		return parent;
 	}
+	void LayoutBase::setVisible(bool visible){
+		drawing->setVisible(visible);
+	}
 	void Border::setColor(int R,int G,int B,int A){
 		iRGBA[0]=R;
 		iRGBA[1]=G;
@@ -506,6 +523,7 @@ namespace D2DUI{
 		LinearLayout::o=o;
 		setBorder(Border());
 		setRadius(0.0f);
+		drawing=new D2DUIDrawableItem(*this,false);
 	}
 	void LinearLayout::add(WindowBase& window){
 		windows.push_back(window);
@@ -585,11 +603,23 @@ namespace D2DUI{
 		}//Horizontal Placement
 	}
 	void LinearLayout::recreateResources(std::shared_ptr<D2DHandle>& d2d){
+		reorderComponents();
 		d2d->target->CreateSolidColorBrush(ColorF(fRGBA[0],fRGBA[1],fRGBA[2]),solidbrush.ReleaseAndGetAddressOf());
 		solidbrush->SetOpacity(fRGBA[3]);
-
+		if(windows.size()!=0){
+			for(int i=0;i<windows.size();i++){
+				if(windows.at(i).get().isVisible())windows.at(i).get().recreateResources(d2d);
+			}
+		}
+		if(layouts.size()!=0){
+			for(int i=0;i<layouts.size();i++){
+				if(layouts.at(i).get().drawing->isVisible())layouts.at(i).get().recreateResources(d2d);
+			}
+		}
 	}
 	void LinearLayout::draw(std::shared_ptr<D2DHandle>& d2d){
+		solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2]));
+		solidbrush->SetOpacity(fRGBA[3]);
 		d2d->target->FillRoundedRectangle(RoundedRect(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),radius_x,radius_y),solidbrush.Get());
 		d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 		if(&leftBorder!=NULL){
@@ -671,18 +701,17 @@ namespace D2DUI{
 				break;
 			}
 		}
-		reorderComponents();
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),D2D1_ANTIALIAS_MODE_ALIASED);
 		d2d->target->SaveDrawingState(d2d->targetstate.Get());
 		d2d->target->SetTransform(Matrix3x2F::Translation(getBounds().left,getBounds().top));
 		if(layouts.size()!=0){
 			for(int i=0;i<layouts.size();i++){
-				layouts.at(i).get().draw(d2d);
+				if(layouts.at(i).get().drawing->isVisible())layouts.at(i).get().draw(d2d);
 			}
 		}
 		if(windows.size()!=0){
 			for(int i=0;i<windows.size();i++){
-				windows.at(i).get().draw(d2d);
+				if(windows.at(i).get().isVisible())windows.at(i).get().draw(d2d);
 			}
 		}
 		d2d->target->PopAxisAlignedClip();
@@ -696,6 +725,7 @@ namespace D2DUI{
 		leftBorder.setStrokeWidth(1.0f);
 		setBorder(leftBorder);
 		setRadius(0.0f);
+		drawing=new D2DUIDrawableItem(*this,false);
 	}
 	void GridLayout::add(WindowBase& window,int row,int col){
 		windows.push_back(window);
@@ -1131,12 +1161,12 @@ namespace D2DUI{
 		reorderComponents();
 		if(windows.size()!=0){
 			for(int i=0;i<windows.size();i++){
-				windows.at(i).get().recreateResources(d2d);
+				if(windows.at(i).get().isVisible())windows.at(i).get().recreateResources(d2d);
 			}
 		}
 		if(layouts.size()!=0){
 			for(int i=0;i<layouts.size();i++){
-				layouts.at(i).get().recreateResources(d2d);	
+				if(windows.at(i).get().isVisible())layouts.at(i).get().recreateResources(d2d);	
 			}
 		}
 	}
@@ -1146,10 +1176,10 @@ namespace D2DUI{
 		//d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),D2D1_ANTIALIAS_MODE_ALIASED);
 		for(int i=0;i<windows.size();i++){
-			windows.at(i).get().draw(d2d);
+			if(windows.at(i).get().isVisible())windows.at(i).get().draw(d2d);
 		}
 		for(int i=0;i<layouts.size();i++){
-			layouts.at(i).get().draw(d2d);
+			if(layouts.at(i).get().drawing->isVisible())layouts.at(i).get().draw(d2d);
 		}
 		d2d->target->PopAxisAlignedClip();
 	}
@@ -1352,11 +1382,10 @@ namespace D2DUI{
 				break;
 			}
 		}
-		reorderComponents();
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),D2D1_ANTIALIAS_MODE_ALIASED);
 		if(rows.size()!=0){
 			for(int i=0;i<rows.size();i++){
-				rows.at(i).get().draw(d2d);
+				if(rows.at(i).get().drawing->isVisible())rows.at(i).get().draw(d2d);
 			}
 		}
 		d2d->target->PopAxisAlignedClip();
@@ -1366,6 +1395,7 @@ namespace D2DUI{
 		setBorder(Border());
 		setGravity(HGravity::CENTERH,VGravity::CENTERV);
 		setBounds(0,0,0,0);
+		drawing=new D2DUIDrawableItem(*this,false);
 	}
 	void TableRow::add(WindowBase& window){
 		windows.push_back(window);
@@ -1622,12 +1652,12 @@ namespace D2DUI{
 		reorderComponents();
 		if(windows.size()!=0){
 			for(int i=0;i<windows.size();i++){
-				windows.at(i).get().recreateResources(d2d);
+				if(windows.at(i).get().isVisible())windows.at(i).get().recreateResources(d2d);
 			}
 		}
 		if(layouts.size()!=0){
 			for(int i=0;i<layouts.size();i++){
-				layouts.at(i).get().recreateResources(d2d);	
+				if(layouts.at(i).get().drawing->isVisible())layouts.at(i).get().recreateResources(d2d);	
 			}
 		}
 	}
@@ -1637,10 +1667,10 @@ namespace D2DUI{
 		//d2d->target->DrawLine(Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().top+(getLeftBorder().getStrokeWidth()/2)),Point2F((float)getBounds().left+(getLeftBorder().getStrokeWidth()/2),(float)getBounds().bottom-(getLeftBorder().getStrokeWidth()/2)),solidbrush.Get(),getLeftBorder().getStrokeWidth(),strokestyle.Get());
 		d2d->target->PushAxisAlignedClip(RectF((float)getBounds().left+getLeftPadding(),(float)getBounds().top+getTopPadding(),(float)getBounds().right-getRightPadding(),(float)getBounds().bottom-getBottomPadding()),D2D1_ANTIALIAS_MODE_ALIASED);
 		for(int i=0;i<windows.size();i++){
-			windows.at(i).get().draw(d2d);
+			if(windows.at(i).get().isVisible())windows.at(i).get().draw(d2d);
 		}
 		for(int i=0;i<layouts.size();i++){
-			layouts.at(i).get().draw(d2d);
+			if(layouts.at(i).get().drawing->isVisible())layouts.at(i).get().draw(d2d);
 		}
 		d2d->target->PopAxisAlignedClip();
 	}
