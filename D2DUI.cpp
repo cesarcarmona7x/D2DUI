@@ -3580,9 +3580,9 @@ namespace D2DUI{
 		int tntop=top+(height/2-tnheight/2);
 		int tbright=right-(width/15);
 		thumbnail->setBounds(tnleft,tntop,tnleft+tnwidth,tntop+tnheight);
-		systemdate->setBounds(thumbnail->getBounds().right+(width/15),thumbnail->getBounds().bottom-(width/15),tbright-(width/30),thumbnail->getBounds().bottom);
-		arc->setBounds(systemdate->getBounds().left,systemdate->getBounds().top-(width/15),tbright,systemdate->getBounds().top);
-		gamedate->setBounds(arc->getBounds().left,arc->getBounds().top-(width/15),tbright,arc->getBounds().top);
+		arc->setBounds(thumbnail->getBounds().right+(width/30),thumbnail->getBounds().bottom-(width/60)-(width/15),tbright-(int)(((width/15)*2.25f)),thumbnail->getBounds().bottom-(width/60));
+		systemdate->setBounds(arc->getBounds().left,arc->getBounds().top-(width/15),tbright,arc->getBounds().top);
+		gamedate->setBounds(systemdate->getBounds().left,systemdate->getBounds().top-(width/15),tbright,systemdate->getBounds().top);
 	}
 	void LoadSlot::setHorizontalTextAlignment(HorizontalConstants H){
 		WindowBase::setHorizontalTextAlignment(H);
@@ -3706,9 +3706,9 @@ namespace D2DUI{
 		int tntop=top+(height/2-tnheight/2);
 		int tbright=right-(width/15);
 		thumbnail->setBounds(tnleft,tntop,tnleft+tnwidth,tntop+tnheight);
-		systemdate->setBounds(thumbnail->getBounds().right+(width/15),thumbnail->getBounds().bottom-(width/15),tbright-(width/30),thumbnail->getBounds().bottom);
-		arc->setBounds(systemdate->getBounds().left,systemdate->getBounds().top-(width/15),tbright,systemdate->getBounds().top);
-		gamedate->setBounds(arc->getBounds().left,arc->getBounds().top-(width/15),tbright,arc->getBounds().top);
+		arc->setBounds(thumbnail->getBounds().right+(width/30),thumbnail->getBounds().bottom-(width/60)-(width/15),tbright-(int)(((width/15)*2.25f)),thumbnail->getBounds().bottom-(width/60));
+		systemdate->setBounds(arc->getBounds().left,arc->getBounds().top-(width/15),tbright,arc->getBounds().top);
+		gamedate->setBounds(systemdate->getBounds().left,systemdate->getBounds().top-(width/15),tbright,systemdate->getBounds().top);
 	}
 	void SaveSlot::setHorizontalTextAlignment(HorizontalConstants H){
 		WindowBase::setHorizontalTextAlignment(H);
