@@ -5,6 +5,12 @@ namespace D2DUI{
 		static D2DUISystem d2dui;
 		return d2dui;
 	}
+	void D2DUISystem::setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality){
+		this->imageQuality=imageQuality;
+	}
+	D2D1_BITMAP_INTERPOLATION_MODE D2DUISystem::getImageQuality(){
+		return imageQuality;
+	}
 	void D2DUISystem::addDrawToQueue(int layer,D2DUIDrawableItem& draw){
 		drawOrder[layer].push_back(draw);
 	}
@@ -16,6 +22,7 @@ namespace D2DUI{
 						if(drawing.get().drawWindow.size()!=0){
 							if(strcmp(typeid(drawing.get().drawWindow.at(0).get()).name(),"class D2DUI::ComboBox")==0){
 								ComboBox& cb=(ComboBox&)drawing.get().drawWindow.at(0).get();
+								cb.setImageQuality(imageQuality);
 								if(cb.usesCustomDrawMode()){
 									cb.customDraw(d2d);
 									cb.customDrawDropdown(d2d);
@@ -31,14 +38,23 @@ namespace D2DUI{
 						if(drawing.get().drawWindow.size()!=0){
 							if(strcmp(typeid(drawing.get().drawWindow.at(0).get()).name(),"class D2DUI::ListBox")==0){
 								ListBox& lb=(ListBox&)drawing.get().drawWindow.at(0).get();
+								lb.setImageQuality(imageQuality);
 								if(lb.usesCustomDrawMode()){lb.customDraw(d2d);}
 								else{lb.draw(d2d);}
 							}
 							else{
+								drawing.get().drawWindow.at(0).get().setImageQuality(imageQuality);
 								drawing.get().drawWindow.at(0).get().draw(d2d);
 							}
 						}
-						if(drawing.get().drawLayout.size()!=0)drawing.get().drawLayout.at(0).get().draw(d2d);
+						if(drawing.get().drawLayout.size()!=0){
+							if(drawing.get().drawLayout.at(0).get().windows.size()!=0){
+								for(int i=0;i<drawing.get().drawLayout.at(0).get().windows.size();i++){
+									drawing.get().drawLayout.at(0).get().windows.at(i).get().setImageQuality(imageQuality);
+								}	
+							}
+							drawing.get().drawLayout.at(0).get().draw(d2d);
+						}
 					}//Check odd layers for any other drawing
 				}
 			}
@@ -188,6 +204,21 @@ namespace D2DUI{
 		setTextSize(12.f);
 		setForeground(1.f,1.f,1.f);
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
+	}
+	void MsgBox::setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality){
+		WindowBase::setImageQuality(imageQuality);
+		textTitle->setImageQuality(imageQuality);
+		if(contentRow->windows.size()!=0){
+			for(int i=0;i<contentRow->windows.size();i++){
+				contentRow->windows.at(i).get().setImageQuality(imageQuality);
+			}
+		}
+		if(buttonsRow->windows.size()!=0){
+			for(int i=0;i<buttonsRow->windows.size();i++){
+				buttonsRow->windows.at(i).get().setImageQuality(imageQuality);
+			}
+		}
 	}
 	void MsgBox::setOpacity(float opacity){
 		WindowBase::setOpacity(opacity);
@@ -341,6 +372,11 @@ namespace D2DUI{
 		setBackground(1.f,0.f,1.f,1.f);
 		setForeground(1.f,1.f,1.f,1.f);
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
+	}
+	void InfoBox::setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality){
+		WindowBase::setImageQuality(imageQuality);
+		textContent->setImageQuality(imageQuality);
 	}
 	void InfoBox::setFont(wchar_t* font){
 		this->font=font;
@@ -422,6 +458,11 @@ namespace D2DUI{
 		setForeground(0.f,0.f,0.f);
 		setTextSize(12.0f);
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
+	}
+	void PopupNotification::setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality){
+		WindowBase::setImageQuality(imageQuality);
+		textContent->setImageQuality(imageQuality);
 	}
 	void PopupNotification::setTextSize(float px){
 		WindowBase::setTextSize(px);
@@ -1288,12 +1329,12 @@ namespace D2DUI{
 		reorderComponents();
 		if(windows.size()!=0){
 			for(int i=0;i<windows.size();i++){
-				windows.at(i).get().recreateResources(d2d);
+				if(windows.at(i).get().isVisible())windows.at(i).get().recreateResources(d2d);
 			}
 		}
 		if(layouts.size()!=0){
 			for(int i=0;i<layouts.size();i++){
-				layouts.at(i).get().recreateResources(d2d);	
+				if(windows.at(i).get().isVisible())layouts.at(i).get().recreateResources(d2d);	
 			}
 		}
 	}
@@ -1737,6 +1778,7 @@ namespace D2DUI{
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
 	}
 	void TextLabel::recreateResources(std::shared_ptr<D2DHandle>& d2d){
 		switch(getHorizontalTextAlignment()){
@@ -1785,6 +1827,7 @@ namespace D2DUI{
 		setTextSize(12.0f);
 		setFont(L"Microsoft Sans Serif");
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
 	}
 	void TextBox::measureCaret(int x,int y){
 		DWORD caretWidth=1;
@@ -1937,7 +1980,7 @@ namespace D2DUI{
 	}
 	void TextBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(hasFocus()){
-			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
 			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 			if(&caretRect!=NULL){
@@ -1946,12 +1989,13 @@ namespace D2DUI{
 			}
 		}
 		else{
-			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
 			d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 		}
 	}
 	Button::Button(std::wstring text,wchar_t* icon){
+		setImageQuality();
 		Button::text=text;
 		Button::icon=icon;
 		setForeground(0.f,0.f,0.f);
@@ -2028,17 +2072,17 @@ namespace D2DUI{
 	void Button::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()){
 			if(isPressed()){
-				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 			else if(isHovered()){
-				d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 			else{
-				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 		else{
-			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 		}
 		solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
 		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
@@ -2186,33 +2230,33 @@ namespace D2DUI{
 		if(direction==UP){
 			if(isEnabled()){
 				if(isPressed()){
-					d2d->target->DrawBitmap(bmp_pressed_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);	
+					d2d->target->DrawBitmap(bmp_pressed_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);	
 				}
 				else if(isHovered()){
-					d2d->target->DrawBitmap(bmp_hovered_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_hovered_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else{
-					d2d->target->DrawBitmap(bmp_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				}
 			}
 			else{
-				d2d->target->DrawBitmap(bmp_disabled_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_disabled_up.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 		else{
 			if(isEnabled()){
 				if(isPressed()){
-					d2d->target->DrawBitmap(bmp_pressed_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);	
+					d2d->target->DrawBitmap(bmp_pressed_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);	
 				}
 				else if(isHovered()){
-					d2d->target->DrawBitmap(bmp_hovered_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_hovered_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else{
-					d2d->target->DrawBitmap(bmp_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				}
 			}
 			else{
-				d2d->target->DrawBitmap(bmp_disabled_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_disabled_down.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 	}
@@ -2230,6 +2274,13 @@ namespace D2DUI{
 		setTextSize(12.0f);
 		setForeground(0,0,0);
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
+	}
+	void Spinner::setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality){
+		WindowBase::setImageQuality(imageQuality);
+		valuemodifier->setImageQuality(imageQuality);
+		up->setImageQuality(imageQuality);
+		down->setImageQuality(imageQuality);
 	}
 	void Spinner::setTextSize(float px){
 		WindowBase::setTextSize(px);
@@ -2347,6 +2398,7 @@ namespace D2DUI{
 		down->draw(d2d);
 	}
 	CheckBox::CheckBox(bool checked,std::wstring text){
+		setImageQuality();
 		states.push_back(NONE);
 		setChecked(checked);
 		CheckBox::text=text;
@@ -2457,39 +2509,40 @@ namespace D2DUI{
 		if(isEnabled()){
 			if(isChecked()){
 				if(isPressed()){
-					d2d->target->DrawBitmap(bmp_pressed_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_pressed_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else if(isHovered()){
-					d2d->target->DrawBitmap(bmp_hovered_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_hovered_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else{
-					d2d->target->DrawBitmap(bmp_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 			}
 			else{
 				if(isPressed()){
-					d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else if(isHovered()){
-					d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else{
-					d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 			}
 		}
 		else{
 			if(isChecked()){
-				d2d->target->DrawBitmap(bmp_disabled_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_disabled_checked.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 			}
 			else{
-				d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 		solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2],fRGBA[3]*opacity));
 		d2d->target->DrawTextLayout(Point2F((getBounds().bottom-getBounds().top)+getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 	}
 	DialogueBox::DialogueBox(std::wstring text):TextLabel(text){
+		setImageQuality();
 		showncharacters=0;
 		decorationfile=L"";
 		decorationlevel=DECORATIONBELOWDIALOGUEBOX;
@@ -2542,12 +2595,12 @@ namespace D2DUI{
 	}
 	void DialogueBox::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(usesDecoration()&&getDecorationLevel()==DECORATIONBELOWDIALOGUEBOX){
-			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
+			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity,imageQuality);
 		}
 		solidbrush->SetColor(ColorF(fRGBA_bg[0],fRGBA_bg[1],fRGBA_bg[2],fRGBA_bg[3]*opacity));
 		d2d->target->FillRectangle(RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),solidbrush.Get());
 		if(usesDecoration()&&getDecorationLevel()==DECORATIONOVERDIALOGUEBOX){
-			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity);
+			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getDecorationBounds().left,(float)getDecorationBounds().top,(float)getDecorationBounds().right,(float)getDecorationBounds().bottom),decorationopacity,imageQuality);
 		}
 		std::wstring wtext(getText());
 		switch(getHorizontalTextAlignment()){
@@ -2585,6 +2638,7 @@ namespace D2DUI{
 		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 	}
 	RadioButton::RadioButton(RadioGroup& parent,bool selected,std::wstring text): rgParent(parent){
+		setImageQuality();
 		setParent(parent);
 		setSelected(selected);
 		RadioButton::text=text;
@@ -2740,33 +2794,33 @@ namespace D2DUI{
 		if(isEnabled()){
 			if(isSelected()){
 				if(isPressed()){
-					d2d->target->DrawBitmap(bmp_pressed_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_pressed_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else if(isHovered()){
-					d2d->target->DrawBitmap(bmp_hovered_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_hovered_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else{
-					d2d->target->DrawBitmap(bmp_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 			}
 			else{
 				if(isPressed()){
-					d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else if(isHovered()){
-					d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 				else{
-					d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+					d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 				}
 			}
 		}
 		else{
 			if(isSelected()){
-				d2d->target->DrawBitmap(bmp_disabled_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_disabled_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 			}
 			else{
-				d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().left+(getBounds().bottom-getBounds().top),(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 		d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
@@ -2780,6 +2834,7 @@ namespace D2DUI{
 		setSelected(selected);
 		setFont(L"Microsoft Sans Serif");
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
 	}
 	void ToggleButton::setTBIndex(int index){
 		tbIndex=index;
@@ -2897,28 +2952,29 @@ namespace D2DUI{
 		//DrawTextLayout measuring are just magic numbers made to fit the image proportions. Use your own proportions when using another image.
 		if(isEnabled()){
 			if(isSelected()){
-				d2d->target->DrawBitmap(bmp_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_selected.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+((getBounds().right-getBounds().left)/50.f)+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 			}
 			else if(isPressed()){
-				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+((getBounds().right-getBounds().left)/50.f)+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 			}
 			else if(isHovered()){
-				d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 			}
 			else{
-				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 				d2d->target->DrawTextLayout(Point2F(getBounds().left+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 			}
 		}
 		else{
-			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			d2d->target->DrawTextLayout(Point2F(getBounds().left+((getBounds().right-getBounds().left)/50.f)+getLeftPadding(),getBounds().top+getTopPadding()),textlayout.Get(),solidbrush.Get());
 		}	
 	}
 	ImageView::ImageView(wchar_t* file){
+		setImageQuality();
 		ImageView::path=file;
 		states.push_back(NONE);
 		drawing=new D2DUIDrawableItem(*this,true);
@@ -2939,7 +2995,7 @@ namespace D2DUI{
 		d2d->target->CreateBitmapFromWicBitmap(d2d->formatconverter.Get(),NULL,bmp.ReleaseAndGetAddressOf());
 	}	
 	void ImageView::draw(std::shared_ptr<D2DHandle>& d2d){
-		d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+		d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 	}
 	void GifView::setLoop(bool loop){
 		this->loop=loop;	
@@ -2966,7 +3022,7 @@ namespace D2DUI{
 		}
 	}
 	void GifView::draw(std::shared_ptr<D2DHandle>& d2d){
-		d2d->target->DrawBitmap(frame_bmp.at(currentframe).Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+		d2d->target->DrawBitmap(frame_bmp.at(currentframe).Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 		if(currentframe<(totalframes-1)){
 			currentframe++;
 		}
@@ -3022,6 +3078,7 @@ namespace D2DUI{
 		}
 	}
 	ImageButton::ImageButton(wchar_t* file,std::wstring text){
+		setImageQuality();
 		disabledpath=pressedpath=hoveredpath=enabledpath=file;
 		this->text=text;
 		setForeground(0,0,0);
@@ -3032,6 +3089,7 @@ namespace D2DUI{
 		drawing=new D2DUIDrawableItem(*this,true);
 	}
 	ImageButton::ImageButton(wchar_t* enabledfile,wchar_t* disabledfile,wchar_t* pressedfile,wchar_t* hoveredfile,std::wstring text){
+		setImageQuality();
 		enabledpath=enabledfile;
 		disabledpath=disabledfile;
 		pressedpath=pressedfile;
@@ -3122,17 +3180,17 @@ namespace D2DUI{
 	void ImageButton::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()){
 			if(isPressed()){
-				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 			if(isHovered()){
-				d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_hovered.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 			else{
-				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 		else{
-			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 		}
 		solidbrush->SetColor(ColorF(fRGBA[0],fRGBA[1],fRGBA[2]));
 		solidbrush->SetOpacity(fRGBA[3]*opacity);
@@ -3507,6 +3565,7 @@ namespace D2DUI{
 		Slider::step=step;
 		states.push_back(NONE);
 		drawing=new D2DUIDrawableItem(*this,false);
+		setImageQuality();
 	}
 	void Slider::setMaximumValue(int maxValue){
 		Slider::maxValue=maxValue;
@@ -3552,7 +3611,7 @@ namespace D2DUI{
 		float top=getBounds().top+((size/2.f)-(trackheight/2.f));
 		float thumbleft=getBounds().left + ((float)value*scale) - (size/2.f);
 		d2d->target->FillRectangle(RectF((float)getBounds().left,top,(float)getBounds().right,(float)(top+trackheight)),solidbrush.Get());
-		d2d->target->DrawBitmap(bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity);
+		d2d->target->DrawBitmap(bmp.Get(),RectF((float)thumbleft,(float)getBounds().top,(float)(thumbleft+size),(float)getBounds().bottom),opacity,imageQuality);
 	}
 	LoadSlot::LoadSlot(std::wstring gamedat,std::wstring sysdate,std::wstring storyarc,wchar_t* thumb){
 		gamedate=std::shared_ptr<TextLabel>(new TextLabel(gamedat));
@@ -3568,6 +3627,14 @@ namespace D2DUI{
 		setFont(L"Microsoft Sans Serif");
 		setHorizontalTextAlignment(HorizontalConstants::LEFT);
 		setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
+		setImageQuality();
+	}
+	void LoadSlot::setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality){
+		WindowBase::setImageQuality(imageQuality);
+		gamedate->setImageQuality(imageQuality);
+		systemdate->setImageQuality(imageQuality);
+		arc->setImageQuality(imageQuality);
+		thumbnail->setImageQuality(imageQuality);
 	}
 	void LoadSlot::setBounds(int left,int top,int right,int bottom){
 		//These numbers are based on the image proportions. Use your own when using a custom image.
@@ -3666,14 +3733,14 @@ namespace D2DUI{
 	void LoadSlot::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()){
 			if(isPressed()){
-				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 			else{
-				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 		else{
-			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 		}
 		thumbnail->draw(d2d);
 		gamedate->draw(d2d);
@@ -3694,6 +3761,14 @@ namespace D2DUI{
 		setFont(L"Microsoft Sans Serif");
 		setHorizontalTextAlignment(HorizontalConstants::LEFT);
 		setVerticalTextAlignment(VerticalConstants::CENTER_VERTICAL);
+		setImageQuality();
+	}
+	void SaveSlot::setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality){
+		WindowBase::setImageQuality(imageQuality);
+		gamedate->setImageQuality(imageQuality);
+		systemdate->setImageQuality(imageQuality);
+		arc->setImageQuality(imageQuality);
+		thumbnail->setImageQuality(imageQuality);
 	}
 	void SaveSlot::setBounds(int left,int top,int right,int bottom){
 		//These numbers are based on the image proportions. Use your own when using a custom image.
@@ -3792,14 +3867,14 @@ namespace D2DUI{
 	void SaveSlot::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isEnabled()){
 			if(isPressed()){
-				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 			else{
-				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+				d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 			}
 		}
 		else{
-			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp_disabled.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 		}
 		thumbnail->draw(d2d);
 		gamedate->draw(d2d);
@@ -3890,13 +3965,13 @@ namespace D2DUI{
 	}
 	void ScrollBar::draw(std::shared_ptr<D2DHandle>& d2d){
 		if(isPressed()){
-			d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp_pressed.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 		}
 		else{
-			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity);
+			d2d->target->DrawBitmap(bmp.Get(),RectF((float)getBounds().left,(float)getBounds().top,(float)getBounds().right,(float)getBounds().bottom),opacity,imageQuality);
 		}
 		float topY=(float)(getBounds().top)+((((float)(getBounds().bottom-getBounds().top))/portions)*position);
 		float height=(float)(getBounds().bottom-getBounds().top)/portions;
-		d2d->target->DrawBitmap(bmp_thumb.Get(),RectF((float)getBounds().left,topY,(float)getBounds().right,topY+height),opacity);
+		d2d->target->DrawBitmap(bmp_thumb.Get(),RectF((float)getBounds().left,topY,(float)getBounds().right,topY+height),opacity,imageQuality);
 	}
 }

@@ -46,19 +46,16 @@ namespace D2DUI{
 		CENTER_VERTICAL=4,
 		BOTTOM=5
 	}VerticalConstants;
-	class TabControlConstants{
-	public:
-		TabControlConstants(){}
-		~TabControlConstants(){}
-		static const int LEFT=0;
-		static const int TOP=1;
-		static const int RIGHT=2;
-		static const int BOTTOM=3;
-		static const int LEFTTORIGHT=4;
-		static const int RIGHTTOLEFT=5;
-		static const int UPTODOWN=6;
-		static const int DOWNTOUP=7;
-	};
+	/*enum TabControlConstants{
+		LEFT=0,
+		TOP=1,
+		RIGHT=2,
+		BOTTOM=3,
+		LEFTTORIGHT=4,
+		RIGHTTOLEFT=5,
+		UPTODOWN=6,
+		DOWNTOUP=7
+	};*/
 	class RadioGroup;
 	class ToggleGroup;
 	class LayoutBase;
@@ -177,6 +174,13 @@ namespace D2DUI{
 		//Retrieves the vertical text alignment as VerticalConstants.
 		virtual VerticalConstants getVerticalTextAlignment(){
 			return vAlignment;
+		}
+		//Sets the quality for image files
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR){
+			this->imageQuality=imageQuality;
+		}
+		virtual D2D1_BITMAP_INTERPOLATION_MODE getImageQuality(){
+			return imageQuality;
 		}
 		//Defines the colour of the text. Values go from 0.0 to 1.0
 		virtual void setForeground(float R,float G,float B,float A=1.0f){
@@ -534,6 +538,7 @@ namespace D2DUI{
 		int topPadding;
 		int rightPadding;
 		int bottomPadding;
+		D2D1_BITMAP_INTERPOLATION_MODE imageQuality;
 		VerticalConstants vAlignment;
 		HorizontalConstants hAlignment;
 		std::wstring text;
@@ -545,6 +550,7 @@ namespace D2DUI{
 			states.push_back(WINDOW_STATES::NONE);
 			portions=1;
 			position=0;
+			setImageQuality();
 		}
 		~ScrollBar(){}
 		enum Orientation{
@@ -881,14 +887,19 @@ namespace D2DUI{
 		3. Used for drawing modal objects (MsgBox, InfoBox, PopupNotification, etc.) and its children.
 		4. Used for drawing dropdowns inside modal objects (see above).
 		*/
+		void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
+		D2D1_BITMAP_INTERPOLATION_MODE getImageQuality();
 		void addDrawToQueue(int layer,D2DUIDrawableItem& draw);
 		//Call this in your loop update. Once adding at least one item to the drawing system, you won't need to manually add the draw, customDraw or drawDropdown for each element.
 		void draw(std::shared_ptr<D2DHandle>& d2d);
 		std::map<int,std::vector<std::reference_wrapper<D2DUIDrawableItem>>>drawOrder;
 		static D2DUISystem& getInstance();
 	private:
-		D2DUISystem(){}
+		D2DUISystem(){
+			setImageQuality();
+		}
 		~D2DUISystem(){}
+		D2D1_BITMAP_INTERPOLATION_MODE imageQuality;
 	};
 
 	class LinearLayout:public LayoutBase{
@@ -1257,6 +1268,7 @@ namespace D2DUI{
 		int getValue();
 		int getMaximumValue();
 		int getMinimumValue();
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
 		virtual void setBounds(int left,int top,int right,int bottom);
 		virtual void setVisible(bool visible);
 		virtual void setEnabled(bool enabled);
@@ -1539,6 +1551,7 @@ namespace D2DUI{
 			setForeground(0.f,0.f,0.f,1.f);
 			drawing=new D2DUIDrawableItem(*this,false);
 			useCustomDraw=false;
+			setImageQuality();
 		}
 		~ComboBox(){
 			tb.reset();
@@ -1546,6 +1559,12 @@ namespace D2DUI{
 			vScrollBar.reset();
 		}
 		std::shared_ptr<TextBox> tb;
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR){
+			WindowBase::setImageQuality(imageQuality);
+			tb->setImageQuality(imageQuality);
+			dropdown->setImageQuality(imageQuality);
+			vScrollBar->setImageQuality(imageQuality);
+		}
 		virtual void setTextSize(float px){
 			WindowBase::setTextSize(px);
 			tb->setTextSize(px);
@@ -1728,8 +1747,14 @@ namespace D2DUI{
 			states.push_back(WINDOW_STATES::NONE);
 			drawing=new D2DUIDrawableItem(*this,false);
 			useCustomDraw=false;
+			setImageQuality();
 		}
 		~ListBox(){}
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR){
+			WindowBase::setImageQuality(imageQuality);
+			vScrollBar->setImageQuality(imageQuality);
+			hScrollBar->setImageQuality(imageQuality);
+		}
 		std::shared_ptr<ScrollBar> hScrollBar;
 		std::shared_ptr<ScrollBar> vScrollBar;
 		virtual void setBounds(int left,int top,int right,int bottom){
@@ -2028,7 +2053,7 @@ namespace D2DUI{
 	public:
 		SlotBase(){}
 		~SlotBase(){}
-		
+
 		virtual void setGameDate(std::wstring date){
 			gamedate->setText(date);
 		}
@@ -2071,6 +2096,7 @@ namespace D2DUI{
 		LoadSlot(std::wstring gamedate=L"NO DATA",std::wstring sysdate=L"",std::wstring storyarc=L"",wchar_t* thumb=L"");
 		~LoadSlot(){
 		}
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
 		virtual void setBounds(int left,int top,int right,int bottom);
 		virtual void setHorizontalTextAlignment(HorizontalConstants H);
 		virtual void setVerticalTextAlignment(VerticalConstants V);
@@ -2105,6 +2131,7 @@ namespace D2DUI{
 	public:
 		SaveSlot(std::wstring gamedate=L"NO DATA",std::wstring sysdate=L"",std::wstring storyarc=L"",wchar_t* thumb=L"");
 		~SaveSlot(){}
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
 		virtual void setBounds(int left,int top,int right,int bottom);
 		virtual void setHorizontalTextAlignment(HorizontalConstants H);
 		virtual void setVerticalTextAlignment(VerticalConstants V);
@@ -2183,6 +2210,7 @@ namespace D2DUI{
 		MsgBox(HWND parent,bool modal,std::wstring text,std::wstring title,MSGBoxButtons buttons,MSGBoxIcon icon);
 		~MsgBox(){
 		}
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
 		std::shared_ptr<TextLabel> textContent, textTitle;
 		std::shared_ptr<ImageView> msgboxicon;
 		virtual void setTextSize(float px);
@@ -2236,6 +2264,7 @@ namespace D2DUI{
 		~InfoBox(){
 		}
 		std::shared_ptr<TextLabel> textContent;
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
 		virtual void setTextSize(float px);
 		virtual void setFont(wchar_t* font);
 		virtual void setForeground(int R,int G,int B,int A=255);
@@ -2279,6 +2308,7 @@ namespace D2DUI{
 		PopupNotification(HWND parent,std::wstring text,long duration);
 		~PopupNotification(){}
 		long duration;
+		virtual void setImageQuality(D2D1_BITMAP_INTERPOLATION_MODE imageQuality=D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
 		virtual void setTextSize(float px);
 		virtual void setFont(wchar_t* font);
 		virtual void setForeground(int R,int G,int B,int A=255);
